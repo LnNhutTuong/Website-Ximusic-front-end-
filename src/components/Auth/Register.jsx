@@ -1,12 +1,111 @@
 import { Link } from "react-router-dom"
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {toast} from "react-toastify";
 const Register = (props) => {
 
+    const  [email, setEmail] = useState("");
+    const  [phone, setPhone] = useState("");
+    const  [username, setUsername] = useState("");
+    const  [password, setPassword] = useState("");
+    const  [rePassword, setRePassword] = useState("");
+    const [isValidInput, setIsValidInput] = useState({
+        isValidEmail: true,
+        isValidPhone: true,
+        isValidUsername: true,
+        isValidPassword: true,
+
+    })
+    const handleRegister = () => {
+
+        if(!isValid()){
+            return;
+        }
+
+        toast.success("Register success");
+        let userData = {
+            email, phone, username, password
+        }
+        console.log(">>>>>>>>>check user data: ", userData);
+
+        let check = isValid();
+        
+        if(check) {
+            axios.post("http://localhost:8080/api/v1/register", {
+                email: email,
+                password: password,
+                phone: phone,
+                username: username,
+            });
+        }
+    }
+
+    const isValid = () => {
+
+        const validation = {
+            isValidEmail: true,
+            isValidPhone: true,
+            isValidUsername: true,
+            isValidPassword: true,
+        }
+
+        let check = true;
+        let error = "";
+
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        let phoneRegex = /^\d{10}$/;
+        let usernameRegex = /^[a-zA-Z0-9]{3,16}$/;
+        
+        if(!email && !phone && !username && !password) {
+            validation.isValidEmail = false;
+            validation.isValidPhone = false;
+            validation.isValidUsername = false;
+            validation.isValidPassword = false;
+            error = "Please fill in all the fields";
+            check = false;
+        }
+        else if(!email || !email.match(emailRegex)){
+            validation.isValidEmail = false;
+            error = "Email is not valid";
+            check = false;
+        }
+        else if (!phone || !phone.match(phoneRegex)){
+            validation.isValidPhone = false;
+            error = "Phone is not valid";
+            check = false;
+        }
+        else if (!username || !username.match(usernameRegex)){
+            validation.isValidUsername = false;
+            error = "Username is not valid";
+            check = false;
+        }
+        else if (!password || password.length < 6){
+            validation.isValidPassword = false;
+            error = "Password must be at least 6 characters";
+            check = false;
+        }
+        else if (password !== rePassword){
+            validation.isValidPassword = false;
+            error = "Password do not match";
+            check = false;
+        }
+
+        setIsValidInput(validation);
+        
+        if(!check && error){
+            toast.error(error);
+            return false;
+        }
+
+        return check;
+    }
+
     useEffect(()=>{
-        axios.get("http://localhost:8080/api/test-api").then(response => {
-            console.log(">>>check data: ",response.data);
-        })
+        // axios.get("http://localhost:8080/api/v1/test-api").then(response => {
+        //     console.log(">>>check data: ",response.data);
+        // })
+
+        
     }, [])
 
 
@@ -21,30 +120,41 @@ const Register = (props) => {
             <h1 className="text-2xl xl:text-3xl font-extrabold">
                 Register
             </h1>
-            <form action="/" method="POST">
                     <div className="w-full flex-1 mt-8">                   
                         <div className="mx-auto max-w-xs">
+                            
+                            {/* Email */}
                             <label className="text-gray-600 font-medium" htmlFor="email">Email:</label>
                             <input
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mb-2"
-                                type="email" placeholder="Email" id="email" name="email"/>
+                                className= {`${isValidInput.isValidEmail ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                                type="email" placeholder="Email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+
+                            {/* Phone */}
                             <label className="text-gray-600 font-medium mt-5" htmlFor="phone">Phone number:</label>
                             <input
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mb-2"
-                                type="text" placeholder="Phone number" id="phone" name="phone"/>
+                                className= {`${isValidInput.isValidPhone ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                                type="text" placeholder="Phone number" id="phone" name="phone" value={phone} onChange={(e) => setPhone(e.target.value)}/>
+
+                            {/* Username */}
                             <label className="text-gray-600 font-medium mt-5" htmlFor="username">User name:</label>
                             <input
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mb-2"
-                                type="text" placeholder="User name" id="username" name="username"/>
+                                className= {`${isValidInput.isValidUsername ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                                type="text" placeholder="User name" id="username" name="username" value={username} onChange={(e) => setUsername(e.target.value)}/>
+
+                            {/* Password */}
                             <label className="text-gray-600 font-medium mt-5" htmlFor="password">Password:</label>
                             <input
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mb-2"
-                                type="password" placeholder="Password" id="password" name="password"/>
+                                className= {`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                                type="password" placeholder="Password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+
+                            {/* Re-Password */}
                             <label className="text-gray-600 font-medium mt-5" htmlFor="re-password">Re-Password:</label>
                             <input
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mb-2"
-                                type="password" placeholder="Re-Password" id="re-password" name="re-password"/>
+                                className= {`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                                type="password" placeholder="Re-Password" id="re-password" name="re-password" value={rePassword} onChange={(e) => setRePassword(e.target.value)}/>
+
                             <button
+                                onClick={() => handleRegister()}
                                 className="mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
                                 <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -64,7 +174,6 @@ const Register = (props) => {
                             </p>
                         </div>
                     </div>
-                </form>
                 </div>       
             </div>
         </div>

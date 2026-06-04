@@ -1,3 +1,5 @@
+import {ToastContainer, Bounce} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Nav from "./components/Navigation/Nav"
 import Login from "./components/Auth/Login"
 import Register from "./components/Auth/Register"
@@ -25,6 +27,19 @@ const App = () => {
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+        />
     </Router>
   )
 }
