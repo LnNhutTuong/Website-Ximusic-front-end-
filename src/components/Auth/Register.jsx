@@ -101,16 +101,6 @@ const Register = (props) => {
 
         return check;
     }
-
-    useEffect(()=>{
-        // axios.get("http://localhost:8080/api/v1/test-api").then(response => {
-        //     console.log(">>>check data: ",response.data);
-        // })
-
-        
-    }, [])
-
-
     
   return (
     <div className="bg-gray-100 text-gray-900 flex justify-center h-[calc(100vh-4rem)] py-12">
