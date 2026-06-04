@@ -1,8 +1,13 @@
-import { Link } from "react-router-dom"
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react";
 import {toast} from "react-toastify";
+
+
+import {registerNewUser} from "../../services/userService";
+
 const Register = (props) => {
+
+    const navigation = useNavigate();
 
     const  [email, setEmail] = useState("");
     const  [phone, setPhone] = useState("");
@@ -16,27 +21,24 @@ const Register = (props) => {
         isValidPassword: true,
 
     })
-    const handleRegister = () => {
+    const handleRegister = async () => {
 
         if(!isValid()){
             return;
         }
 
-        toast.success("Register success");
-        let userData = {
-            email, phone, username, password
-        }
-        console.log(">>>>>>>>>check user data: ", userData);
-
         let check = isValid();
         
         if(check) {
-            axios.post("http://localhost:8080/api/v1/register", {
-                email: email,
-                password: password,
-                phone: phone,
-                username: username,
-            });
+           let res = await registerNewUser(email, password, phone, username);
+           console.log(">>>check res: ", res);
+           if(res?.data?.EC === 0){
+            toast.success(res.data.EM);
+            navigation("/login");
+           }
+           else {
+            toast.error(res.data.EM);
+           }
         }
     }
 
