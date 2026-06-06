@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { handleLogin } from "../../services/userService";
+import { useNavigate } from "react-router-dom";
 
 const Login = (props) => {
+  const navigate = useNavigate();
+
   const [valueLogin, setValueLogin] = useState("");
   const [password, setPassword] = useState("");
   const [isValidInput, setIsValidInput] = useState({
@@ -67,10 +70,24 @@ const Login = (props) => {
       console.log(">>>>>Check res: ", res);
 
       if (res?.data?.EC === 0) {
+        let data = {
+          isAuthenticated: true,
+          token: "fake token hehe",
+        };
+
+        sessionStorage.setItem("account", JSON.stringify(data));
         toast.success(res.data.EM);
+        navigate("/");
+        window.location.reload();
       } else {
         toast.error(res.data.EM);
       }
+    }
+  };
+
+  const handleEnter = (event) => {
+    if (event.charCode === 13 && event.code === "Enter") {
+      handleSubmit();
     }
   };
 
@@ -110,6 +127,7 @@ const Login = (props) => {
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={(e) => handleEnter(e)}
                 />
               </div>
 
