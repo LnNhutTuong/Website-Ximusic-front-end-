@@ -29,7 +29,10 @@ const Login = (props) => {
       error = "Please fill in all the fields";
     }
 
-    if (!valueLogin || valueLogin.match(emailRegex || phoneRegex)) {
+    if (
+      !valueLogin ||
+      (valueLogin.match(emailRegex) && valueLogin.match(phoneRegex))
+    ) {
       validation.isValidValueLogin = false;
       check = false;
       error = "Your Email or Phone number is invalid";
@@ -53,16 +56,21 @@ const Login = (props) => {
 
   const handleSubmit = async () => {
     if (!isValid) {
+      console.log("sai rooif con!");
       return;
     }
 
     let check = isValid();
 
-    let data = { valueLogin, password };
-
     if (check) {
       let res = await handleLogin(valueLogin, password);
       console.log(">>>>>Check res: ", res);
+
+      if (res?.data?.EC === 0) {
+        toast.success(res.data.EM);
+      } else {
+        toast.error(res.data.EM);
+      }
     }
   };
 
@@ -83,7 +91,7 @@ const Login = (props) => {
                 Email or phone number:
               </label>
               <input
-                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                className={`${isValidInput.isValidValueLogin ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="text"
                 placeholder="Email or phone number"
                 name="valueLogin"
@@ -96,7 +104,7 @@ const Login = (props) => {
                   Password:
                 </label>
                 <input
-                  className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white "
+                  className={`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                   type="password"
                   placeholder="Password"
                   name="password"

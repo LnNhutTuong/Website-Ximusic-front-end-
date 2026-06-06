@@ -10,9 +10,11 @@ const registerNewUser = (email, password, phone, username) => {
 };
 
 const handleLogin = (valueLogin, password) => {
+  // console.log(">>>Check value login: ", valueLogin);
+  // console.log(">>>Check password: ", password);
   return axios.post("http://localhost:8080/api/v1/login", {
-    valueLogin,
-    password,
+    valueLogin: valueLogin,
+    password: password,
   });
 };
 
