@@ -42,6 +42,30 @@ const Nav = (props) => {
                   List users
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/Project"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-500"
+                      : "text-gray-300 hover:text-gray-300"
+                  }
+                >
+                  Project
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/logout"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-500"
+                      : "text-gray-300 hover:text-gray-300"
+                  }
+                >
+                  Logout
+                </NavLink>
+              </li>
             </>
           ) : (
             <>
@@ -72,17 +96,6 @@ const Nav = (props) => {
               </li>
             </>
           )}
-
-          <li>
-            <NavLink
-              to="/contact"
-              className={({ isActive }) =>
-                isActive ? "text-blue-500" : "text-gray-300 hover:text-gray-300"
-              }
-            >
-              Contact
-            </NavLink>
-          </li>
         </ul>
       </div>
     </nav>

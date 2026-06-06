@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { handleLogin } from "../../services/userService";
@@ -90,6 +90,13 @@ const Login = (props) => {
       handleSubmit();
     }
   };
+
+  useEffect(() => {
+    let session = sessionStorage.getItem("account");
+    if (session) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="bg-gray-100 text-gray-900 flex justify-center h-[calc(100vh-4rem)] py-12">
