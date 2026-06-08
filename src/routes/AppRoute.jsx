@@ -7,8 +7,8 @@ import {
 import { useEffect, useState } from "react";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
-import ManagerUser from "../components/Manager/ManageUser/index";
-import ManageProject from "../components/Manager/ManageProject/index";
+import ManagerUser from "../components/Manager/ManageUser/User";
+import ManageProject from "../components/Manager/ManageProject/Project";
 
 import PrivateRoutes from "./PrivateRoutes";
 const AppRoutes = (props) => {

@@ -11,6 +11,13 @@ const Nav = (props) => {
     }
   }, []);
 
+  const handleLogout = () => {
+    if (account) {
+      sessionStorage.removeItem("account");
+    }
+    window.location.reload();
+  };
+
   return (
     <nav className="bg-gray-900 text-white px-6 py-4">
       <div className="flex items-center justify-between">
@@ -48,23 +55,19 @@ const Nav = (props) => {
                   className={({ isActive }) =>
                     isActive
                       ? "text-blue-500"
-                      : "text-gray-300 hover:text-gray-300"
+                      : "text-gray-300 hover:text-blue-5000"
                   }
                 >
                   Project
                 </NavLink>
               </li>
               <li>
-                <NavLink
-                  to="/logout"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-blue-500"
-                      : "text-gray-300 hover:text-gray-300"
-                  }
+                <button
+                  onClick={() => handleLogout()}
+                  className="text-gray-300 hover:text-blue-500"
                 >
                   Logout
-                </NavLink>
+                </button>
               </li>
             </>
           ) : (
