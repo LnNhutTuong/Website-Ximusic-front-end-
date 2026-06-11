@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import {
   fetchAllUser,
+  handleDeleteUser,
   handleGetUserWithId,
 } from "../../../services/userService";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";
+import { Button } from "@/components/ui/button";
 
 const ListUser = () => {
   const [listUser, setListUser] = useState([]);
@@ -16,6 +18,7 @@ const ListUser = () => {
 
   //Dialog Detail User
   const [detailUser, setDetailUser] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
   const [dialogDetailUser, setDialogDetailUser] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -154,13 +157,23 @@ const ListUser = () => {
                   <td className="px-6 py-4">
                     {new Date(user.updatedAt).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4">
-                    <a className="border-b" href="update-page/<%= user.id %>">
+                  <td className="px-6 py-4 flex gap-2">
+                    <Button
+                      variant="warning"
+                      onClick={() => {
+                        (setDialogDetailUser(true),
+                          handleGetDataUser(user.id),
+                          setIsEditMode(true));
+                      }}
+                    >
                       Edit
-                    </a>
-                    <form action="/delete-user/<%= user.id %>" method="POST">
-                      <button>Delete</button>
-                    </form>
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleDeleteUser(user.id)}
+                    >
+                      Delete
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -220,6 +233,7 @@ const ListUser = () => {
         setShow={setDialogDetailUser}
         fetchAllUser={getListUser}
         detailUser={detailUser}
+        isEditMode={isEditMode}
       />
     </>
   );

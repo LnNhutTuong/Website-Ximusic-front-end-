@@ -68,6 +68,10 @@ const handleUpdateUser = (
     groupId,
   });
 };
+
+const handleDeleteUser = (id) => {
+  return axios.delete(`http://localhost:8080/api/v1/user/delete/${id}`);
+};
 export {
   registerNewUser,
   handleLogin,
@@ -76,4 +80,5 @@ export {
   getAllGroup,
   handleGetUserWithId,
   handleUpdateUser,
+  handleDeleteUser,
 };

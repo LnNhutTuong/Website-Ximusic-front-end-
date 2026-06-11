@@ -27,12 +27,16 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getAllGroup, handleUpdateUser } from "../../../services/userService";
+import {
+  getAllGroup,
+  handleUpdateUser,
+  handleDeleteUser,
+} from "../../../services/userService";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const DialogDetailUser = (props) => {
-  const { show, setShow, fetchAllUser, detailUser } = props;
+  const { show, setShow, fetchAllUser, detailUser, isEditMode } = props;
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -70,6 +74,10 @@ const DialogDetailUser = (props) => {
       setSex(detailUser.sex);
       setGroupId(detailUser.groupId);
     }
+
+    if (isEditMode) {
+      setIsEdit(isEditMode);
+    }
   };
 
   useEffect(() => {
@@ -84,8 +92,15 @@ const DialogDetailUser = (props) => {
     setIsEdit(true);
   };
 
-  const handleDelete = () => {
-    alert("Are you sure?");
+  const handleDelete = async () => {
+    let res = await handleDeleteUser(detailUser.id);
+    if (res?.data?.EC === 0) {
+      toast.success(res.data.EM);
+      fetchAllUser();
+      handleCLoseDialog();
+    } else {
+      toast.error(res.data.EM);
+    }
   };
 
   const isValid = () => {
