@@ -341,7 +341,7 @@ const DialogCreateUser = (props) => {
               Cancel
             </Button>
 
-            <Button onClick={() => handleSubmit()}>Save changes</Button>
+            <Button onClick={() => handleSubmit()}>Create user</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

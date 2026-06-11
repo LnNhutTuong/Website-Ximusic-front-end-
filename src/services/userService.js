@@ -21,7 +21,6 @@ const getAllGroup = () => {
 };
 
 const fetchAllUser = (page, limit) => {
-  console.log(">>>>>>>>check limit: ", limit);
   return axios.get(
     `http://localhost:8080/api/v1/user/read?page=${page}&limit=${limit}`,
   );
@@ -31,7 +30,7 @@ const handleCreateNewUser = (
   email,
   password,
   username,
-  addres,
+  address,
   sex,
   phone,
   groupId,
@@ -40,17 +39,41 @@ const handleCreateNewUser = (
     email,
     password,
     username,
-    addres,
+    address,
     sex,
     phone,
     groupId,
   });
 };
 
+const handleGetUserWithId = (id) => {
+  return axios.get(`http://localhost:8080/api/v1/user/read-detail/${id}`);
+};
+
+const handleUpdateUser = (
+  id,
+  email,
+  username,
+  address,
+  sex,
+  phone,
+  groupId,
+) => {
+  return axios.put(`http://localhost:8080/api/v1/user/update/${id}`, {
+    email,
+    username,
+    address,
+    sex,
+    phone,
+    groupId,
+  });
+};
 export {
   registerNewUser,
   handleLogin,
   fetchAllUser,
   handleCreateNewUser,
   getAllGroup,
+  handleGetUserWithId,
+  handleUpdateUser,
 };

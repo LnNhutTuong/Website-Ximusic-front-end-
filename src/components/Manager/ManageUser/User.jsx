@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchAllUser } from "../../../services/userService";
+import {
+  fetchAllUser,
+  handleGetUserWithId,
+} from "../../../services/userService";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";
@@ -12,6 +15,7 @@ const ListUser = () => {
   const [dialogCreate, setDialogCreate] = useState(false);
 
   //Dialog Detail User
+  const [detailUser, setDetailUser] = useState("");
   const [dialogDetailUser, setDialogDetailUser] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -64,7 +68,12 @@ const ListUser = () => {
     });
   };
 
-  const handleShowDetailUser = () => {};
+  const handleGetDataUser = async (idUser) => {
+    let res = await handleGetUserWithId(idUser);
+    if (res?.data?.EC === 0) {
+      setDetailUser(res.data.DT);
+    }
+  };
 
   return (
     <>
@@ -122,13 +131,17 @@ const ListUser = () => {
                   </th>
                   <td
                     className="px-6 py-4"
-                    onClick={() => setDialogDetailUser(true)}
+                    onClick={() => {
+                      (setDialogDetailUser(true), handleGetDataUser(user.id));
+                    }}
                   >
                     {user.email}
                   </td>
                   <td
                     className="px-6 py-4"
-                    onClick={() => setDialogDetailUser(true)}
+                    onClick={() => {
+                      (setDialogDetailUser(true), handleGetDataUser(user.id));
+                    }}
                   >
                     {user.username}
                   </td>
@@ -206,6 +219,7 @@ const ListUser = () => {
         show={dialogDetailUser}
         setShow={setDialogDetailUser}
         fetchAllUser={getListUser}
+        detailUser={detailUser}
       />
     </>
   );
