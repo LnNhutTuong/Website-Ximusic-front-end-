@@ -16,13 +16,41 @@ const handleLogin = (valueLogin, password) => {
   });
 };
 
+const getAllGroup = () => {
+  return axios.get("http://localhost:8080/api/v1/group/read");
+};
+
 const fetchAllUser = (page, limit) => {
+  console.log(">>>>>>>>check limit: ", limit);
   return axios.get(
     `http://localhost:8080/api/v1/user/read?page=${page}&limit=${limit}`,
   );
-
-  console.log(">>>Check page: ", page);
-  console.log(">>>Check limit: ", limit);
 };
 
-export { registerNewUser, handleLogin, fetchAllUser };
+const handleCreateNewUser = (
+  email,
+  password,
+  username,
+  addres,
+  sex,
+  phone,
+  groupId,
+) => {
+  return axios.post("http://localhost:8080/api/v1/user/create", {
+    email,
+    password,
+    username,
+    addres,
+    sex,
+    phone,
+    groupId,
+  });
+};
+
+export {
+  registerNewUser,
+  handleLogin,
+  fetchAllUser,
+  handleCreateNewUser,
+  getAllGroup,
+};

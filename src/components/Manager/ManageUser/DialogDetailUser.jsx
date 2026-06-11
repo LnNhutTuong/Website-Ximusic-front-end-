@@ -33,7 +33,7 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const DialogCreateUser = (props) => {
+const DialogDetailUser = (props) => {
   const { show, setShow, fetchAllUser } = props;
 
   const [email, setEmail] = useState("");
@@ -349,4 +349,4 @@ const DialogCreateUser = (props) => {
   );
 };
 
-export default DialogCreateUser;
+export default DialogDetailUser;

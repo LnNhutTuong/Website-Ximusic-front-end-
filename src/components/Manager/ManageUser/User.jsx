@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchAllUser } from "../../../services/userService";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
+import DialogDetailUser from "./DialogDetailUser";
 
 const ListUser = () => {
   const [listUser, setListUser] = useState([]);
@@ -10,10 +11,13 @@ const ListUser = () => {
   // Dialog Create User
   const [dialogCreate, setDialogCreate] = useState(false);
 
+  //Dialog Detail User
+  const [dialogDetailUser, setDialogDetailUser] = useState(false);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = parseInt(searchParams.get("page"), 10) || 1;
-  const currentLimit = parseInt(searchParams.get("limit"), 10) || 1;
+  const currentLimit = 5;
 
   useEffect(() => {
     getListUser();
@@ -60,9 +64,11 @@ const ListUser = () => {
     });
   };
 
+  const handleShowDetailUser = () => {};
+
   return (
     <>
-      <div className="list-user-container">
+      <div className="list-user-container mx-10 my-5">
         <h1 className="text-xl font-bold">List Users</h1>
         <div className="flex gap-2 my-2">
           <button
@@ -114,10 +120,20 @@ const ListUser = () => {
                   >
                     {user.id}
                   </th>
-                  <td className="px-6 py-4">{user.email}</td>
-                  <td className="px-6 py-4">{user.username}</td>
+                  <td
+                    className="px-6 py-4"
+                    onClick={() => setDialogDetailUser(true)}
+                  >
+                    {user.email}
+                  </td>
+                  <td
+                    className="px-6 py-4"
+                    onClick={() => setDialogDetailUser(true)}
+                  >
+                    {user.username}
+                  </td>
                   <td className="px-6 py-4">
-                    {user.Group ? user.Group.name : "No group"}
+                    {user.Group ? user.Group.name.toUpperCase() : "No group"}
                   </td>
                   <td className="px-6 py-4">
                     {new Date(user.createdAt).toLocaleString()}
@@ -180,7 +196,17 @@ const ListUser = () => {
         </div>
       </div>
 
-      <DialogCreateUser show={dialogCreate} setShow={setDialogCreate} />
+      <DialogCreateUser
+        show={dialogCreate}
+        setShow={setDialogCreate}
+        fetchAllUser={getListUser}
+      />
+
+      <DialogDetailUser
+        show={dialogDetailUser}
+        setShow={setDialogDetailUser}
+        fetchAllUser={getListUser}
+      />
     </>
   );
 };
