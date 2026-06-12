@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   fetchAllUser,
+  getAllGroup,
   handleDeleteUser,
   handleGetUserWithId,
 } from "../../../services/userService";
@@ -8,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";
 import { Button } from "@/components/ui/button";
-
+import { toast } from "react-toastify";
 const ListUser = () => {
   const [listUser, setListUser] = useState([]);
   const [totalPage, setTotalPage] = useState([]);
@@ -32,10 +33,10 @@ const ListUser = () => {
 
   const getListUser = async () => {
     let res = await fetchAllUser(currentPage, currentLimit);
-    if (res?.data?.EC === 0) {
-      setListUser(res.data.DT.rows);
+    if (res?.EC === 0) {
+      setListUser(res.DT.rows);
 
-      let totalUser = +res.data.DT.count;
+      let totalUser = +res.DT.count;
 
       let pageCount = Math.ceil(totalUser / currentLimit);
 
@@ -73,8 +74,19 @@ const ListUser = () => {
 
   const handleGetDataUser = async (idUser) => {
     let res = await handleGetUserWithId(idUser);
-    if (res?.data?.EC === 0) {
-      setDetailUser(res.data.DT);
+    if (res?.EC === 0) {
+      setDetailUser(res.DT);
+    }
+  };
+
+  const handleDelete = async (idUser) => {
+    let res = await handleDeleteUser(idUser);
+    console.log(">>>>>>>Check res: ", res);
+    if (res?.EC === 0) {
+      toast.success(res.EM);
+      getListUser();
+    } else {
+      toast.error(res.EM);
     }
   };
 
@@ -170,7 +182,7 @@ const ListUser = () => {
                     </Button>
                     <Button
                       variant="destructive"
-                      onClick={() => handleDeleteUser(user.id)}
+                      onClick={() => handleDelete(user.id)}
                     >
                       Delete
                     </Button>

@@ -60,8 +60,8 @@ const DialogDetailUser = (props) => {
 
   const getListGroups = async () => {
     let res = await getAllGroup();
-    if (res?.data?.EC === 0) {
-      setListGroups(res.data.DT);
+    if (res?.EC === 0) {
+      setListGroups(res.DT);
     }
   };
 
@@ -94,12 +94,12 @@ const DialogDetailUser = (props) => {
 
   const handleDelete = async () => {
     let res = await handleDeleteUser(detailUser.id);
-    if (res?.data?.EC === 0) {
-      toast.success(res.data.EM);
+    if (res?.EC === 0) {
+      toast.success(res.EM);
       fetchAllUser();
       handleCLoseDialog();
     } else {
-      toast.error(res.data.EM);
+      toast.error(res.EM);
     }
   };
 
@@ -206,12 +206,12 @@ const DialogDetailUser = (props) => {
 
       console.log(">>>check res: ", res);
 
-      if (res?.data?.EC === 0) {
-        toast.success(res.data.EM);
+      if (res?.EC === 0) {
+        toast.success(res.EM);
         await fetchAllUser();
         handleCLoseDialog();
       } else {
-        toast.error(res.data.EM);
+        toast.error(res.EM);
       }
     }
   };
