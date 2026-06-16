@@ -28,11 +28,11 @@ const Register = (props) => {
     if (check) {
       let res = await registerNewUser(email, password, phone, username);
       console.log(">>>check res: ", res);
-      if (res?.data?.EC === 0) {
-        toast.success(res.data.EM);
+      if (res.EC === 0) {
+        toast.success(res.EM);
         navigate("/login");
       } else {
-        toast.error(res.data.EM);
+        toast.error(res.EM);
       }
     }
   };
@@ -89,6 +89,12 @@ const Register = (props) => {
     }
 
     return check;
+  };
+
+  const handleEnter = (event) => {
+    if (event.charCode === 13 && event.code === "Enter") {
+      handleRegister();
+    }
   };
 
   useEffect(() => {
@@ -185,6 +191,7 @@ const Register = (props) => {
                 name="re-password"
                 value={rePassword}
                 onChange={(e) => setRePassword(e.target.value)}
+                onKeyPress={(e) => handleEnter(e)}
               />
 
               <button

@@ -69,18 +69,18 @@ const Login = (props) => {
       let res = await handleLogin(valueLogin, password);
       console.log(">>>>>Check res: ", res);
 
-      if (res?.data?.EC === 0) {
+      if (res.EC === 0) {
         let data = {
           isAuthenticated: true,
           token: "fake token hehe",
         };
 
         sessionStorage.setItem("account", JSON.stringify(data));
-        toast.success(res.data.EM);
+        toast.success(res.EM);
         navigate("/");
         window.location.reload();
       } else {
-        toast.error(res.data.EM);
+        toast.error(res.EM);
       }
     }
   };
