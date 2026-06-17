@@ -59,7 +59,6 @@ const Login = (props) => {
 
   const handleSubmit = async () => {
     if (!isValid) {
-      console.log("sai rooif con!");
       return;
     }
 
@@ -78,6 +77,7 @@ const Login = (props) => {
         sessionStorage.setItem("account", JSON.stringify(data));
         toast.success(res.EM);
         navigate("/");
+        window.location.reload();
       } else {
         toast.error(res.EM);
       }

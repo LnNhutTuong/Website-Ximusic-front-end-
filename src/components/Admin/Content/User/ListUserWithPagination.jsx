@@ -10,6 +10,7 @@ import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
+import { set } from "lodash";
 const ListUser = () => {
   const [listUser, setListUser] = useState([]);
   const [totalPage, setTotalPage] = useState([]);
@@ -46,6 +47,10 @@ const ListUser = () => {
       }
 
       setTotalPage(pageArray);
+    } else {
+      setListUser([]);
+      setTotalPage([]);
+      toast.error(res.EM);
     }
   };
 
@@ -135,59 +140,63 @@ const ListUser = () => {
               </tr>
             </thead>
             <tbody>
-              {listUser.map((user) => (
-                <tr className="bg-neutral-primary border-b border-default">
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-heading whitespace-nowrap"
-                  >
-                    {user.id}
-                  </th>
-                  <td
-                    className="px-6 py-4"
-                    onClick={() => {
-                      (setDialogDetailUser(true), handleGetDataUser(user.id));
-                    }}
-                  >
-                    {user.email}
-                  </td>
-                  <td
-                    className="px-6 py-4"
-                    onClick={() => {
-                      (setDialogDetailUser(true), handleGetDataUser(user.id));
-                    }}
-                  >
-                    {user.username}
-                  </td>
-                  <td className="px-6 py-4">
-                    {user.Group ? user.Group.name.toUpperCase() : "No group"}
-                  </td>
-                  <td className="px-6 py-4">
-                    {new Date(user.createdAt).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    {new Date(user.updatedAt).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 flex gap-2">
-                    <Button
-                      variant="warning"
+              {listUser ? (
+                listUser.map((user) => (
+                  <tr className="bg-neutral-primary border-b border-default">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-heading whitespace-nowrap"
+                    >
+                      {user.id}
+                    </th>
+                    <td
+                      className="px-6 py-4"
                       onClick={() => {
-                        (setDialogDetailUser(true),
-                          handleGetDataUser(user.id),
-                          setIsEditMode(true));
+                        (setDialogDetailUser(true), handleGetDataUser(user.id));
                       }}
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete(user.id)}
+                      {user.email}
+                    </td>
+                    <td
+                      className="px-6 py-4"
+                      onClick={() => {
+                        (setDialogDetailUser(true), handleGetDataUser(user.id));
+                      }}
                     >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                      {user.username}
+                    </td>
+                    <td className="px-6 py-4">
+                      {user.Group ? user.Group.name.toUpperCase() : "No group"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {new Date(user.createdAt).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      {new Date(user.updatedAt).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 flex gap-2">
+                      <Button
+                        variant="warning"
+                        onClick={() => {
+                          (setDialogDetailUser(true),
+                            handleGetDataUser(user.id),
+                            setIsEditMode(true));
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDelete(user.id)}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <>not found any user</>
+              )}
             </tbody>
           </table>
         </div>
