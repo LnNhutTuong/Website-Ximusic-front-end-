@@ -1,4 +1,4 @@
-import axios from "../setup/axios";
+import axios from "../API/axiosSetup";
 
 const registerNewUser = (email, password, phone, username) => {
   return axios.post("api/v1/register", {

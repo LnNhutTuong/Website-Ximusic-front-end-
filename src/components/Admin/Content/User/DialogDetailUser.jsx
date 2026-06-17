@@ -31,7 +31,7 @@ import {
   getAllGroup,
   handleUpdateUser,
   handleDeleteUser,
-} from "../../../services/userService";
+} from "../../../../services/userService";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 

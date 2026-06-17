@@ -78,7 +78,6 @@ const Login = (props) => {
         sessionStorage.setItem("account", JSON.stringify(data));
         toast.success(res.EM);
         navigate("/");
-        window.location.reload();
       } else {
         toast.error(res.EM);
       }

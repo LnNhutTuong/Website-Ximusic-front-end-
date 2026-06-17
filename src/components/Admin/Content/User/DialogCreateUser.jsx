@@ -29,7 +29,7 @@ import { Label } from "@/components/ui/label";
 import {
   getAllGroup,
   handleCreateNewUser,
-} from "../../../services/userService";
+} from "../../../../services/userService";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -80,27 +80,33 @@ const DialogCreateUser = (props) => {
       validation.isValidSex = false;
       error = "Please fill in all the fields";
       check = false;
-    } else if (!email || !email.match(emailRegex)) {
+    }
+    if (!email || !email.match(emailRegex)) {
       validation.isValidEmail = false;
       error = "Email is not valid";
       check = false;
-    } else if (!phone || !phone.match(phoneRegex)) {
+    }
+    if (!phone || !phone.match(phoneRegex)) {
       validation.isValidPhone = false;
       error = "Phone is not valid";
       check = false;
-    } else if (!username || !username.match(usernameRegex)) {
+    }
+    if (!username || !username.match(usernameRegex)) {
       validation.isValidUsername = false;
       error = "Username is not valid";
       check = false;
-    } else if (!address) {
+    }
+    if (!address) {
       validation.isValidAddress = false;
       error = "Address is not valid";
       check = false;
-    } else if (!groupId) {
+    }
+    if (!groupId) {
       validation.isValidGroupId = false;
       error = "Please select Group";
       check = false;
-    } else if (!sex) {
+    }
+    if (!sex) {
       validation.isValidSex = false;
       error = "Please select Gender";
       check;

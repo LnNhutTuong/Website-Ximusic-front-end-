@@ -4,7 +4,7 @@ import {
   getAllGroup,
   handleDeleteUser,
   handleGetUserWithId,
-} from "../../../services/userService";
+} from "../../../../services/userService";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";
@@ -81,7 +81,6 @@ const ListUser = () => {
 
   const handleDelete = async (idUser) => {
     let res = await handleDeleteUser(idUser);
-    console.log(">>>>>>>Check res: ", res);
     if (res?.EC === 0) {
       toast.success(res.EM);
       getListUser();
