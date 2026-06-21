@@ -2,7 +2,7 @@ import { ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import _ from "lodash";
 import AppRoutes from "./routes/AppRoute";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Nav from "./components/Navigation/Nav";
 
 import {
@@ -11,6 +11,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { UserContext } from "./context/userContext";
 const App = () => {
   return (
     <>

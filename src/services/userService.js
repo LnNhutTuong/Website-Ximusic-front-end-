@@ -70,6 +70,10 @@ const handleUpdateUser = (
 const handleDeleteUser = (id) => {
   return axios.delete(`api/v1/user/delete/${id}`);
 };
+
+const getUserAccount = () => {
+  return axios.get("/api/v1/account");
+};
 export {
   registerNewUser,
   handleLogin,
@@ -79,4 +83,5 @@ export {
   handleGetUserWithId,
   handleUpdateUser,
   handleDeleteUser,
+  getUserAccount,
 };

@@ -1,11 +1,12 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import _ from "lodash";
 import { useState } from "react";
+import { UserContext } from "@/context/userContext";
 const PrivateRoutes = (props) => {
-  const account = JSON.parse(sessionStorage.getItem("account"));
+  const { user } = useContext(UserContext);
 
-  return account?.isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  return user?.isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default PrivateRoutes;

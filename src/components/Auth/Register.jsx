@@ -97,13 +97,6 @@ const Register = (props) => {
     }
   };
 
-  useEffect(() => {
-    let session = sessionStorage.getItem("account");
-    if (session) {
-      navigate("/");
-    }
-  }, []);
-
   return (
     <div className="bg-gray-100 text-gray-900 flex justify-center h-[calc(100vh-4rem)] py-12">
       <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex border border-black">

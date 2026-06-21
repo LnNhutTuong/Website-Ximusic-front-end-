@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { handleLogin } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "@/context/userContext";
 
 const Login = (props) => {
   const navigate = useNavigate();
+
+  const { loginContext } = useContext(UserContext);
 
   const [valueLogin, setValueLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -66,18 +69,23 @@ const Login = (props) => {
 
     if (check) {
       let res = await handleLogin(valueLogin, password);
-      console.log(">>>>>Check res: ", res);
 
       if (res.EC === 0) {
         let data = {
           isAuthenticated: true,
-          token: "fake token hehe",
+          token: res.access_token,
+          account: {
+            email: res.DT.email,
+            username: res.DT.username,
+            groupWithRoles: res.DT.groupWithRoles,
+          },
         };
 
         sessionStorage.setItem("account", JSON.stringify(data));
+        loginContext(data);
+
         toast.success(res.EM);
         navigate("/");
-        window.location.reload();
       } else {
         toast.error(res.EM);
       }
@@ -89,13 +97,6 @@ const Login = (props) => {
       handleSubmit();
     }
   };
-
-  useEffect(() => {
-    let session = sessionStorage.getItem("account");
-    if (session) {
-      navigate("/");
-    }
-  }, []);
 
   return (
     <div className="bg-gray-100 text-gray-900 flex justify-center h-[calc(100vh-4rem)] py-12">
