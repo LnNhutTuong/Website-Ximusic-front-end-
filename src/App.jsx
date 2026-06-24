@@ -12,10 +12,25 @@ import {
   Navigate,
 } from "react-router-dom";
 import { UserContext } from "./context/userContext";
+import { Triangle } from "react-loader-spinner";
 const App = () => {
+  const { user } = useContext(UserContext);
+
   return (
     <>
-      <Router>
+      {user && user.isLoadingAuth ? (
+        <div className="flex justify-center items-center h-screen">
+          <Triangle
+            visible={true}
+            height="220"
+            width="220"
+            color="#000000"
+            ariaLabel="triangle-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      ) : (
         <div className="app-container">
           <div className="app-header">
             <Nav />
@@ -24,7 +39,8 @@ const App = () => {
             <AppRoutes />
           </div>
         </div>
-      </Router>
+      )}
+
       <ToastContainer
         position="top-right"
         autoClose={5000}

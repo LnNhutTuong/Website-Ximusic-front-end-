@@ -5,15 +5,16 @@ const instance = axios.create({
   baseURL: "http://localhost:8080/",
 });
 
-// Alter defaults after instance has been created
-// instance.defaults.headers.common["Authorization"] = "AUTH_TOKEN 1234567";
-
 instance.defaults.withCredentials = true;
 
 // Add a request interceptor
 instance.interceptors.request.use(
   function (config) {
     // Do something before the request is sent
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   function (error) {
@@ -36,11 +37,14 @@ instance.interceptors.response.use(
     switch (status) {
       // authentication (token related issues)
       case 401: {
-        toast.error("Unauthorized the user. Please login...");
-        // window.location.href = "/login";
+        const url = error?.config?.url;
+
+        if (url !== "/api/v1/account") {
+          toast.error("Unauthorized the user. Please login...");
+        }
+
         return Promise.reject(error);
       }
-
       // forbidden (permission related issues)
       case 403: {
         toast.error("You don't have permission to access this resource...");

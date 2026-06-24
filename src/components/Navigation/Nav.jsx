@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import _ from "lodash";
 import { UserContext } from "@/context/userContext";
 const Nav = (props) => {
-  const { user, loginContext, logoutContext } = useContext(UserContext);
+  const { user, logoutContext } = useContext(UserContext);
   const location = useLocation();
   if ((user && user.isAuthenticated) || location.pathname === "/") {
     return (
@@ -53,7 +53,7 @@ const Nav = (props) => {
                 </li>
                 <li>
                   <button
-                    onClick={() => handleLogout()}
+                    onClick={() => logoutContext()}
                     className="text-gray-300 hover:text-blue-500"
                   >
                     Logout

@@ -180,8 +180,7 @@ const ListUser = () => {
                         variant="warning"
                         onClick={() => {
                           (setDialogDetailUser(true),
-                            handleGetDataUser(user.id),
-                            setIsEditMode(true));
+                            handleGetDataUser(user.id));
                         }}
                       >
                         Edit

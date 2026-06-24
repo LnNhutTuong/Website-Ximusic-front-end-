@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { handleLogin } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/userContext";
-
+import { Triangle } from "react-loader-spinner";
 const Login = (props) => {
   const navigate = useNavigate();
 
@@ -16,6 +16,7 @@ const Login = (props) => {
     isValidValueLogin: true,
     isValidPassword: true,
   });
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const isValid = () => {
     let check = true;
@@ -61,34 +62,42 @@ const Login = (props) => {
   };
 
   const handleSubmit = async () => {
-    if (!isValid) {
-      return;
-    }
-
-    let check = isValid();
-
-    if (check) {
-      let res = await handleLogin(valueLogin, password);
-
-      if (res.EC === 0) {
-        let data = {
-          isAuthenticated: true,
-          token: res.access_token,
-          account: {
-            email: res.DT.email,
-            username: res.DT.username,
-            groupWithRoles: res.DT.groupWithRoles,
-          },
-        };
-
-        sessionStorage.setItem("account", JSON.stringify(data));
-        loginContext(data);
-
-        toast.success(res.EM);
-        navigate("/");
-      } else {
-        toast.error(res.EM);
+    setIsSubmit(true);
+    try {
+      if (!isValid) {
+        return;
       }
+
+      let check = isValid();
+
+      if (check) {
+        let res = await handleLogin(valueLogin, password);
+        if (res.EC === 0) {
+          let data = {
+            isAuthenticated: true,
+            token: res.DT.access_token,
+            account: {
+              email: res.DT.email,
+              username: res.DT.username,
+              groupWithRoles: res.DT.groupWithRoles,
+            },
+          };
+
+          localStorage.setItem("jwt", res.DT.access_token);
+          loginContext(data);
+
+          toast.success(res.EM);
+          navigate("/");
+        } else {
+          toast.error(res.EM);
+        }
+      }
+    } catch (e) {
+      console.log(">>>>>>>>>check error: ", e);
+    } finally {
+      setTimeout(() => {
+        setIsSubmit(false);
+      }, 3000);
     }
   };
 
@@ -138,25 +147,37 @@ const Login = (props) => {
                 />
               </div>
 
-              <button
-                onClick={() => handleSubmit()}
-                className="mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-              >
-                <svg
-                  className="w-6 h-6 -ml-2"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+              {!isSubmit ? (
+                <button
+                  onClick={() => handleSubmit()}
+                  className="mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
                 >
-                  <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                  <circle cx="8.5" cy="7" r="4" />
-                  <path d="M20 8v6M23 11h-6" />
-                </svg>
-                <span className="ml-3">Login</span>
-              </button>
-
+                  <svg
+                    className="w-6 h-6 -ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <path d="M20 8v6M23 11h-6" />
+                  </svg>
+                  <span className="ml-3">Login</span>
+                </button>
+              ) : (
+                <>
+                  <Triangle
+                    visible={true}
+                    color="#4fa94d"
+                    ariaLabel="triangle-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                  Login loading...
+                </>
+              )}
               <p className="mt-6 text-xs text-gray-600 text-center flex gap-1 justify-center">
                 Don't have an account?
                 <Link

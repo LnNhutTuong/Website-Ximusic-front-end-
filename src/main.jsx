@@ -3,12 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { UserProvider, UserContext } from "./context/userContext";
+import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
-  <UserProvider>
-    <App />
-  </UserProvider>,
-
+  <BrowserRouter>
+    <UserProvider>
+      <App />
+    </UserProvider>
+  </BrowserRouter>,
   // </StrictMode>,
 );

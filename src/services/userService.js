@@ -74,6 +74,7 @@ const handleDeleteUser = (id) => {
 const getUserAccount = () => {
   return axios.get("/api/v1/account");
 };
+
 export {
   registerNewUser,
   handleLogin,

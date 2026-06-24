@@ -1,34 +1,66 @@
 import React, { createContext, useEffect, useState } from "react";
 import { getUserAccount } from "../services/userService";
+import { useNavigate } from "react-router-dom";
+
 const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({
+    isLoadingAuth: true,
+    isAuthenticated: false,
+    token: "",
+    account: {},
+  });
+
+  const navigate = useNavigate();
 
   const loginContext = (userData) => {
-    setUser(userData);
+    setUser({ ...userData, isLoadingAuth: false });
   };
 
   const logoutContext = () => {
     setUser({
-      name: "",
-      auth: false,
+      isLoadingAuth: false,
+      isAuthenticated: false,
+      token: "",
+      account: {},
     });
+    navigate("/");
   };
 
   const fetchUser = async () => {
-    let res = await getUserAccount();
-    if (res && res.EC === 0) {
-      let data = {
-        isAuthenticated: true,
-        token: res.token,
-        account: {
-          email: res.email,
-          username: res.username,
-          groupWithRoles: res.groupWithRoles,
-        },
-      };
-      setUser(data);
+    try {
+      let res = await getUserAccount();
+      console.log(">>>>>>>>check res fetchUser: ", res);
+      if (res && res.EC === 0) {
+        let data = {
+          isLoadingAuth: false,
+          isAuthenticated: true,
+          token: res.token,
+          account: {
+            email: res.email,
+            username: res.username,
+            groupWithRoles: res.groupWithRoles,
+          },
+        };
+        setTimeout(() => {
+          setUser(data);
+        }, 2200);
+      } else {
+        setUser({
+          isLoadingAuth: false,
+          isAuthenticated: false,
+          token: "None",
+          account: {},
+        });
+      }
+    } catch (error) {
+      setUser({
+        isLoadingAuth: false,
+        isAuthenticated: false,
+        token: "Error Fetch",
+        account: {},
+      });
     }
   };
 
