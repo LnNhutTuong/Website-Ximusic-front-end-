@@ -9,13 +9,13 @@ import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import ManagerUser from "../components/Admin/Content/User/ListUserWithPagination";
 import ManageProject from "../components/Admin/Content/Project/Project";
-
+import Home from "@/pages/Home";
 import PrivateRoutes from "./PrivateRoutes";
 const AppRoutes = (props) => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<h1>Home</h1>} />
+        <Route path="/" element={<Home />} />
 
         {/* private route */}
         <Route element={<PrivateRoutes />}>

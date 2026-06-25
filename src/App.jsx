@@ -1,5 +1,7 @@
 import { ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "swiper/css";
+
 import _ from "lodash";
 import AppRoutes from "./routes/AppRoute";
 import { useContext, useEffect, useState } from "react";
@@ -31,11 +33,12 @@ const App = () => {
           />
         </div>
       ) : (
-        <div className="app-container">
+        <div className="app-container h-screen flex flex-col">
           <div className="app-header">
             <Nav />
           </div>
-          <div className="app-content">
+
+          <div className="app-content flex-1 overflow-hidden">
             <AppRoutes />
           </div>
         </div>
