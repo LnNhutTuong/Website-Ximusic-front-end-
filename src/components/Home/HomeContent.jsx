@@ -2,8 +2,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 const HomeContent = (props) => {
   return (
-    <div className="flex-1 bg-slate-400/40 rounded-xl overflow-y-auto space-y-4 p-3 scrollbar-none">
-      <div className="border h-56 rounded-xl overflow-hidden">
+    <div className="flex-1 h-[calc(100%-30px)] bg-slate-600/50 rounded-xl overflow-y-auto space-y-4 p-3 scrollbar-none mb-3">
+      <div className="h-56 rounded-xl overflow-hidden">
         <Swiper
           slidesPerView={1}
           autoplay={{ delay: 1000 }}
@@ -23,7 +23,7 @@ const HomeContent = (props) => {
           </SwiperSlide>
         </Swiper>
       </div>
-      <div className="border rounded-xl bg-stone-900/70 h-50">
+      <div className="rounded-xl bg-stone-900/80 h-50">
         <div className="p-3 flex gap-1 text-sm">
           <button className="border border-white rounded-xl px-3 ">All</button>
           <button className="border border-white rounded-xl px-3">Music</button>
@@ -89,8 +89,8 @@ const HomeContent = (props) => {
           </div>
         </div>
       </div>
-      <div className="border h-84 bg-stone-900/70 flex rounded-xl overflow-hidden">
-        <div className=" flex-1 flex flex-col border-r border-dashed bg-stone-900/70">
+      <div className="h-84 bg-stone-900/80 flex rounded-xl overflow-hidden">
+        <div className=" flex-1 flex flex-col border-r border-dashed ">
           <h1 className="font-bold text-xl px-10 py-3 ">New Podcast</h1>
           <div className="flex-1 flex  gap-3 p-4 hover:bg-white/10 ">
             <div className="w-50 h-full bg-blue-900 rounded-md overflow-hidden">
@@ -118,7 +118,7 @@ const HomeContent = (props) => {
             </div>
           </div>
         </div>
-        <div className="bg-stone-900/70 flex-1/22">
+        <div className=" flex-1/22">
           <h1 className="font-bold text-xl px-10 py-3 text-white">New Album</h1>
           <div className="flex">
             <div className="px-3">
@@ -175,7 +175,79 @@ const HomeContent = (props) => {
           </div>
         </div>
       </div>
-      <div className="border bg-blue-900 h-86">Most Artist</div>
+      <div className="h-84 bg-stone-900/80 flex flex-col rounded-xl overflow-hidden">
+        <h1 className="font-bold text-xl px-10 py-3 ">Recents</h1>
+        <div className="flex justify-center gap-2">
+          <div className="px-3">
+            <div className="flex flex-col gap-3 p-2 hover:bg-white/10 w-56 rounded-xl cursor-pointer transition-all duration-200">
+              <div className="w-full aspect-square bg-blue-900 rounded-lg overflow-hidden">
+                <img
+                  src="https://picsum.photos/300"
+                  className="w-full h-full object-cover"
+                  alt="Album cover"
+                />
+              </div>
+
+              <div className="w-full pt-1">
+                <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug">
+                  Nhân hơi sơ, ăn khô miệng.
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div className="px-3">
+            <div className="flex flex-col gap-3 p-2 hover:bg-white/10 w-56 rounded-xl cursor-pointer transition-all duration-200">
+              <div className="w-full aspect-square bg-blue-900 rounded-lg overflow-hidden">
+                <img
+                  src="https://picsum.photos/300"
+                  className="w-full h-full object-cover"
+                  alt="Album cover"
+                />
+              </div>
+
+              <div className="w-full pt-1">
+                <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug">
+                  Nhân hơi sơ, ăn khô miệng.
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div className="px-3">
+            <div className="flex flex-col gap-3 p-2 hover:bg-white/10 w-56 rounded-xl cursor-pointer transition-all duration-200">
+              <div className="w-full aspect-square bg-blue-900 rounded-lg overflow-hidden">
+                <img
+                  src="https://picsum.photos/300"
+                  className="w-full h-full object-cover"
+                  alt="Album cover"
+                />
+              </div>
+
+              <div className="w-full pt-1">
+                <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug">
+                  Nhân hơi sơ, ăn khô miệng.
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div className="px-3">
+            <div className="flex flex-col gap-3 p-2 hover:bg-white/10 w-56 rounded-xl cursor-pointer transition-all duration-200">
+              <div className="w-full aspect-square bg-blue-900 rounded-lg overflow-hidden">
+                <img
+                  src="https://picsum.photos/300"
+                  className="w-full h-full object-cover"
+                  alt="Album cover"
+                />
+              </div>
+
+              <div className="w-full pt-1">
+                <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug">
+                  Nhân hơi sơ, ăn khô miệng.
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
