@@ -2,7 +2,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 const HomeContent = (props) => {
   return (
-    <div className="flex-1 h-[calc(100%-30px)] bg-slate-600/50 rounded-xl overflow-y-auto space-y-4 p-3 scrollbar-none mb-3">
+    <div className="flex-1 h-[calc(100%-30px)] bg-white/20 rounded-xl overflow-y-auto space-y-4 p-3 scrollbar-none mb-3">
       <div className="h-56 rounded-xl overflow-hidden">
         <Swiper
           slidesPerView={1}
