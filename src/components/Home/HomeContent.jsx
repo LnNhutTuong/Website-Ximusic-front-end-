@@ -32,7 +32,7 @@ const HomeContent = (props) => {
           </button>
         </div>
         <div className="grid grid-cols-3 gap-3 px-2">
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10">
+          <div className="flex items-center gap-3 p-2 border border-white/5 shrink-0 rounded-lg hover:bg-white/10">
             <img
               src="https://picsum.photos/60"
               className="w-12 h-12 rounded-md object-cover"
