@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 import { UserContext } from "./context/userContext";
 import { Triangle } from "react-loader-spinner";
+import PlayerBar from "./components/Home/PlayerBar";
 const App = () => {
   const { user } = useContext(UserContext);
 
@@ -38,9 +39,10 @@ const App = () => {
             <Nav />
           </div>
 
-          <div className="app-content flex-1 overflow-hidden">
+          <div className="app-content flex-1 overflow-hidden pb-23">
             <AppRoutes />
           </div>
+          <PlayerBar />
         </div>
       )}
 

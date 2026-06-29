@@ -8,10 +8,13 @@ import {
 } from "react-icons/fa";
 import { LuListMusic } from "react-icons/lu";
 import { GrSort } from "react-icons/gr";
-
+import { UserContext } from "@/context/userContext";
+import { useContext } from "react";
 const LibrarySidebar = (props) => {
   const [collapsed, setCollapsed] = React.useState(false);
 
+  const { user } = useContext(UserContext);
+  console.log(">>>>check user: ", user);
   const handleScroll = (direction) => {
     const container = document.getElementById("category-scroll-container");
     if (container) {
@@ -20,7 +23,7 @@ const LibrarySidebar = (props) => {
     }
   };
 
-  return (
+  return user && user.isAuthenticated ? (
     <div className="w-fit h-[calc(100%-30px)] bg-white/10 rounded-xl overflow-hidden transition-all duration-300">
       <Sidebar
         collapsed={collapsed}
@@ -54,7 +57,7 @@ const LibrarySidebar = (props) => {
             >
               <div className="flex items-center justify-between p-4 text-white">
                 <button
-                  className="cursor-pointer p-1 hover:bg-slate-500/50 rounded text-white h-full"
+                  className="cursor-pointer p-1 text-white/60 hover:text-white rounded text-white h-full"
                   onClick={() => setCollapsed((c) => !c)}
                 >
                   <LuListMusic size={44} />
@@ -81,6 +84,33 @@ const LibrarySidebar = (props) => {
             </Menu>
           </div>
 
+          {collapsed && (
+            <>
+              <div className=" flex-1 min-h-0 w-full flex items-center justify-center flex-col gap-3">
+                <div className="text-2xl">
+                  <button className="p-2 rounded-2xl bg-white/20 text-white/60 hover:text-white">
+                    <FaPlus />
+                  </button>
+                </div>
+                <div className="overflow-y-auto flex flex-col gap-2 px-2 pb-4 scrollbar-none">
+                  {[...Array(20)].map((_, index) => (
+                    <div
+                      key={index}
+                      className="border border-white/5 shrink-0 rounded-lg"
+                    >
+                      <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10">
+                        <img
+                          src="https://picsum.photos/60"
+                          className="w-12 h-12 rounded-md object-cover"
+                          alt="avatar"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
           {/* --- cat go ri --- */}
           {!collapsed && (
             <div className="relative group px-4 my-2 shrink-0">
@@ -190,6 +220,88 @@ const LibrarySidebar = (props) => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+      </Sidebar>
+    </div>
+  ) : (
+    <div className="w-fit h-[calc(100%-30px)] bg-white/10 rounded-xl overflow-hidden transition-all duration-300">
+      <Sidebar
+        collapsed={collapsed}
+        rootStyles={{
+          backgroundColor: "transparent",
+          border: "none",
+          height: "100%",
+          overflow: "hidden",
+          "& .ps-sidebar-container": {
+            backgroundColor: "transparent !important",
+            display: "flex !important",
+            flexDirection: "column !important",
+            height: "100% !important",
+          },
+        }}
+      >
+        <div className="flex flex-col h-full overflow-hidden w-full text-white">
+          {/* header: co lap, open, create new*/}
+          <div className="shrink-0">
+            <Menu
+              menuItemStyles={{
+                button: {
+                  backgroundColor: "transparent",
+                  color: "#ffffff",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1) !important",
+                  },
+                },
+              }}
+              rootStyles={{ border: "none" }}
+            >
+              <div className="flex items-center justify-between p-4 text-white">
+                <button
+                  className="cursor-pointer p-1 text-white/60 hover:text-white rounded text-white h-full"
+                  onClick={() => setCollapsed((c) => !c)}
+                >
+                  <LuListMusic size={44} />
+                </button>
+                <div
+                  style={{ fontWeight: 700, fontSize: 18 }}
+                  className="w-full"
+                >
+                  {!collapsed && (
+                    <div className="w-full flex items-center justify-between px-1">
+                      <span>Your library</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Menu>
+          </div>
+
+          {collapsed && (
+            <>
+              <div className=" flex-1 min-h-0 w-full flex items-center justify-center flex-col gap-3">
+                <div className="flex-1 flex flex-col items-center justify-center gap-6 p-4 mb-22">
+                  <button className="bg-white/20 rounded-2xl px-2 py-3 text-white/60 hover:text-white">
+                    <p className="[writing-mode:vertical-lr] rotate-180 text-center font-medium tracking-wide">
+                      Login
+                    </p>
+                  </button>
+                  <p className="[writing-mode:vertical-lr] rotate-180 text-center font-medium tracking-wide">
+                    Login to make your library
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* your library */}
+          {!collapsed && (
+            <div className="flex justify-center flex-col items-center gap-2 ">
+              <p>Login to make you library</p>
+              <button className="bg-white/20 rounded-2xl px-3 py-2 text-white/60 hover:text-white">
+                Login
+              </button>
             </div>
           )}
         </div>

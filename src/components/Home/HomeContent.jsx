@@ -2,7 +2,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 const HomeContent = (props) => {
   return (
-    <div className="flex-1 h-[calc(100%-30px)] bg-white/20 rounded-xl overflow-y-auto space-y-4 p-3 scrollbar-none mb-3">
+    <div className="flex-1 h-[calc(100%-30px)] rounded-xl overflow-y-auto space-y-4 scrollbar-none mb-3">
       <div className="h-56 rounded-xl overflow-hidden">
         <Swiper
           slidesPerView={1}
@@ -23,7 +23,7 @@ const HomeContent = (props) => {
           </SwiperSlide>
         </Swiper>
       </div>
-      <div className="rounded-xl bg-stone-900/80 h-50">
+      <div className="rounded-xl bg-stone-900/80 h-50 ">
         <div className="p-3 flex gap-1 text-sm">
           <button className="border border-white rounded-xl px-3 ">All</button>
           <button className="border border-white rounded-xl px-3">Music</button>

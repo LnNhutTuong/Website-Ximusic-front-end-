@@ -9,7 +9,7 @@ const Nav = (props) => {
   const location = useLocation();
   if ((user && user.isAuthenticated) || location.pathname === "/") {
     return (
-      <nav className="bg-none text-white px-22 py-4 border-b  ">
+      <nav className="bg-none text-white px-22 py-4 border-b border-white/20">
         <div className="flex items-center justify-between">
           {/* XimenT */}
           <h1 className="text-xl font-bold ximent flex-1">XiMusic</h1>
