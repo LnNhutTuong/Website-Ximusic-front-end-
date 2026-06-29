@@ -6,9 +6,13 @@ import {
   GiPlayButton,
 } from "react-icons/gi";
 import { FaRepeat, FaVolumeHigh } from "react-icons/fa6";
+import { useContext } from "react";
+import { PlayerContext } from "@/context/musicContext";
 
 const PlayerBar = () => {
-  return (
+  const { player, setPlayer } = useContext(PlayerContext);
+
+  return player && player.currentSong != null ? (
     <div className="fixed bottom-0 left-0 right-0 h-20 bg-black/95 flex items-center justify-between px-5 text-white z-50 select-none border-t border-white/20">
       <div className="flex items-center w-1/3 min-w-[180px]">
         <img
@@ -80,6 +84,15 @@ const PlayerBar = () => {
         </div>
       </div>
     </div>
+  ) : (
+    <>
+      <div className="fixed bottom-0 left-0 right-0 h-20 bg-black/95 flex flex-col justify-center items-center  px-5 text-white z-50 select-none border-t border-white/20">
+        <p>You want a random song?</p>
+        <button className="border rounded-2xl px-3 py-1 cursor-pointer text-white/60 hover:text-white">
+          Play it
+        </button>
+      </div>
+    </>
   );
 };
 

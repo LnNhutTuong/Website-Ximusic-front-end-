@@ -77,26 +77,14 @@ const Nav = (props) => {
               <>
                 <li>
                   <NavLink
-                    to="/Users"
+                    to="/Admin"
                     className={({ isActive }) =>
                       isActive
                         ? "text-black-500"
                         : "text-gray-300 hover:text-gray-300"
                     }
                   >
-                    List users
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/Project"
-                    className={({ isActive }) =>
-                      isActive
-                        ? "text-black-500"
-                        : "text-gray-300 hover:text-black-5000"
-                    }
-                  >
-                    Project
+                    Admin
                   </NavLink>
                 </li>
                 <li>
