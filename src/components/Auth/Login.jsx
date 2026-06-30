@@ -108,23 +108,17 @@ const Login = (props) => {
   };
 
   return (
-    <div className="bg-gray-100 text-gray-900 flex justify-center h-[calc(100vh-4rem)] py-12">
-      <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex border border-black">
-        <img src="https://picsum.photos/200/300" className="mx-auto" />
-      </div>
-      <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 border border-black flex justify-center">
+    <div className="flex justify-center h-[calc(100vh-4rem)] pb-35 pt-10 px-90">
+      <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 border border-white flex justify-center rounded-xl bg-white/10">
         <div className="mt-12 flex flex-col items-center">
           <h1 className="text-2xl xl:text-3xl font-extrabold">Login</h1>
           <div className="w-full flex-1 mt-8">
             <div className="mx-auto max-w-xs">
-              <label
-                className="text-gray-600 font-medium "
-                htmlFor="valueLogin"
-              >
+              <label className=" font-medium " htmlFor="valueLogin">
                 Email or phone number:
               </label>
               <input
-                className={`${isValidInput.isValidValueLogin ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                className={`${isValidInput.isValidValueLogin ? "border-gray-200 " : "border-red-300 focus:border-red-500"} text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="text"
                 placeholder="Email or phone number"
                 name="valueLogin"
@@ -133,11 +127,11 @@ const Login = (props) => {
               />
 
               <div className="mt-5">
-                <label className="text-gray-600 font-medium" htmlFor="password">
+                <label className=" font-medium" htmlFor="password">
                   Password:
                 </label>
                 <input
-                  className={`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                  className={`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"} text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                   type="password"
                   placeholder="Password"
                   name="password"
@@ -150,7 +144,8 @@ const Login = (props) => {
               {!isSubmit ? (
                 <button
                   onClick={() => handleSubmit()}
-                  className="mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                  className="cursor-pointer mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full 
+                  py-4 rounded-lg hover:bg-white hover:text-black hover:shadow-2xl/30 hover:shadow-white transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
                 >
                   <svg
                     className="w-6 h-6 -ml-2"
@@ -167,22 +162,23 @@ const Login = (props) => {
                   <span className="ml-3">Login</span>
                 </button>
               ) : (
-                <>
+                <div className="flex flex-col justify-center items-center  gap-2">
                   <Triangle
                     visible={true}
-                    color="#4fa94d"
+                    color="#ffffff"
                     ariaLabel="triangle-loading"
                     wrapperStyle={{}}
                     wrapperClass=""
                   />
-                  Login loading...
-                </>
+                  <span>Waiting -_-</span>
+                </div>
               )}
-              <p className="mt-6 text-xs text-gray-600 text-center flex gap-1 justify-center">
+              <p className="mt-6 text-xs  text-center flex gap-1 justify-center">
                 Don't have an account?
                 <Link
                   to="/register"
-                  className="border-b border-gray-500 border-dotted text-indigo-500"
+                  className="text-stroke-4 text-stroke-white font-bold text-black bg-white rounded-xl px-1 hover:underline cursor-pointer 
+                  hover:bg-black hover:text-white hover:shadow-2xl/30 hover:shadow-red-900 hover:border"
                 >
                   Register
                 </Link>

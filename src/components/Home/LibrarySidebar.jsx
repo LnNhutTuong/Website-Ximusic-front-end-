@@ -1,4 +1,3 @@
-import React from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import {
   FaPlus,
@@ -10,8 +9,16 @@ import { LuListMusic } from "react-icons/lu";
 import { GrSort } from "react-icons/gr";
 import { UserContext } from "@/context/userContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 const LibrarySidebar = (props) => {
-  const [collapsed, setCollapsed] = React.useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
 
   const { user } = useContext(UserContext);
   console.log(">>>>check user: ", user);
@@ -282,7 +289,14 @@ const LibrarySidebar = (props) => {
             <>
               <div className=" flex-1 min-h-0 w-full flex items-center justify-center flex-col gap-3">
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 p-4 mb-22">
-                  <button className="bg-white/20 rounded-2xl px-2 py-3 text-white/60 hover:text-white">
+                  <button
+                    className="bg-white/20 rounded-2xl px-2 py-3 text-white/60 hover:text-white cursor-pointer"
+                    onClick={() => {
+                      {
+                        handleLogin();
+                      }
+                    }}
+                  >
                     <p className="[writing-mode:vertical-lr] rotate-180 text-center font-medium tracking-wide">
                       Login
                     </p>
@@ -299,7 +313,14 @@ const LibrarySidebar = (props) => {
           {!collapsed && (
             <div className="flex justify-center flex-col items-center gap-2 ">
               <p>Login to make you library</p>
-              <button className="bg-white/20 rounded-2xl px-3 py-2 text-white/60 hover:text-white">
+              <button
+                className="bg-white/20 rounded-2xl px-3 py-2 text-white/60 hover:text-white cursor-pointer"
+                onClick={() => {
+                  {
+                    handleLogin();
+                  }
+                }}
+              >
                 Login
               </button>
             </div>

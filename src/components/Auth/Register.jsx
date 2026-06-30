@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { registerNewUser } from "../../services/userService";
-
+import { Triangle } from "react-loader-spinner";
 const Register = (props) => {
   const navigate = useNavigate();
 
@@ -18,22 +18,34 @@ const Register = (props) => {
     isValidUsername: true,
     isValidPassword: true,
   });
+
+  const [isSubmit, setIsSubmit] = useState(false);
+
   const handleRegister = async () => {
-    if (!isValid()) {
-      return;
-    }
-
-    let check = isValid();
-
-    if (check) {
-      let res = await registerNewUser(email, password, phone, username);
-      console.log(">>>check res: ", res);
-      if (res.EC === 0) {
-        toast.success(res.EM);
-        navigate("/login");
-      } else {
-        toast.error(res.EM);
+    setIsSubmit(true);
+    try {
+      if (!isValid()) {
+        return;
       }
+
+      let check = isValid();
+
+      if (check) {
+        let res = await registerNewUser(email, password, phone, username);
+        console.log(">>>check res: ", res);
+        if (res.EC === 0) {
+          toast.success(res.EM);
+          navigate("/login");
+        } else {
+          toast.error(res.EM);
+        }
+      }
+    } catch (e) {
+      console.log(">>>>>>>>>check error: ", e);
+    } finally {
+      setTimeout(() => {
+        setIsSubmit(false);
+      }, 3000);
     }
   };
 
@@ -98,21 +110,18 @@ const Register = (props) => {
   };
 
   return (
-    <div className="bg-gray-100 text-gray-900 flex justify-center h-[calc(100vh-4rem)] py-12">
-      <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex border border-black">
-        <img src="https://picsum.photos/200/300" className="mx-auto" />
-      </div>
-      <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 border border-black flex justify-center">
-        <div className="mt-12 flex flex-col items-center">
+    <div className="flex justify-center h-[calc(100vh-4rem)] pb-35 pt-10 px-90">
+      <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 border border-white flex justify-center rounded-xl bg-white/10">
+        <div className="flex flex-col items-center">
           <h1 className="text-2xl xl:text-3xl font-extrabold">Register</h1>
           <div className="w-full flex-1 mt-8">
             <div className="mx-auto max-w-xs">
               {/* Email */}
-              <label className="text-gray-600 font-medium" htmlFor="email">
+              <label className=" font-medium" htmlFor="email">
                 Email:
               </label>
               <input
-                className={`${isValidInput.isValidEmail ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                className={`${isValidInput.isValidEmail ? "border-gray-200 " : "border-red-300 focus:border-red-500"}text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="email"
                 placeholder="Email"
                 id="email"
@@ -122,11 +131,11 @@ const Register = (props) => {
               />
 
               {/* Phone */}
-              <label className="text-gray-600 font-medium mt-5" htmlFor="phone">
+              <label className=" font-medium mt-5" htmlFor="phone">
                 Phone number:
               </label>
               <input
-                className={`${isValidInput.isValidPhone ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                className={`${isValidInput.isValidPhone ? "border-gray-200 " : "border-red-300 focus:border-red-500"}text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="text"
                 placeholder="Phone number"
                 id="phone"
@@ -136,14 +145,11 @@ const Register = (props) => {
               />
 
               {/* Username */}
-              <label
-                className="text-gray-600 font-medium mt-5"
-                htmlFor="username"
-              >
+              <label className=" font-medium mt-5" htmlFor="username">
                 User name:
               </label>
               <input
-                className={`${isValidInput.isValidUsername ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                className={`${isValidInput.isValidUsername ? "border-gray-200 " : "border-red-300 focus:border-red-500"}text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="text"
                 placeholder="User name"
                 id="username"
@@ -153,14 +159,11 @@ const Register = (props) => {
               />
 
               {/* Password */}
-              <label
-                className="text-gray-600 font-medium mt-5"
-                htmlFor="password"
-              >
+              <label className=" font-medium mt-5" htmlFor="password">
                 Password:
               </label>
               <input
-                className={`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                className={`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"}text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="password"
                 placeholder="Password"
                 id="password"
@@ -170,14 +173,11 @@ const Register = (props) => {
               />
 
               {/* Re-Password */}
-              <label
-                className="text-gray-600 font-medium mt-5"
-                htmlFor="re-password"
-              >
+              <label className=" font-medium mt-5" htmlFor="re-password">
                 Re-Password:
               </label>
               <input
-                className={`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"} w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
+                className={`${isValidInput.isValidPassword ? "border-gray-200 " : "border-red-300 focus:border-red-500"}text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="password"
                 placeholder="Re-Password"
                 id="re-password"
@@ -187,29 +187,47 @@ const Register = (props) => {
                 onKeyPress={(e) => handleEnter(e)}
               />
 
-              <button
-                onClick={() => handleRegister()}
-                className="mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-              >
-                <svg
-                  className="w-6 h-6 -ml-2"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                  <circle cx="8.5" cy="7" r="4" />
-                  <path d="M20 8v6M23 11h-6" />
-                </svg>
-                <span className="ml-3">Register</span>
-              </button>
-              <p className="mt-6 text-xs text-gray-600 text-center flex gap-1 justify-center">
+              {!isSubmit ? (
+                <>
+                  <button
+                    onClick={() => handleRegister()}
+                    className="cursor-pointer mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full 
+                  py-4 rounded-lg hover:bg-white hover:text-black hover:shadow-2xl/30 hover:shadow-white transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                  >
+                    <svg
+                      className="w-6 h-6 -ml-2"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                      <circle cx="8.5" cy="7" r="4" />
+                      <path d="M20 8v6M23 11h-6" />
+                    </svg>
+                    <span className="ml-3">Register</span>
+                  </button>
+                </>
+              ) : (
+                <div className="flex flex-col justify-center items-center  gap-2">
+                  <Triangle
+                    visible={true}
+                    color="#ffffff"
+                    ariaLabel="triangle-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                  <span>Waiting -_-</span>
+                </div>
+              )}
+
+              <p className="mt-6 text-xs  text-center flex gap-1 justify-center">
                 Already have an account?
                 <Link
                   to="/login"
-                  className="border-b border-gray-500 border-dotted text-indigo-500"
+                  className="text-stroke-4 text-stroke-white font-bold text-black bg-white rounded-xl px-1 hover:underline cursor-pointer 
+                  hover:bg-black hover:text-white hover:shadow-2xl/30 hover:shadow-red-900 hover:border"
                 >
                   Login
                 </Link>

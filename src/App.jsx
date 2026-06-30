@@ -22,23 +22,24 @@ const App = () => {
   return (
     <>
       {user && user.isLoadingAuth ? (
-        <div className="flex justify-center items-center h-screen">
-          <Triangle
-            visible={true}
-            height="220"
-            width="220"
-            color="#000000"
-            ariaLabel="triangle-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-          />
-        </div>
+        <>
+          <div className="flex justify-center items-center h-screen">
+            <Triangle
+              visible={true}
+              height="220"
+              width="220"
+              color="#000000"
+              ariaLabel="triangle-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+            />
+          </div>
+        </>
       ) : (
         <div className="app-container h-screen flex flex-col">
           <div className="app-header">
             <Nav />
           </div>
-
           <div className="app-content flex-1 overflow-hidden pb-23">
             <AppRoutes />
           </div>

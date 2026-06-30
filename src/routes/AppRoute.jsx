@@ -12,6 +12,7 @@ import ManagerUser from "../components/Admin/Content/User/ListUserWithPagination
 import ManageProject from "../components/Admin/Content/Project/Project";
 import Home from "@/pages/Home";
 import PrivateRoutes from "./PrivateRoutes";
+import PublicRoutes from "./PublicRoute";
 const AppRoutes = (props) => {
   return (
     <>
@@ -27,8 +28,10 @@ const AppRoutes = (props) => {
         </Route>
 
         {/* Auth */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route element={<PublicRoutes />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
 
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
