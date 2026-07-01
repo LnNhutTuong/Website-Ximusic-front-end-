@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { handleLogin } from "../../services/userService";
+import { handleLogin } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/userContext";
 import { Triangle } from "react-loader-spinner";
@@ -27,7 +27,6 @@ const Login = (props) => {
     };
 
     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    let phoneRegex = /^\d{10}$/;
 
     if (!valueLogin || !password) {
       validation.isValidPassword = false;
@@ -36,13 +35,10 @@ const Login = (props) => {
       error = "Please fill in all the fields";
     }
 
-    if (
-      !valueLogin ||
-      (valueLogin.match(emailRegex) && valueLogin.match(phoneRegex))
-    ) {
+    if (!valueLogin || !valueLogin.match(emailRegex)) {
       validation.isValidValueLogin = false;
       check = false;
-      error = "Your Email or Phone number is invalid";
+      error = "Your Email is invalid";
     }
 
     if (!password || password.length < 6) {
@@ -78,7 +74,7 @@ const Login = (props) => {
             token: res.DT.access_token,
             account: {
               email: res.DT.email,
-              username: res.DT.username,
+              displayName: res.DT.displayName,
               groupWithRoles: res.DT.groupWithRoles,
             },
           };
@@ -115,15 +111,16 @@ const Login = (props) => {
           <div className="w-full flex-1 mt-8">
             <div className="mx-auto max-w-xs">
               <label className=" font-medium " htmlFor="valueLogin">
-                Email or phone number:
+                Email:
               </label>
               <input
                 className={`${isValidInput.isValidValueLogin ? "border-gray-200 " : "border-red-300 focus:border-red-500"} text-black w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 text-sm focus:outline-none  focus:bg-white mb-2`}
                 type="text"
-                placeholder="Email or phone number"
+                placeholder="Email"
                 name="valueLogin"
                 value={valueLogin}
                 onChange={(e) => setValueLogin(e.target.value)}
+                onKeyPress={(e) => handleEnter(e)}
               />
 
               <div className="mt-5">

@@ -1,33 +1,13 @@
 import axios from "../API/axiosSetup";
 
-const registerNewUser = (email, password, phone, username) => {
-  return axios.post("api/v1/register", {
-    email: email,
-    password: password,
-    phone: phone,
-    username: username,
-  });
-};
-
-const handleLogin = (valueLogin, password) => {
-  return axios.post("api/v1/login", {
-    valueLogin: valueLogin,
-    password: password,
-  });
-};
-
-const getAllGroup = () => {
-  return axios.get("api/v1/group/read");
-};
-
 const fetchAllUser = (page, limit) => {
-  return axios.get(`api/v1/user/read?page=${page}&limit=${limit}`);
+  return axios.get(`api/v1/user?page=${page}&limit=${limit}`);
 };
 
 const handleCreateNewUser = (
   email,
   password,
-  username,
+  displayName,
   address,
   sex,
   phone,
@@ -36,7 +16,7 @@ const handleCreateNewUser = (
   return axios.post("api/v1/user/create", {
     email,
     password,
-    username,
+    displayName,
     address,
     sex,
     phone,
@@ -45,13 +25,13 @@ const handleCreateNewUser = (
 };
 
 const handleGetUserWithId = (id) => {
-  return axios.get(`api/v1/user/read-detail/${id}`);
+  return axios.get(`api/v1/user/${id}`);
 };
 
 const handleUpdateUser = (
   id,
   email,
-  username,
+  displayName,
   address,
   sex,
   phone,
@@ -59,7 +39,7 @@ const handleUpdateUser = (
 ) => {
   return axios.put(`api/v1/user/update/${id}`, {
     email,
-    username,
+    displayName,
     address,
     sex,
     phone,
@@ -76,11 +56,8 @@ const getUserAccount = () => {
 };
 
 export {
-  registerNewUser,
-  handleLogin,
   fetchAllUser,
   handleCreateNewUser,
-  getAllGroup,
   handleGetUserWithId,
   handleUpdateUser,
   handleDeleteUser,

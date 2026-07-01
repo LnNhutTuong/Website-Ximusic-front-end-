@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import {
   fetchAllUser,
-  getAllGroup,
   handleDeleteUser,
   handleGetUserWithId,
 } from "../../../../services/userService";
+import { getAllGroup } from "../../../../services/groupService";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";
@@ -124,7 +124,7 @@ const ListUser = () => {
                   Email
                 </th>
                 <th scope="col" className="px-6 py-3 font-medium">
-                  Username
+                  displayName
                 </th>
                 <th scope="col" className="px-6 py-3 font-medium">
                   Group
@@ -164,7 +164,7 @@ const ListUser = () => {
                         (setDialogDetailUser(true), handleGetDataUser(user.id));
                       }}
                     >
-                      {user.username}
+                      {user.displayName}
                     </td>
                     <td className="px-6 py-4">
                       {user.Group ? user.Group.name.toUpperCase() : "No group"}

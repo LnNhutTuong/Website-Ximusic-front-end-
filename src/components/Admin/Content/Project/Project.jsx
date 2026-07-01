@@ -13,7 +13,7 @@ const ListUser = () => {
                 Email
               </th>
               <th scope="col" className="px-6 py-3 font-medium">
-                Username
+                displayName
               </th>
               <th scope="col" className="px-6 py-3 font-medium">
                 Action
@@ -30,7 +30,7 @@ const ListUser = () => {
                             <%= user.email %>
                         </td>
                         <td className="px-6 py-4">
-                            <%= user.username %>
+                            <%= user.displayName %>
                         </td>
                         <td className="px-6 py-4">
                             <a className="border-b" href="update-page/<%= user.id %>">Edit</a>

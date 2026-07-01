@@ -31,16 +31,16 @@ const UserProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       let res = await getUserAccount();
-      console.log(">>>>>>>>check res fetchUser: ", res);
+
       if (res && res.EC === 0) {
         let data = {
           isLoadingAuth: false,
           isAuthenticated: true,
-          token: res.token,
+          token: res.DT.access_token,
           account: {
-            email: res.email,
-            username: res.username,
-            groupWithRoles: res.groupWithRoles,
+            email: res.DT.email,
+            displayName: res.DT.displayName,
+            groupWithRoles: res.DT.groupWithRoles,
           },
         };
         setTimeout(() => {

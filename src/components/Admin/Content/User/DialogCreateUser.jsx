@@ -26,10 +26,9 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  getAllGroup,
-  handleCreateNewUser,
-} from "../../../../services/userService";
+import { handleCreateNewUser } from "../../../../services/userService";
+import { getAllGroup } from "../../../../services/groupService";
+
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -37,7 +36,7 @@ const DialogCreateUser = (props) => {
   const { show, setShow, fetchAllUser } = props;
 
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  const [displayName, setdisplayName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [groupId, setGroupId] = useState("");
@@ -48,7 +47,7 @@ const DialogCreateUser = (props) => {
   const [isValidInput, setIsValidInput] = useState({
     isValidEmail: true,
     isValidPhone: true,
-    isValidUsername: true,
+    isValiddisplayName: true,
     isValidAddress: true,
     isValidGroupId: true,
     isValidSex: true,
@@ -58,7 +57,7 @@ const DialogCreateUser = (props) => {
     const validation = {
       isValidEmail: true,
       isValidPhone: true,
-      isValidUsername: true,
+      isValiddisplayName: true,
       isValidAddress: true,
       isValidGroupId: true,
       isValidSex: true,
@@ -69,12 +68,12 @@ const DialogCreateUser = (props) => {
 
     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     let phoneRegex = /^\d{10}$/;
-    let usernameRegex = /^[a-zA-Z0-9]{3,16}$/;
+    let displayNameRegex = /^[a-zA-Z0-9]{3,16}$/;
 
-    if (!email && !address && !username && !phone && !groupId && !sex) {
+    if (!email && !address && !displayName && !phone && !groupId && !sex) {
       validation.isValidEmail = false;
       validation.isValidPhone = false;
-      validation.isValidUsername = false;
+      validation.isValiddisplayName = false;
       validation.isValidAddress = false;
       validation.isValidGroupId = false;
       validation.isValidSex = false;
@@ -91,9 +90,9 @@ const DialogCreateUser = (props) => {
       error = "Phone is not valid";
       check = false;
     }
-    if (!username || !username.match(usernameRegex)) {
-      validation.isValidUsername = false;
-      error = "Username is not valid";
+    if (!displayName || !displayName.match(displayNameRegex)) {
+      validation.isValiddisplayName = false;
+      error = "displayName is not valid";
       check = false;
     }
     if (!address) {
@@ -135,7 +134,7 @@ const DialogCreateUser = (props) => {
   const handleCLoseDialog = () => {
     setEmail("");
     setAddress("");
-    setUsername("");
+    setdisplayName("");
     setPhone("");
     setSex("");
     setGroupId("");
@@ -143,7 +142,7 @@ const DialogCreateUser = (props) => {
     setIsValidInput({
       isValidEmail: true,
       isValidPhone: true,
-      isValidUsername: true,
+      isValiddisplayName: true,
       isValidAddress: true,
       isValidGroupId: true,
       isValidSex: true,
@@ -163,7 +162,7 @@ const DialogCreateUser = (props) => {
       let res = await handleCreateNewUser(
         email,
         defaultPassword,
-        username,
+        displayName,
         address,
         sex,
         phone,
@@ -222,17 +221,17 @@ const DialogCreateUser = (props) => {
                 </Field>
 
                 <Field>
-                  <Label className="text-sm">Username</Label>
+                  <Label className="text-sm">displayName</Label>
                   <Input
-                    aria-invalid={!isValidInput.isValidUsername}
+                    aria-invalid={!isValidInput.isValiddisplayName}
                     className="h-9 text-sm"
-                    name="username"
+                    name="displayName"
                     onChange={(e) => {
-                      setUsername(e.target.value);
+                      setdisplayName(e.target.value);
                     }}
                   />
-                  {!isValidInput.isValidUsername && (
-                    <FieldError>Your username is invalid</FieldError>
+                  {!isValidInput.isValiddisplayName && (
+                    <FieldError>Your displayName is invalid</FieldError>
                   )}
                 </Field>
 

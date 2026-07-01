@@ -6,13 +6,7 @@ import { IoMdHome } from "react-icons/io";
 
 const Nav = (props) => {
   const { user, logoutContext } = useContext(UserContext);
-  const location = useLocation();
-  // if (
-  //   (user && user.isAuthenticated) ||
-  //   location.pathname === "/" ||
-  //   location.pathname === "/login" ||
-  //   location.pathname === "/register"
-  // ) {
+
   return (
     <nav className="bg-none text-white px-22 py-4 border-b border-white/20">
       <div className="flex items-center justify-between">
@@ -80,18 +74,35 @@ const Nav = (props) => {
         <ul className="flex gap-6 flex-1 justify-end ">
           {user && !_.isEmpty(user) && user.isAuthenticated ? (
             <>
-              <li>
-                <NavLink
-                  to="/Admin"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-black-500"
-                      : "text-gray-300 hover:text-gray-300"
-                  }
-                >
-                  Admin
-                </NavLink>
-              </li>
+              {user && user.account.groupWithRoles.id === 1 && (
+                <li>
+                  <NavLink
+                    to="/Admin"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-black-500"
+                        : "text-gray-300 hover:text-gray-300"
+                    }
+                  >
+                    Admin
+                  </NavLink>
+                </li>
+              )}
+              {(user && user.account.groupWithRoles.id === 2) ||
+                (user.account.groupWithRoles.id === 3 && (
+                  <li>
+                    <NavLink
+                      to="/"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-black-500"
+                          : "text-gray-300 hover:text-gray-300"
+                      }
+                    >
+                      Profile
+                    </NavLink>
+                  </li>
+                ))}
               <li>
                 <button
                   onClick={() => logoutContext()}
