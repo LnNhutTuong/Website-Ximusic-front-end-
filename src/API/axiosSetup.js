@@ -41,6 +41,8 @@ instance.interceptors.response.use(
 
         if (url !== "/api/v1/account") {
           toast.error("Unauthorized the user. Please login...");
+          localStorage.removeItem("jwt");
+          window.location.href = "/";
         }
 
         return Promise.reject(error);

@@ -25,6 +25,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -47,7 +48,6 @@ const DialogDetailUser = (props) => {
   // artist
   const [isArtist, setIsArtist] = useState(null);
   const [statusVerify, setStatusVerify] = useState("");
-
   const [listStatusVerify, setListStatusVerify] = useState([
     { value: 0, label: "Pending" },
     { value: 1, label: "Approved" },
@@ -73,7 +73,7 @@ const DialogDetailUser = (props) => {
 
   const dataUser = () => {
     if (detailUser) {
-      setEmail(detailUser.information.email);
+      setEmail(detailUser.information.email?.trim());
       setDisplayName(detailUser.information.displayName);
       setGroupId(detailUser.information.groupId);
 
@@ -100,7 +100,7 @@ const DialogDetailUser = (props) => {
   };
 
   const handleDelete = async () => {
-    let res = await handleDeleteUser(detailUser.id);
+    let res = await handleDeleteUser(detailUser.information.id);
     if (res?.EC === 0) {
       toast.success(res.EM);
       fetchAllUser();
@@ -123,9 +123,16 @@ const DialogDetailUser = (props) => {
     let error = "";
 
     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const displayNameRegex = /^(?=.*[a-zA-Z0-9])[a-zA-Z0-9 ]{3,16}$/;
+    const displayNameRegex =
+      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
 
-    if (!email && !displayName && !groupId && !isArtist && !statusVerify) {
+    if (
+      !email &&
+      !displayName &&
+      !groupId &&
+      isArtist === "" &&
+      statusVerify === ""
+    ) {
       validation.isValidEmail = false;
       validation.isValidDisplayName = false;
       validation.isValidGroupId = false;
@@ -149,14 +156,14 @@ const DialogDetailUser = (props) => {
       error = "Please select Group";
       check = false;
     }
-    if (!isArtist) {
+    if (isArtist === null) {
       validation.isValidIsArtist = false;
-      error = "";
+      error = "Please select User type";
       check = false;
     }
-    if (!statusVerify) {
+    if (isArtist === null || isArtist === "") {
       validation.isValidStatusVerify = false;
-      error = "Please select Group";
+      error = "Please select Status Verify";
       check = false;
     }
 
@@ -181,6 +188,8 @@ const DialogDetailUser = (props) => {
       isValidEmail: true,
       isValidDisplayName: true,
       isValidGroupId: true,
+      isValidIsArtist: true,
+      isValidStatusVerify: true,
     });
 
     setIsEdit(false);
@@ -192,22 +201,19 @@ const DialogDetailUser = (props) => {
       return;
     }
 
-    let check = isValid();
-    const userId = detailUser.id;
+    const userId = detailUser.information.id;
 
-    if (check) {
+    const finalEmail = email.trim().toLowerCase();
+
+    if (isValid()) {
       let res = await handleUpdateUser(
         userId,
-        email,
+        finalEmail,
         displayName,
-        address,
-        sex,
-        phone,
         groupId,
+        isArtist,
+        statusVerify,
       );
-
-      console.log(">>>check res: ", res);
-
       if (res?.EC === 0) {
         toast.success(res.EM);
         await fetchAllUser();
@@ -268,7 +274,7 @@ const DialogDetailUser = (props) => {
                   </Field>
 
                   <Field>
-                    <Label className="text-sm">displayName</Label>
+                    <Label className="text-sm">Display name</Label>
                     <Input
                       readOnly={!isEdit}
                       aria-invalid={!isValidInput.isValidDisplayName}
@@ -319,38 +325,32 @@ const DialogDetailUser = (props) => {
                 {/* RIGHT */}
                 <div className="space-y-4">
                   <Field>
-                    <Label className="text-sm">Is Artist</Label>
-                    <RadioGroup
-                      disabled={!isEdit}
-                      defaultValue="comfortable"
-                      className="w-fit"
-                      onValueChange={(value) => {
-                        setIsArtist(value);
-                      }}
-                      value={String(isArtist)}
+                    {/* Label của trường dữ liệu */}
+                    <FieldLabel>User type</FieldLabel>
+
+                    <Tabs
+                      value={isArtist ? "artist" : "listener"}
+                      onValueChange={(value) => setIsArtist(value === "artist")}
+                      className="w-full bg-muted rounded-xl p-2"
+                      aria-invalid={!isValidInput.isValidIsArtist}
                     >
-                      <div className="flex gap-10">
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem
-                            value="true"
-                            id="r1"
-                            // aria-invalid={!isValidInput.isValidSex}
-                          />
-                          <Label htmlFor="r1">True</Label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem
-                            value="false"
-                            id="r2"
-                            // aria-invalid={!isValidInput.isValidSex}
-                          />
-                          <Label htmlFor="r2">False</Label>
-                        </div>
-                      </div>
-                    </RadioGroup>
-                    {/* {!isValidInput.isValidPhone && (
-                      <FieldError>Please select your Gender</FieldError>
-                    )} */}
+                      <TabsList className="w-full p--2">
+                        <TabsTrigger
+                          disabled={!isEdit}
+                          value="artist"
+                          className="text-black hover:border-black hover:text-blue-900"
+                        >
+                          Artist
+                        </TabsTrigger>
+                        <TabsTrigger
+                          disabled={!isEdit}
+                          value="listener"
+                          className="text-black hover:border-black hover:text-blue-900"
+                        >
+                          Listener
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
                   </Field>
 
                   {isArtist ? (
@@ -365,10 +365,10 @@ const DialogDetailUser = (props) => {
                         value={statusVerify}
                       >
                         <SelectTrigger
-                          // aria-invalid={!isValidInput.isValidGroupId}
+                          aria-invalid={!isValidInput.isValidStatusVerify}
                           className="w-full"
                         >
-                          <SelectValue placeholder="Select group" />
+                          <SelectValue placeholder="Select status verify" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
@@ -383,9 +383,6 @@ const DialogDetailUser = (props) => {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-                      {/* {!isValidInput.isValidGroupId && (
-                      <FieldError>Please select a Group</FieldError>
-                    )} */}
                     </Field>
                   ) : null}
                 </div>
@@ -404,7 +401,12 @@ const DialogDetailUser = (props) => {
                 >
                   Cancel
                 </Button>
-                <Button onClick={() => handleSubmit()}>Save changes</Button>
+                <Button
+                  onClick={() => handleSubmit()}
+                  className="hover:shadow-2xl hover:shadow-black/30 hover:bg-black"
+                >
+                  Save changes
+                </Button>
               </>
             ) : (
               <>

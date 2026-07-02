@@ -24,6 +24,7 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { handleCreateNewUser } from "../../../../services/userService";
@@ -36,47 +37,49 @@ const DialogCreateUser = (props) => {
   const { show, setShow, fetchAllUser } = props;
 
   const [email, setEmail] = useState("");
-  const [displayName, setdisplayName] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [groupId, setGroupId] = useState("");
-  const [sex, setSex] = useState("");
-
   const [listGroups, setListGroups] = useState([]);
+
+  // artist
+  const [isArtist, setIsArtist] = useState(null);
+  const [statusVerify, setStatusVerify] = useState("");
+  const [listStatusVerify, setListStatusVerify] = useState([
+    { value: 0, label: "Pending" },
+    { value: 1, label: "Approved" },
+    { value: 2, label: "Rejected" },
+  ]);
 
   const [isValidInput, setIsValidInput] = useState({
     isValidEmail: true,
-    isValidPhone: true,
-    isValiddisplayName: true,
-    isValidAddress: true,
+    isValidDisplayName: true,
     isValidGroupId: true,
-    isValidSex: true,
+    isValidIsArtist: true,
+    isValidStatusVerify: true,
   });
 
   const isValid = () => {
     const validation = {
       isValidEmail: true,
-      isValidPhone: true,
-      isValiddisplayName: true,
-      isValidAddress: true,
+      isValidDisplayName: true,
       isValidGroupId: true,
-      isValidSex: true,
+      isValidIsArtist: true,
+      isValidStatusVerify: true,
     };
 
     let check = true;
     let error = "";
 
     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    let phoneRegex = /^\d{10}$/;
-    let displayNameRegex = /^[a-zA-Z0-9]{3,16}$/;
+    const displayNameRegex =
+      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
 
-    if (!email && !address && !displayName && !phone && !groupId && !sex) {
+    if (!email && !displayName && !groupId && !isArtist && !statusVerify) {
       validation.isValidEmail = false;
-      validation.isValidPhone = false;
-      validation.isValiddisplayName = false;
-      validation.isValidAddress = false;
+      validation.isValidDisplayName = false;
       validation.isValidGroupId = false;
-      validation.isValidSex = false;
+      validation.isValidIsArtist = false;
+      validation.isValidStatusVerify = false;
       error = "Please fill in all the fields";
       check = false;
     }
@@ -85,32 +88,29 @@ const DialogCreateUser = (props) => {
       error = "Email is not valid";
       check = false;
     }
-    if (!phone || !phone.match(phoneRegex)) {
-      validation.isValidPhone = false;
-      error = "Phone is not valid";
-      check = false;
-    }
+
     if (!displayName || !displayName.match(displayNameRegex)) {
-      validation.isValiddisplayName = false;
+      validation.isValidDisplayName = false;
       error = "displayName is not valid";
       check = false;
     }
-    if (!address) {
-      validation.isValidAddress = false;
-      error = "Address is not valid";
-      check = false;
-    }
+
     if (!groupId) {
       validation.isValidGroupId = false;
       error = "Please select Group";
       check = false;
     }
-    if (!sex) {
-      validation.isValidSex = false;
-      error = "Please select Gender";
-      check;
-    }
 
+    if (isArtist === null) {
+      validation.isValidIsArtist = false;
+      error = "Please select User type";
+      check = false;
+    }
+    if (isArtist === null || isArtist === "") {
+      validation.isValidStatusVerify = false;
+      error = "Please select Status Verify";
+      check = false;
+    }
     setIsValidInput(validation);
 
     if (!check && error) {
@@ -133,19 +133,18 @@ const DialogCreateUser = (props) => {
 
   const handleCLoseDialog = () => {
     setEmail("");
-    setAddress("");
-    setdisplayName("");
-    setPhone("");
-    setSex("");
+    setDisplayName("");
     setGroupId("");
+
+    setIsArtist(null);
+    setStatusVerify("");
 
     setIsValidInput({
       isValidEmail: true,
-      isValidPhone: true,
-      isValiddisplayName: true,
-      isValidAddress: true,
+      isValidDisplayName: true,
       isValidGroupId: true,
-      isValidSex: true,
+      isValidIsArtist: true,
+      isValidStatusVerify: true,
     });
 
     setShow(false);
@@ -158,15 +157,16 @@ const DialogCreateUser = (props) => {
 
     let check = isValid();
     let defaultPassword = "123456";
+    const finalEmail = email.trim().toLowerCase();
+
     if (check) {
       let res = await handleCreateNewUser(
-        email,
+        finalEmail,
         defaultPassword,
         displayName,
-        address,
-        sex,
-        phone,
         groupId,
+        isArtist,
+        statusVerify,
       );
 
       if (res?.EC === 0) {
@@ -223,14 +223,14 @@ const DialogCreateUser = (props) => {
                 <Field>
                   <Label className="text-sm">displayName</Label>
                   <Input
-                    aria-invalid={!isValidInput.isValiddisplayName}
+                    aria-invalid={!isValidInput.isValidDisplayName}
                     className="h-9 text-sm"
                     name="displayName"
                     onChange={(e) => {
-                      setdisplayName(e.target.value);
+                      setDisplayName(e.target.value);
                     }}
                   />
-                  {!isValidInput.isValiddisplayName && (
+                  {!isValidInput.isValidDisplayName && (
                     <FieldError>Your displayName is invalid</FieldError>
                   )}
                 </Field>
@@ -268,70 +268,60 @@ const DialogCreateUser = (props) => {
               {/* RIGHT */}
               <div className="space-y-4">
                 <Field>
-                  <Label className="text-sm">Address</Label>
-                  <Input
-                    aria-invalid={!isValidInput.isValidAddress}
-                    className="h-9 text-sm"
-                    name="address"
-                    onChange={(e) => {
-                      setAddress(e.target.value);
-                    }}
-                  />
-                  {!isValidInput.isValidAddress && (
-                    <FieldError>Your address is invalid</FieldError>
-                  )}
-                </Field>
+                  {/* Label của trường dữ liệu */}
+                  <FieldLabel>User type</FieldLabel>
 
-                <Field>
-                  <Label className="text-sm">Phone</Label>
-                  <Input
-                    aria-invalid={!isValidInput.isValidPhone}
-                    className="h-9 text-sm"
-                    name="phone"
-                    onChange={(e) => {
-                      setPhone(e.target.value);
-                    }}
-                  />
-                  {!isValidInput.isValidPhone && (
-                    <FieldError>
-                      Your phone number is invalid <br />
-                      Phone number is only 10 numbers
-                    </FieldError>
-                  )}
-                </Field>
-
-                <Field>
-                  <Label className="text-sm">Sex</Label>
-                  <RadioGroup
-                    defaultValue="comfortable"
-                    className="w-fit"
-                    onValueChange={(value) => {
-                      setSex(value);
-                    }}
+                  <Tabs
+                    value={isArtist ? "artist" : "listener"}
+                    onValueChange={(value) => setIsArtist(value === "artist")}
+                    className="w-full bg-muted rounded-xl p-2"
+                    aria-invalid={!isValidInput.isValidIsArtist}
                   >
-                    <div className="flex gap-10">
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem
-                          value="Male"
-                          id="r1"
-                          aria-invalid={!isValidInput.isValidSex}
-                        />
-                        <Label htmlFor="r1">Male</Label>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem
-                          value="Female"
-                          id="r2"
-                          aria-invalid={!isValidInput.isValidSex}
-                        />
-                        <Label htmlFor="r2">Female</Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                  {!isValidInput.isValidPhone && (
-                    <FieldError>Please select your Gender</FieldError>
-                  )}
+                    <TabsList className="w-full p--2">
+                      <TabsTrigger
+                        value="artist"
+                        className="text-black hover:border-black hover:text-blue-900"
+                      >
+                        Artist
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="listener"
+                        className="text-black hover:border-black hover:text-blue-900"
+                      >
+                        Listener
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </Field>
+
+                {isArtist ? (
+                  <Field>
+                    <FieldLabel>Verify</FieldLabel>
+                    <Select
+                      items={listStatusVerify}
+                      onValueChange={(value) => {
+                        setStatusVerify(value);
+                      }}
+                      value={statusVerify}
+                    >
+                      <SelectTrigger
+                        aria-invalid={!isValidInput.isValidStatusVerify}
+                        className="w-full"
+                      >
+                        <SelectValue placeholder="Select status verify" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {listStatusVerify.map((status) => (
+                            <SelectItem key={status.value} value={status.value}>
+                              {status.label.toUpperCase()}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                ) : null}
               </div>
             </div>
           </FieldGroup>

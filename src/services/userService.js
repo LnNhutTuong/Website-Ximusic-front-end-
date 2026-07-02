@@ -32,18 +32,16 @@ const handleUpdateUser = (
   id,
   email,
   displayName,
-  address,
-  sex,
-  phone,
   groupId,
+  isArtist,
+  statusVerify,
 ) => {
   return axios.put(`api/v1/user/update/${id}`, {
     email,
     displayName,
-    address,
-    sex,
-    phone,
     groupId,
+    isArtist,
+    statusVerify,
   });
 };
 
