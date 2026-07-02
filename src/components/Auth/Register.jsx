@@ -59,7 +59,7 @@ const Register = (props) => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const displayNameRegex =
-      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
+      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*(?: [\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*)*$/u;
     if (!email || !email.match(emailRegex)) {
       validation.isValidEmail = false;
       error = "Email is invalid";

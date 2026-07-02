@@ -42,7 +42,6 @@ const DialogCreateUser = (props) => {
   const [listGroups, setListGroups] = useState([]);
 
   // artist
-  const [isArtist, setIsArtist] = useState(null);
   const [statusVerify, setStatusVerify] = useState("");
   const [listStatusVerify, setListStatusVerify] = useState([
     { value: 0, label: "Pending" },
@@ -54,7 +53,6 @@ const DialogCreateUser = (props) => {
     isValidEmail: true,
     isValidDisplayName: true,
     isValidGroupId: true,
-    isValidIsArtist: true,
     isValidStatusVerify: true,
   });
 
@@ -63,7 +61,6 @@ const DialogCreateUser = (props) => {
       isValidEmail: true,
       isValidDisplayName: true,
       isValidGroupId: true,
-      isValidIsArtist: true,
       isValidStatusVerify: true,
     };
 
@@ -72,13 +69,12 @@ const DialogCreateUser = (props) => {
 
     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const displayNameRegex =
-      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
+      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*(?: [\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*)*$/u;
 
-    if (!email && !displayName && !groupId && !isArtist && !statusVerify) {
+    if (!email && !displayName && !groupId && !statusVerify) {
       validation.isValidEmail = false;
       validation.isValidDisplayName = false;
       validation.isValidGroupId = false;
-      validation.isValidIsArtist = false;
       validation.isValidStatusVerify = false;
       error = "Please fill in all the fields";
       check = false;
@@ -101,12 +97,7 @@ const DialogCreateUser = (props) => {
       check = false;
     }
 
-    if (isArtist === null) {
-      validation.isValidIsArtist = false;
-      error = "Please select User type";
-      check = false;
-    }
-    if (isArtist === null || isArtist === "") {
+    if (statusVerify === null || statusVerify === "") {
       validation.isValidStatusVerify = false;
       error = "Please select Status Verify";
       check = false;
@@ -135,15 +126,12 @@ const DialogCreateUser = (props) => {
     setEmail("");
     setDisplayName("");
     setGroupId("");
-
-    setIsArtist(null);
     setStatusVerify("");
 
     setIsValidInput({
       isValidEmail: true,
       isValidDisplayName: true,
       isValidGroupId: true,
-      isValidIsArtist: true,
       isValidStatusVerify: true,
     });
 
@@ -165,7 +153,6 @@ const DialogCreateUser = (props) => {
         defaultPassword,
         displayName,
         groupId,
-        isArtist,
         statusVerify,
       );
 
@@ -234,7 +221,10 @@ const DialogCreateUser = (props) => {
                     <FieldError>Your displayName is invalid</FieldError>
                   )}
                 </Field>
+              </div>
 
+              {/* RIGHT */}
+              <div className="space-y-4">
                 <Field>
                   <FieldLabel>Group</FieldLabel>
                   <Select
@@ -263,38 +253,8 @@ const DialogCreateUser = (props) => {
                     <FieldError>Please select a Group</FieldError>
                   )}
                 </Field>
-              </div>
 
-              {/* RIGHT */}
-              <div className="space-y-4">
-                <Field>
-                  {/* Label của trường dữ liệu */}
-                  <FieldLabel>User type</FieldLabel>
-
-                  <Tabs
-                    value={isArtist ? "artist" : "listener"}
-                    onValueChange={(value) => setIsArtist(value === "artist")}
-                    className="w-full bg-muted rounded-xl p-2"
-                    aria-invalid={!isValidInput.isValidIsArtist}
-                  >
-                    <TabsList className="w-full p--2">
-                      <TabsTrigger
-                        value="artist"
-                        className="text-black hover:border-black hover:text-blue-900"
-                      >
-                        Artist
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="listener"
-                        className="text-black hover:border-black hover:text-blue-900"
-                      >
-                        Listener
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </Field>
-
-                {isArtist ? (
+                {groupId === 2 ? (
                   <Field>
                     <FieldLabel>Verify</FieldLabel>
                     <Select

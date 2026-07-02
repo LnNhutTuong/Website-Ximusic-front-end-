@@ -9,7 +9,7 @@ import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import Admin from "@/pages/Admin";
 import ManagerUser from "../components/Admin/Content/User/ListUserWithPagination";
-import ManageProject from "../components/Admin/Content/Project/Project";
+import ManageProject from "../components/Admin/Content/Artist/Project";
 import Home from "@/pages/Home";
 import PrivateRoutes from "./PrivateRoutes";
 import PublicRoutes from "./PublicRoute";

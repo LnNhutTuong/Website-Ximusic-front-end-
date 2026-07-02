@@ -46,7 +46,6 @@ const DialogDetailUser = (props) => {
   const [listGroups, setListGroups] = useState([]);
 
   // artist
-  const [isArtist, setIsArtist] = useState(null);
   const [statusVerify, setStatusVerify] = useState("");
   const [listStatusVerify, setListStatusVerify] = useState([
     { value: 0, label: "Pending" },
@@ -58,7 +57,6 @@ const DialogDetailUser = (props) => {
     isValidEmail: true,
     isValidDisplayName: true,
     isValidGroupId: true,
-    isValidIsArtist: true,
     isValidStatusVerify: true,
   });
 
@@ -77,7 +75,6 @@ const DialogDetailUser = (props) => {
       setDisplayName(detailUser.information.displayName);
       setGroupId(detailUser.information.groupId);
 
-      setIsArtist(detailUser.artist.isArtist);
       setStatusVerify(detailUser.artist.verify);
     }
 
@@ -92,7 +89,6 @@ const DialogDetailUser = (props) => {
 
   useEffect(() => {
     dataUser();
-    console.log(">>>>check user: ", detailUser);
   }, [detailUser]);
 
   const handleEdit = () => {
@@ -115,7 +111,6 @@ const DialogDetailUser = (props) => {
       isValidEmail: true,
       isValidDisplayName: true,
       isValidGroupId: true,
-      isValidIsArtist: true,
       isValidStatusVerify: true,
     };
 
@@ -124,19 +119,13 @@ const DialogDetailUser = (props) => {
 
     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const displayNameRegex =
-      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
+      /^(?=.{3,24}$)(?=.*[\p{L}\p{N}])[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*(?: [\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*)*$/u;
 
-    if (
-      !email &&
-      !displayName &&
-      !groupId &&
-      isArtist === "" &&
-      statusVerify === ""
-    ) {
+    if (!email && !displayName && !groupId && statusVerify === "") {
       validation.isValidEmail = false;
       validation.isValidDisplayName = false;
       validation.isValidGroupId = false;
-      validation.isValidIsArtist = false;
+
       validation.isValidStatusVerify = false;
       error = "Please fill in all the fields";
       check = false;
@@ -156,12 +145,8 @@ const DialogDetailUser = (props) => {
       error = "Please select Group";
       check = false;
     }
-    if (isArtist === null) {
-      validation.isValidIsArtist = false;
-      error = "Please select User type";
-      check = false;
-    }
-    if (isArtist === null || isArtist === "") {
+
+    if (statusVerify === null || statusVerify === "") {
       validation.isValidStatusVerify = false;
       error = "Please select Status Verify";
       check = false;
@@ -181,14 +166,12 @@ const DialogDetailUser = (props) => {
     setDisplayName("");
     setGroupId("");
 
-    setIsArtist(null);
     setStatusVerify("");
 
     setIsValidInput({
       isValidEmail: true,
       isValidDisplayName: true,
       isValidGroupId: true,
-      isValidIsArtist: true,
       isValidStatusVerify: true,
     });
 
@@ -211,7 +194,6 @@ const DialogDetailUser = (props) => {
         finalEmail,
         displayName,
         groupId,
-        isArtist,
         statusVerify,
       );
       if (res?.EC === 0) {
@@ -289,7 +271,10 @@ const DialogDetailUser = (props) => {
                       <FieldError>Your displayName is invalid</FieldError>
                     )}
                   </Field>
+                </div>
 
+                {/* RIGHT */}
+                <div className="space-y-4">
                   <Field>
                     <FieldLabel>Group</FieldLabel>
                     <Select
@@ -320,40 +305,8 @@ const DialogDetailUser = (props) => {
                       <FieldError>Please select a Group</FieldError>
                     )}
                   </Field>
-                </div>
 
-                {/* RIGHT */}
-                <div className="space-y-4">
-                  <Field>
-                    {/* Label của trường dữ liệu */}
-                    <FieldLabel>User type</FieldLabel>
-
-                    <Tabs
-                      value={isArtist ? "artist" : "listener"}
-                      onValueChange={(value) => setIsArtist(value === "artist")}
-                      className="w-full bg-muted rounded-xl p-2"
-                      aria-invalid={!isValidInput.isValidIsArtist}
-                    >
-                      <TabsList className="w-full p--2">
-                        <TabsTrigger
-                          disabled={!isEdit}
-                          value="artist"
-                          className="text-black hover:border-black hover:text-blue-900"
-                        >
-                          Artist
-                        </TabsTrigger>
-                        <TabsTrigger
-                          disabled={!isEdit}
-                          value="listener"
-                          className="text-black hover:border-black hover:text-blue-900"
-                        >
-                          Listener
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </Field>
-
-                  {isArtist ? (
+                  {groupId === 2 ? (
                     <Field>
                       <FieldLabel>Verify</FieldLabel>
                       <Select
@@ -362,7 +315,7 @@ const DialogDetailUser = (props) => {
                         onValueChange={(value) => {
                           setStatusVerify(value);
                         }}
-                        value={statusVerify}
+                        value={statusVerify ?? undefined}
                       >
                         <SelectTrigger
                           aria-invalid={!isValidInput.isValidStatusVerify}

@@ -8,19 +8,15 @@ const handleCreateNewUser = (
   email,
   password,
   displayName,
-  address,
-  sex,
-  phone,
   groupId,
+  statusVerify,
 ) => {
   return axios.post("api/v1/user/create", {
     email,
     password,
     displayName,
-    address,
-    sex,
-    phone,
     groupId,
+    statusVerify,
   });
 };
 
@@ -33,14 +29,13 @@ const handleUpdateUser = (
   email,
   displayName,
   groupId,
-  isArtist,
+
   statusVerify,
 ) => {
   return axios.put(`api/v1/user/update/${id}`, {
     email,
     displayName,
     groupId,
-    isArtist,
     statusVerify,
   });
 };
