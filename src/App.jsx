@@ -6,13 +6,6 @@ import _ from "lodash";
 import AppRoutes from "./routes/AppRoute";
 import { useContext, useEffect, useState } from "react";
 import Nav from "./components/Navigation/Nav";
-
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
 import { UserContext } from "./context/userContext";
 import { Triangle } from "react-loader-spinner";
 import PlayerBar from "./components/Home/PlayerBar";

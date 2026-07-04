@@ -33,15 +33,19 @@ import {
   handleDeleteUser,
 } from "../../../../services/userService";
 import { getAllGroup } from "../../../../services/groupService";
+import DialogArtistProfile from "./DialogArtistProfile";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const DialogDetailUser = (props) => {
   const { show, setShow, fetchAllUser, detailUser, isEditMode } = props;
 
+  const [showDialogArtistProfile, setShowDialogArtistProfile] = useState(false);
+
   // information
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [avt, setAvt] = useState("");
   const [groupId, setGroupId] = useState("");
   const [listGroups, setListGroups] = useState([]);
 
@@ -73,9 +77,12 @@ const DialogDetailUser = (props) => {
     if (detailUser) {
       setEmail(detailUser.information.email?.trim());
       setDisplayName(detailUser.information.displayName);
+      setAvt(detailUser.information.avt ?? "");
       setGroupId(detailUser.information.groupId);
 
-      setStatusVerify(detailUser.artist.verify);
+      if (detailUser.information.groupId === 2) {
+        setStatusVerify(detailUser.artist.verified);
+      }
     }
 
     if (isEditMode) {
@@ -211,6 +218,10 @@ const DialogDetailUser = (props) => {
     setIsEdit(false);
   };
 
+  const handleOpeenDialogArtistProifle = () => {
+    setShowDialogArtistProfile(true);
+  };
+
   return (
     <>
       <Dialog
@@ -227,7 +238,7 @@ const DialogDetailUser = (props) => {
           onPointerDownOutside={(e) => e.preventDefault()}
           className="sm:max-w-4xl max-h-[65vh] overflow-y-auto p-6"
         >
-          <DialogHeader>
+          <DialogHeader className="mb-5">
             <DialogTitle className="text-xl font-semibold">
               Detail User
             </DialogTitle>
@@ -237,6 +248,19 @@ const DialogDetailUser = (props) => {
             <FieldGroup className="space-y-4">
               <div className="grid grid-cols-2 gap-6">
                 {/* LEFT */}
+                <div className="space-y-4">
+                  <div className="h-[414px] w-[414px] rounded-xl overflow-hidden p-1 bg-black/40">
+                    <img
+                      className="rounded-xl"
+                      src={
+                        avt === "" ? "../../public/image/default_image.svg" : ""
+                      }
+                      alt=""
+                    />
+                  </div>
+                </div>
+
+                {/* RIGHT */}
                 <div className="space-y-4">
                   <Field>
                     <Label className="text-sm">Email</Label>
@@ -271,10 +295,6 @@ const DialogDetailUser = (props) => {
                       <FieldError>Your displayName is invalid</FieldError>
                     )}
                   </Field>
-                </div>
-
-                {/* RIGHT */}
-                <div className="space-y-4">
                   <Field>
                     <FieldLabel>Group</FieldLabel>
                     <Select
@@ -343,38 +363,53 @@ const DialogDetailUser = (props) => {
             </FieldGroup>
           </FieldSet>
 
-          <DialogFooter className="mt-6">
-            {isEdit ? (
-              <>
+          <DialogFooter className="mt-4">
+            <div className={`flex items-center  w-full justify-between`}>
+              {groupId === 2 && (
                 <Button
                   onClick={() => {
-                    handleCancelEditMode();
+                    setShowDialogArtistProfile(true);
                   }}
-                  variant="outline"
                 >
-                  Cancel
+                  View Artist Profile
                 </Button>
-                <Button
-                  onClick={() => handleSubmit()}
-                  className="hover:shadow-2xl hover:shadow-black/30 hover:bg-black"
-                >
-                  Save changes
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="warning" onClick={() => handleEdit()}>
-                  Edit user
-                </Button>
+              )}
 
-                <Button variant="destructive" onClick={() => handleDelete()}>
-                  Delete user
-                </Button>
-              </>
-            )}
+              <div
+                className={`flex items-center gap-2 ${
+                  groupId === 2 ? "justify-between" : "ml-auto"
+                }`}
+              >
+                {isEdit ? (
+                  <>
+                    <Button variant="outline" onClick={handleCancelEditMode}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSubmit}>Save changes</Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="warning" onClick={handleEdit}>
+                      Edit user
+                    </Button>
+                    <Button variant="destructive" onClick={handleDelete}>
+                      Delete user
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {groupId === 2 && (
+        <DialogArtistProfile
+          show={showDialogArtistProfile}
+          setShow={setShowDialogArtistProfile}
+          detailUser={detailUser}
+        />
+      )}
     </>
   );
 };

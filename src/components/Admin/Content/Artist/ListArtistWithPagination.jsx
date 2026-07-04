@@ -1,110 +1,92 @@
-import { useContext, useEffect, useState } from "react";
-import {
-  fetchAllUser,
-  handleDeleteUser,
-  handleGetUserWithId,
-} from "../../../../services/userService";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import DialogCreateUser from "./DialogCreateUser";
-import DialogDetailUser from "./DialogDetailUser";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
-import { UserContext } from "@/context/userContext";
 import { Triangle } from "react-loader-spinner";
 
 const ListUser = () => {
-  const [listUser, setListUser] = useState([]);
-  const [totalPage, setTotalPage] = useState([]);
+  // const [listUser, setListUser] = useState([]);
+  // const [totalPage, setTotalPage] = useState([]);
 
-  // Refresh
-  const [isRefresh, setIsRefresh] = useState(false);
+  // // Refresh
+  // const [isRefresh, setIsRefresh] = useState(false);
 
-  // Dialog Create User
-  const [dialogCreate, setDialogCreate] = useState(false);
+  // // Dialog Create User
+  // const [dialogCreate, setDialogCreate] = useState(false);
 
-  //Dialog Detail User
-  const [detailUser, setDetailUser] = useState("");
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [dialogDetailUser, setDialogDetailUser] = useState(false);
+  // useEffect(() => {
+  //   getListUser();
+  // }, [currentPage, currentLimit]);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  // const getListUser = async () => {
+  //   let res = await fetchAllUser(currentPage, currentLimit);
+  //   if (res?.EC === 0) {
+  //     setListUser(res.DT.rows);
 
-  const currentPage = parseInt(searchParams.get("page"), 10) || 1;
-  const currentLimit = 5;
+  //     let totalUser = +res.DT.count;
 
-  useEffect(() => {
-    getListUser();
-  }, [currentPage, currentLimit]);
+  //     let pageCount = Math.ceil(totalUser / currentLimit);
 
-  const getListUser = async () => {
-    let res = await fetchAllUser(currentPage, currentLimit);
-    if (res?.EC === 0) {
-      setListUser(res.DT.rows);
+  //     const pageArray = [];
+  //     for (let i = 1; i <= pageCount; i++) {
+  //       pageArray.push(i);
+  //     }
 
-      let totalUser = +res.DT.count;
+  //     setTotalPage(pageArray);
+  //   } else {
+  //     setListUser([]);
+  //     setTotalPage([]);
+  //     toast.error(res.EM);
+  //   }
+  // };
 
-      let pageCount = Math.ceil(totalUser / currentLimit);
+  // const handlePageChange = (type) => {
+  //   if (type === "next") {
+  //     if (currentPage >= totalPage.length) return;
+  //     setSearchParams({
+  //       page: +currentPage + 1,
+  //       limit: +currentLimit,
+  //     });
+  //   } else {
+  //     if (currentPage <= 1) return;
+  //     setSearchParams({
+  //       page: +currentPage - 1,
+  //       limit: +currentLimit,
+  //     });
+  //   }
+  // };
 
-      const pageArray = [];
-      for (let i = 1; i <= pageCount; i++) {
-        pageArray.push(i);
-      }
+  // const handleChoosePageNumber = (pageNumber) => {
+  //   setSearchParams({
+  //     page: +pageNumber,
+  //     limit: +currentLimit,
+  //   });
+  // };
 
-      setTotalPage(pageArray);
-    } else {
-      setListUser([]);
-      setTotalPage([]);
-      toast.error(res.EM);
-    }
-  };
+  // const handleGetDataUser = async (idUser) => {
+  //   let res = await handleGetUserWithId(idUser);
+  //   if (res?.EC === 0) {
+  //     setDetailUser(res.DT);
+  //   }
+  // };
 
-  const handlePageChange = (type) => {
-    if (type === "next") {
-      if (currentPage >= totalPage.length) return;
-      setSearchParams({
-        page: +currentPage + 1,
-        limit: +currentLimit,
-      });
-    } else {
-      if (currentPage <= 1) return;
-      setSearchParams({
-        page: +currentPage - 1,
-        limit: +currentLimit,
-      });
-    }
-  };
+  // const handleDelete = async (idUser) => {
+  //   let res = await handleDeleteUser(idUser);
+  //   if (res?.EC === 0) {
+  //     toast.success(res.EM);
+  //     getListUser();
+  //   } else {
+  //     toast.error(res.EM);
+  //   }
+  // };
 
-  const handleChoosePageNumber = (pageNumber) => {
-    setSearchParams({
-      page: +pageNumber,
-      limit: +currentLimit,
-    });
-  };
-
-  const handleGetDataUser = async (idUser) => {
-    let res = await handleGetUserWithId(idUser);
-    if (res?.EC === 0) {
-      setDetailUser(res.DT);
-    }
-  };
-
-  const handleDelete = async (idUser) => {
-    let res = await handleDeleteUser(idUser);
-    if (res?.EC === 0) {
-      toast.success(res.EM);
-      getListUser();
-    } else {
-      toast.error(res.EM);
-    }
-  };
-
-  const handleRefresh = () => {
-    setIsRefresh(true);
-    getListUser();
-    setTimeout(() => {
-      setIsRefresh(false);
-    }, 3000);
-  };
+  // const handleRefresh = () => {
+  //   setIsRefresh(true);
+  //   getListUser();
+  //   setTimeout(() => {
+  //     setIsRefresh(false);
+  //   }, 3000);
+  // };
 
   return (
     <>

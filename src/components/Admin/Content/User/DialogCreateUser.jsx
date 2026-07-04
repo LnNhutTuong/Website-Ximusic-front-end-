@@ -97,11 +97,14 @@ const DialogCreateUser = (props) => {
       check = false;
     }
 
-    if (statusVerify === null || statusVerify === "") {
-      validation.isValidStatusVerify = false;
-      error = "Please select Status Verify";
-      check = false;
+    if (groupId === 2) {
+      if (statusVerify === null || statusVerify === "") {
+        validation.isValidStatusVerify = false;
+        error = "Please select Status Verify";
+        check = false;
+      }
     }
+
     setIsValidInput(validation);
 
     if (!check && error) {

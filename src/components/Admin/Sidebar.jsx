@@ -1,6 +1,15 @@
-import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { NavLink } from "react-router-dom";
+import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import { NavLink, useLocation } from "react-router-dom";
 const SidebarAdmin = () => {
+  const location = useLocation();
+
+  const isActive = (path) => {
+    if (path === "/admin") {
+      return location.pathname === "/admin";
+    }
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <div className="bg-white/20 rounded-xl">
       <Sidebar
@@ -56,53 +65,66 @@ const SidebarAdmin = () => {
                   transition: "all 0.3s ease",
 
                   "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.1) !important",
-                    color: "#ffffff !important",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    color: "#ffffff",
+                  },
+
+                  "&.ps-active": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    color: "#ffffff",
+                    fontWeight: 600,
                   },
                 },
               }}
             >
               <MenuItem
-                component={<NavLink to="/admin" end />}
+                component={<NavLink to="/admin" />}
+                active={isActive("/admin")}
                 className="font-medium"
-                rootStyles={{
-                  "& .ps-active": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2) !important",
-                    color: "#ffffff !important",
-                    fontWeight: "600",
-                  },
-                }}
               >
                 Dashboard
               </MenuItem>
 
               <MenuItem
                 component={<NavLink to="/admin/users" />}
+                active={isActive("/admin/users")}
                 className="font-medium"
-                rootStyles={{
-                  "& .ps-active": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2) !important",
-                    color: "#ffffff !important",
-                    fontWeight: "600",
-                  },
-                }}
               >
                 Manager Users
               </MenuItem>
 
-              <MenuItem
-                component={<NavLink to="/admin/project" />}
-                className="font-medium"
+              <SubMenu
+                label="Manager Music"
                 rootStyles={{
-                  "& .ps-active": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2) !important",
-                    color: "#ffffff !important",
-                    fontWeight: "600",
+                  "& .ps-submenu-content": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    paddingLeft: "20px",
+                    // margin: "0px 10px ",
                   },
                 }}
               >
-                Manager Music
-              </MenuItem>
+                <MenuItem
+                  component={<NavLink to="/admin/genre" />}
+                  active={isActive("/admin/genre")}
+                  className="font-medium"
+                >
+                  Genre
+                </MenuItem>
+                <MenuItem
+                  component={<NavLink to="/admin/album" />}
+                  active={isActive("/admin/album")}
+                  className="font-medium"
+                >
+                  Album
+                </MenuItem>
+                <MenuItem
+                  component={<NavLink to="/admin/song" />}
+                  active={isActive("/admin/song")}
+                  className="font-medium"
+                >
+                  Song
+                </MenuItem>
+              </SubMenu>
             </Menu>
           </div>
         </div>
