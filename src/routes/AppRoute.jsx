@@ -9,7 +9,10 @@ import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import Admin from "@/pages/Admin";
 import ManagerUser from "../components/Admin/Content/User/ListUserWithPagination";
-import ManageArtist from "../components/Admin/Content/Artist/ListArtistWithPagination";
+import ManagerGenre from "../components/Admin/Content/Music/Genre/ListGenreWithPagination";
+import ManageAlbum from "../components/Admin/Content/Music/Album/ListAlbumWithPagination";
+import ManageSong from "../components/Admin/Content/Music/Song/ListSongWithPagination";
+
 import Home from "@/pages/Home";
 import PrivateRoutes from "./PrivateRoutes";
 import PublicRoutes from "./PublicRoute";
@@ -21,9 +24,11 @@ const AppRoutes = (props) => {
 
         {/* private route */}
         <Route element={<PrivateRoutes />}>
-          <Route path="/admin" element={<Admin />}>
+          <Route path="admin" element={<Admin />}>
             <Route path="users" element={<ManagerUser />} />
-            <Route path="project" element={<ManageArtist />} />
+            <Route path="genre" element={<ManagerGenre />} />
+            <Route path="album" element={<ManageAlbum />} />
+            <Route path="song" element={<ManageSong />} />
           </Route>
         </Route>
 
