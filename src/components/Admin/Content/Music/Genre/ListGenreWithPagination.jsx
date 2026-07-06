@@ -1,9 +1,15 @@
 import { Triangle } from "react-loader-spinner";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import DialogCreateNewGenre from "./DialogCreateNewGenre";
+import { fetchAllGenre } from "../../../../../services/music/genre/genreService";
 const ManagerGenre = (props) => {
   const [listGenre, setListGenre] = useState([]);
   const [totalPage, setTotalPage] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentPage = parseInt(searchParams.get("page"), 10) || 1;
+  const currentLimit = 7;
 
   // Refresh
   const [isRefresh, setIsRefresh] = useState(false);
@@ -16,6 +22,33 @@ const ManagerGenre = (props) => {
     setTimeout(() => {
       setIsRefresh(false);
     }, 3000);
+  };
+
+  useEffect(() => {
+    getListGenre();
+    console.log(">>check list genre: ", listGenre);
+  }, [listGenre]);
+
+  const getListGenre = async () => {
+    let res = await fetchAllGenre(currentPage, currentLimit);
+    if (res?.EC === 0) {
+      setListGenre(res.DT.rows);
+
+      let totalUser = +res.DT.count;
+
+      let pageCount = Math.ceil(totalUser / currentLimit);
+
+      const pageArray = [];
+      for (let i = 1; i <= pageCount; i++) {
+        pageArray.push(i);
+      }
+
+      setTotalPage(pageArray);
+    } else {
+      setListUser([]);
+      setTotalPage([]);
+      toast.error(res.EM);
+    }
   };
 
   return (
@@ -92,24 +125,23 @@ const ManagerGenre = (props) => {
                   {listGenre.map((genre) => (
                     <div className="col-span-2 flex h-30 overflow-hidden rounded-xl border">
                       <img
-                        src="https://picsum.photos/200/200"
+                        src="../../../../public/image/question_icon.jpg"
                         alt=""
                         className="h-full w-30 object-cover"
                       />
-
-                      <div className="flex flex-1 flex-col px-2 py-3 ">
+                      <span className="border mx-3 my-3" />
+                      <div className="flex flex-1 flex-col pe-2 py-3 ">
                         <div className="flex justify-between border-b">
-                          <h3 className="text-lg font-bold ">Ballad</h3>
+                          <h3 className="text-lg font-bold ">
+                            {genre.name.toUpperCase()}
+                          </h3>
                           <button className=" px-2 rounded-xl mb-2 text-white/60 hover:text-white hover:cursor-pointer">
                             View
                           </button>
                         </div>
 
-                        <p className="mt-1 line-clamp-3 text-sm text-gray-500 overflow-y-auto scrollbar-none">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Ratione quod, alias sapiente debitis nihil nisi
-                          rerum dolore, autem et nobis facilis. Libero ex nisi
-                          unde nostrum quis consectetur vel ad.
+                        <p className="mt-1 line-clamp-3 text-sm text-white/80 overflow-y-auto scrollbar-none">
+                          {genre.description}
                         </p>
                       </div>
                     </div>
