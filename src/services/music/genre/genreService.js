@@ -5,13 +5,13 @@ const fetchAllGenre = (page, limit) => {
 };
 
 const createNewGenre = (name, description, icon) => {
-  const formData = new FormData();
+  const data = new FormData();
 
-  formData.append("name", name);
-  formData.append("description", description);
-  formData.append("icon", icon);
+  data.append("name", name);
+  data.append("description", description);
+  data.append("icon", icon);
 
-  return axios.post("/api/v1/genre/create", formData);
+  return axios.post("/api/v1/genre/create", data);
 };
 
 export { fetchAllGenre, createNewGenre };

@@ -9,6 +9,7 @@ import Nav from "./components/Navigation/Nav";
 import { UserContext } from "./context/userContext";
 import { Triangle } from "react-loader-spinner";
 import PlayerBar from "./components/Home/PlayerBar";
+
 const App = () => {
   const { user } = useContext(UserContext);
 

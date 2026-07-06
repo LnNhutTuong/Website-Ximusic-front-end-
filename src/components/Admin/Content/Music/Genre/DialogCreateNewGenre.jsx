@@ -28,12 +28,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+import { createNewGenre } from "../../../../../services/music/genre/genreService";
+
 const DialogCreateNewGenre = (props) => {
-  const { show, setShow } = props;
+  const { show, setShow, fetchAllGenre } = props;
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -45,6 +46,7 @@ const DialogCreateNewGenre = (props) => {
     isValidName: true,
     isValidDescription: true,
   });
+
   const handleCLoseDialog = () => {
     setShow(false);
 
@@ -106,13 +108,20 @@ const DialogCreateNewGenre = (props) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!isValid()) {
       return;
     } else {
-      console.log(">>>check name: ", name);
-      console.log(">>>check description: ", description);
-      console.log(">>>check icon: ", icon ?? null);
+      let res = await createNewGenre(name, description, icon);
+      console.log(">>>check res: ", res);
+
+      if (res?.EC === 0) {
+        toast.success(res.EM);
+        await fetchAllGenre();
+        handleCLoseDialog();
+      } else {
+        toast.error(res.EM);
+      }
     }
   };
 

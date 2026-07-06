@@ -123,8 +123,15 @@ const ManagerGenre = (props) => {
                 <div className="grid grid-cols-8 gap-4 mx-auto items-center px-24 mt-10">
                   {listGenre.map((genre) => (
                     <div className="col-span-2 flex h-30 overflow-hidden rounded-xl border">
+                      {console.log(
+                        `>>>check url icons: ${import.meta.env.VITE_BACKEND_URL}/${genre.icon}`,
+                      )}
                       <img
-                        src={genre.icon || "/image/question_icon.jpg"}
+                        src={
+                          genre.icon
+                            ? `${import.meta.env.VITE_BACKEND_URL}/${genre.icon}`
+                            : "/image/question_icon.jpg"
+                        }
                         alt=""
                         className="h-full w-30 object-cover"
                       />
@@ -193,6 +200,7 @@ const ManagerGenre = (props) => {
       <DialogCreateNewGenre
         show={showDialogCreate}
         setShow={setShowDialogCreate}
+        fetchAllGenre={getListGenre}
       />
     </>
   );
