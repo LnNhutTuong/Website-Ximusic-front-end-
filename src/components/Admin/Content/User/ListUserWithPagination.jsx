@@ -211,10 +211,11 @@ const ListUser = () => {
                             }`}
                             onClick={
                               user.groupId === 2
-                                ? () => {
-                                    (setDialogArtistProfile(true),
+                                ? async () => {
+                                    (setDialogArtistProfile(false),
+                                      await handleGetDataUser(user.id),
                                       setIsArtist(true),
-                                      handleGetDataUser(user.id));
+                                      setDialogArtistProfile(true));
                                   }
                                 : undefined
                             }

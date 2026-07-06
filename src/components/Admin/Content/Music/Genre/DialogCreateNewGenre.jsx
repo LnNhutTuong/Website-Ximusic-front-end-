@@ -27,6 +27,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -34,8 +35,85 @@ import { toast } from "react-toastify";
 const DialogCreateNewGenre = (props) => {
   const { show, setShow } = props;
 
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [icon, setIcon] = useState(null);
+  const [previewIcon, setPreviewIcon] = useState("");
+
+  const [isValidInput, setIsValidInput] = useState({
+    isValidName: true,
+    isValidDescription: true,
+  });
   const handleCLoseDialog = () => {
     setShow(false);
+
+    setName("");
+    setDescription("");
+
+    setIcon("");
+    setPreviewIcon("");
+
+    setIsValidInput({
+      isValidName: true,
+      isValidDescription: true,
+    });
+  };
+
+  const isValid = () => {
+    const validation = {
+      isValidName: true,
+      isValidDescription: true,
+    };
+
+    let check = true;
+    let error = "";
+
+    const nameRegex = /^[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
+    const descriptionRegex =
+      /^[\p{L}\p{N}](?:[\p{L}\p{N}\s.,!?:;()'"-]*[\p{L}\p{N}])?$/u;
+
+    if (!name && !description) {
+      validation.isValidName = false;
+      validation.isValidDescription = false;
+      error = "Please fill in all the fields";
+      check = false;
+    } else if (!name || !name.match(nameRegex)) {
+      validation.isValidName = false;
+      error = "Name is not valid";
+      check = false;
+    } else if (!description || !description.match(descriptionRegex)) {
+      validation.isValidDescription = false;
+      error = "Description is not valid";
+      check = false;
+    }
+
+    setIsValidInput(validation);
+
+    if (!check && error) {
+      toast.error(error);
+      return false;
+    }
+    return check;
+  };
+
+  const handleUploadIcon = (event) => {
+    if (event.target && event.target.files && event.target.files[0]) {
+      setPreviewIcon(URL.createObjectURL(event.target.files[0]));
+      setIcon(event.target.files[0]);
+    } else {
+      setPreviewIcon(``);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!isValid()) {
+      return;
+    } else {
+      console.log(">>>check name: ", name);
+      console.log(">>>check description: ", description);
+      console.log(">>>check icon: ", icon ?? null);
+    }
   };
 
   return (
@@ -64,24 +142,64 @@ const DialogCreateNewGenre = (props) => {
             <div className="grid grid-cols-2 gap-6">
               {/* LEFT */}
               <div className="space-y-4">
-                <Field>
-                  <Label className="text-sm">Email</Label>
-                  <Input
-                    // aria-invalid={!isValidInput.isValidEmail}
-                    className="h-9 text-sm"
-                    name="email"
-                    // onChange={(e) => {
-                    //   setEmail(e.target.value);
-                    // }}
+                <div className="group relative h-[414px] w-[414px] rounded-xl overflow-hidden p-2 flex justify-center items-center bg-black/40">
+                  <img
+                    src={previewIcon || "/image/question_icon.jpg"}
+                    alt="icon genre"
+                    className="object-cover rounded-xl"
                   />
-                  {/* {!isValidInput.isValidEmail && (
-                    <FieldError>Your email is invalid</FieldError>
-                  )} */}
-                </Field>
+
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <label
+                      htmlFor="uploadFile"
+                      className="cursor-pointer px-6 py-2 rounded-xl bg-white text-black font-semibold transition-all duration-300 hover:shadow-[0_0_22px_rgba(255,255,255,0.8)]"
+                    >
+                      Choose Icon
+                    </label>
+                    <input
+                      type="file"
+                      name="icon"
+                      hidden
+                      id="uploadFile"
+                      onChange={(e) => {
+                        handleUploadIcon(e);
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* RIGHT */}
-              <div className="space-y-4"></div>
+              <div className="space-y-4">
+                <Field>
+                  <Label className="text-sm">Name</Label>
+                  <Input
+                    aria-invalid={!isValidInput.isValidName}
+                    className="h-9 text-sm"
+                    name="email"
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                  />
+                  {!isValidInput.isValidName && (
+                    <FieldError>Your name is invalid</FieldError>
+                  )}
+                </Field>
+                <Field>
+                  <Label className="text-sm">Description</Label>
+                  <Textarea
+                    aria-invalid={!isValidInput.isValidDescription}
+                    className="h-9 text-sm"
+                    name="description"
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
+                  />
+                  {!isValidInput.isValidDescription && (
+                    <FieldError>Your description is invalid</FieldError>
+                  )}
+                </Field>
+              </div>
             </div>
           </FieldGroup>
 
@@ -95,7 +213,7 @@ const DialogCreateNewGenre = (props) => {
               Cancel
             </Button>
 
-            {/* <Button onClick={() => handleSubmit()}>Create user</Button> */}
+            <Button onClick={() => handleSubmit()}>Create user</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

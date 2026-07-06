@@ -78,20 +78,15 @@ const DialogCreateUser = (props) => {
       validation.isValidStatusVerify = false;
       error = "Please fill in all the fields";
       check = false;
-    }
-    if (!email || !email.match(emailRegex)) {
+    } else if (!email || !email.match(emailRegex)) {
       validation.isValidEmail = false;
       error = "Email is not valid";
       check = false;
-    }
-
-    if (!displayName || !displayName.match(displayNameRegex)) {
+    } else if (!displayName || !displayName.match(displayNameRegex)) {
       validation.isValidDisplayName = false;
       error = "displayName is not valid";
       check = false;
-    }
-
-    if (!groupId) {
+    } else if (!groupId) {
       validation.isValidGroupId = false;
       error = "Please select Group";
       check = false;

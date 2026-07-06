@@ -26,8 +26,7 @@ const ManagerGenre = (props) => {
 
   useEffect(() => {
     getListGenre();
-    console.log(">>check list genre: ", listGenre);
-  }, [listGenre]);
+  }, [currentPage, currentLimit]);
 
   const getListGenre = async () => {
     let res = await fetchAllGenre(currentPage, currentLimit);
@@ -125,7 +124,7 @@ const ManagerGenre = (props) => {
                   {listGenre.map((genre) => (
                     <div className="col-span-2 flex h-30 overflow-hidden rounded-xl border">
                       <img
-                        src="../../../../public/image/question_icon.jpg"
+                        src={genre.icon || "/image/question_icon.jpg"}
                         alt=""
                         className="h-full w-30 object-cover"
                       />

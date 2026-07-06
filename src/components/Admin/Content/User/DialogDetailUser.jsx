@@ -169,6 +169,10 @@ const DialogDetailUser = (props) => {
   };
 
   const handleCLoseDialog = () => {
+    setShow(false);
+    setIsEdit(false);
+    setShowDialogArtistProfile(false);
+
     setEmail("");
     setDisplayName("");
     setGroupId("");
@@ -181,9 +185,6 @@ const DialogDetailUser = (props) => {
       isValidGroupId: true,
       isValidStatusVerify: true,
     });
-
-    setIsEdit(false);
-    setShow(false);
   };
 
   const handleSubmit = async () => {
@@ -218,8 +219,12 @@ const DialogDetailUser = (props) => {
     setIsEdit(false);
   };
 
-  const handleOpeenDialogArtistProifle = () => {
-    setShowDialogArtistProfile(true);
+  const handleOpenArtistProfile = () => {
+    setShowDialogArtistProfile(false);
+
+    if (detailUser?.information?.groupId === 2 && detailUser?.artist) {
+      setShowDialogArtistProfile(true);
+    }
   };
 
   return (
@@ -368,7 +373,7 @@ const DialogDetailUser = (props) => {
               {groupId === 2 && (
                 <Button
                   onClick={() => {
-                    setShowDialogArtistProfile(true);
+                    handleOpenArtistProfile();
                   }}
                 >
                   View Artist Profile
@@ -403,7 +408,7 @@ const DialogDetailUser = (props) => {
         </DialogContent>
       </Dialog>
 
-      {groupId === 2 && (
+      {groupId === 2 && detailUser?.artist && (
         <DialogArtistProfile
           show={showDialogArtistProfile}
           setShow={setShowDialogArtistProfile}

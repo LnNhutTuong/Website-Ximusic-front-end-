@@ -43,14 +43,17 @@ const DialogArtistProfile = (props) => {
   };
 
   const handleCLoseDialog = () => {
+    setShow(false);
+
     setStageName("");
     setBio("");
     setVerified("");
     setMonthlyListeners("");
     setCountry("");
 
-    setShow(false);
-    setIsArtist(false);
+    if (setIsArtist) {
+      setIsArtist(false);
+    }
   };
 
   return (
@@ -83,9 +86,7 @@ const DialogArtistProfile = (props) => {
                   <div className="h-[414px] w-[414px] rounded-xl overflow-hidden px-1 py-1 flex justify-center items-center bg-black/40">
                     <img
                       className="rounded-xl"
-                      src={
-                        avt === "" ? "../../public/image/default_image.svg" : ""
-                      }
+                      src={avt || "/image/default_image.svg"}
                       alt=""
                     />
                   </div>
