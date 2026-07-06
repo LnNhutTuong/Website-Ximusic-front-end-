@@ -2,20 +2,29 @@ import { Triangle } from "react-loader-spinner";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateNewGenre from "./DialogCreateNewGenre";
-import { fetchAllGenre } from "../../../../../services/music/genre/genreService";
+import DialogGenreDetail from "./DialogGenreDetail";
+import {
+  fetchAllGenre,
+  getGenreWithId,
+} from "../../../../../services/music/genre/genreService";
+import { rspack } from "globals";
 const ManagerGenre = (props) => {
   const [listGenre, setListGenre] = useState([]);
   const [totalPage, setTotalPage] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = parseInt(searchParams.get("page"), 10) || 1;
-  const currentLimit = 7;
+  const currentLimit = 12;
 
   // Refresh
   const [isRefresh, setIsRefresh] = useState(false);
 
   //Dialog Create Genre
+  const [dataGenre, setDataGenre] = useState("");
   const [showDialogCreate, setShowDialogCreate] = useState(false);
+
+  //Dialog Genre Detail
+  const [showDialogDetail, setShowDialogDetail] = useState(false);
 
   const handleRefresh = () => {
     setIsRefresh(true);
@@ -33,9 +42,9 @@ const ManagerGenre = (props) => {
     if (res?.EC === 0) {
       setListGenre(res.DT.rows);
 
-      let totalUser = +res.DT.count;
+      let totalGenre = +res.DT.count;
 
-      let pageCount = Math.ceil(totalUser / currentLimit);
+      let pageCount = Math.ceil(totalGenre / currentLimit);
 
       const pageArray = [];
       for (let i = 1; i <= pageCount; i++) {
@@ -44,9 +53,17 @@ const ManagerGenre = (props) => {
 
       setTotalPage(pageArray);
     } else {
-      setListUser([]);
+      setListGenre([]);
       setTotalPage([]);
       toast.error(res.EM);
+    }
+  };
+
+  const handleGetGenreWithId = async (genreId) => {
+    let res = await getGenreWithId(genreId);
+
+    if (res?.EC === 0) {
+      setDataGenre(res.DT);
     }
   };
 
@@ -123,9 +140,6 @@ const ManagerGenre = (props) => {
                 <div className="grid grid-cols-8 gap-4 mx-auto items-center px-24 mt-10">
                   {listGenre.map((genre) => (
                     <div className="col-span-2 flex h-30 overflow-hidden rounded-xl border">
-                      {console.log(
-                        `>>>check url icons: ${import.meta.env.VITE_BACKEND_URL}/${genre.icon}`,
-                      )}
                       <img
                         src={
                           genre.icon
@@ -141,7 +155,13 @@ const ManagerGenre = (props) => {
                           <h3 className="text-lg font-bold ">
                             {genre.name.toUpperCase()}
                           </h3>
-                          <button className=" px-2 rounded-xl mb-2 text-white/60 hover:text-white hover:cursor-pointer">
+                          <button
+                            className=" px-2 rounded-xl mb-2 text-white/60 hover:text-white hover:cursor-pointer"
+                            onClick={async () => {
+                              (setShowDialogDetail(true),
+                                await handleGetGenreWithId(genre.id));
+                            }}
+                          >
                             View
                           </button>
                         </div>
@@ -177,18 +197,6 @@ const ManagerGenre = (props) => {
           </div>
 
           <div className=" mt-5 flex justify-end items-center">
-            {/* <div className="border border-white/20 rounded-2xl w-fit px-2 py-3">
-              <span className="font-bold text-red-600">Caution:</span> Click
-              <span className="px-2 py-1 bg-blue-600 rounded-xl mx-2 font-bold">
-                ARTIST
-              </span>
-              or
-              <span className="px-2 py-1 bg-white text-black font-bold rounded-xl mx-2">
-                LISTENER
-              </span>
-              in the Group column to view the corresponding Artist or Listener
-              profile.
-            </div> */}
             <div className="border border-white/20 rounded-2xl w-fit px-5 py-3 text-center">
               <span className="font-bold ">Date & Time</span> <br />
               26/08/2005 | 11:00 PM
@@ -201,6 +209,11 @@ const ManagerGenre = (props) => {
         show={showDialogCreate}
         setShow={setShowDialogCreate}
         fetchAllGenre={getListGenre}
+      />
+      <DialogGenreDetail
+        show={showDialogDetail}
+        setShow={setShowDialogDetail}
+        dataGenre={dataGenre}
       />
     </>
   );

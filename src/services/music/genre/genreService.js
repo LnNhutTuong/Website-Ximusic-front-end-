@@ -14,4 +14,8 @@ const createNewGenre = (name, description, icon) => {
   return axios.post("/api/v1/genre/create", data);
 };
 
-export { fetchAllGenre, createNewGenre };
+const getGenreWithId = (genreId) => {
+  return axios.get(`/api/v1/genre/${genreId}`);
+};
+
+export { fetchAllGenre, createNewGenre, getGenreWithId };
