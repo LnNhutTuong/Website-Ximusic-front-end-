@@ -7,7 +7,7 @@ import {
   fetchAllGenre,
   getGenreWithId,
 } from "../../../../../services/music/genre/genreService";
-import { rspack } from "globals";
+import questionIcon from "@/assets/static/genre/question_icon.jpg";
 const ManagerGenre = (props) => {
   const [listGenre, setListGenre] = useState([]);
   const [totalPage, setTotalPage] = useState([]);
@@ -144,7 +144,7 @@ const ManagerGenre = (props) => {
                         src={
                           genre.icon
                             ? `${import.meta.env.VITE_BACKEND_URL}/${genre.icon}`
-                            : "/image/question_icon.jpg"
+                            : questionIcon
                         }
                         alt=""
                         className="h-full w-30 object-cover"
@@ -214,6 +214,7 @@ const ManagerGenre = (props) => {
         show={showDialogDetail}
         setShow={setShowDialogDetail}
         dataGenre={dataGenre}
+        fetchAllGenre={getListGenre}
       />
     </>
   );

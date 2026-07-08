@@ -31,18 +31,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { createNewGenre } from "../../../../../services/music/genre/genreService";
+import {
+  updateGenre,
+  deleteGenre,
+} from "../../../../../services/music/genre/genreService";
+import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
 const DialogGenreDetail = (props) => {
-  const { show, setShow, dataGenre } = props;
-
+  const { show, setShow, dataGenre, fetchAllGenre } = props;
   const [isEdit, setIsEdit] = useState(false);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
   const [icon, setIcon] = useState(null);
+
   const [previewIcon, setPreviewIcon] = useState("");
+  const [newIcon, setNewIcon] = useState("");
 
   const [isValidInput, setIsValidInput] = useState({
     isValidName: true,
@@ -54,22 +59,16 @@ const DialogGenreDetail = (props) => {
       setName(dataGenre.name);
       setDescription(dataGenre.description);
       setIcon(dataGenre.icon);
-
-      if (dataGenre.icon) {
-        setPreviewIcon(dataGenre.icon);
-      }
     }
   };
 
   useEffect(() => {
     setDataGenre();
-    console.log(
-      `>>>>>>Check data after set: ${name}, ${description}, ${icon}, ${previewIcon}`,
-    );
   }, [dataGenre]);
 
   const handleCLoseDialog = () => {
     setShow(false);
+    setIsEdit(false);
 
     setName("");
     setDescription("");
@@ -92,7 +91,7 @@ const DialogGenreDetail = (props) => {
     let check = true;
     let error = "";
 
-    const nameRegex = /^[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
+    const nameRegex = /^[\p{L}\p{N}]+(?:[- ][\p{L}\p{N}]+)*$/u;
     const descriptionRegex =
       /^[\p{L}\p{N}](?:[\p{L}\p{N}\s.,!?:;()'"-]*[\p{L}\p{N}])?$/u;
 
@@ -123,9 +122,9 @@ const DialogGenreDetail = (props) => {
   const handleUploadIcon = (event) => {
     if (event.target && event.target.files && event.target.files[0]) {
       setPreviewIcon(URL.createObjectURL(event.target.files[0]));
-      setIcon(event.target.files[0]);
+      setNewIcon(event.target.files[0]);
     } else {
-      setPreviewIcon(``);
+      setPreviewIcon("");
     }
   };
 
@@ -133,15 +132,21 @@ const DialogGenreDetail = (props) => {
     if (!isValid()) {
       return;
     } else {
-      let res = await createNewGenre(name, description, icon);
+      let res = await updateGenre(
+        dataGenre.id,
+        name,
+        description,
+        newIcon || icon,
+      );
       console.log(">>>check res: ", res);
-
       if (res?.EC === 0) {
         toast.success(res.EM);
         await fetchAllGenre();
         handleCLoseDialog();
       } else {
         toast.error(res.EM);
+        setPreviewIcon("");
+        setNewIcon("");
       }
     }
   };
@@ -152,7 +157,20 @@ const DialogGenreDetail = (props) => {
 
   const handleCancelEditMode = () => {
     setDataGenre();
+    setPreviewIcon("");
     setIsEdit(false);
+  };
+
+  const handleDeleteGenre = async (genreId) => {
+    let res = await deleteGenre(genreId);
+    console.log(">>>>>>>check res: ", res);
+    if (res?.EC === 0) {
+      toast.success(res.EM);
+      await fetchAllGenre();
+      handleCLoseDialog();
+    } else {
+      toast.error(res.EM);
+    }
   };
 
   return (
@@ -177,16 +195,18 @@ const DialogGenreDetail = (props) => {
             </DialogTitle>
           </DialogHeader>
 
-          <FieldGroup className="space-y-4">
+          <FieldGroup className="space-y-4 mt-3">
             <div className="grid grid-cols-2 gap-6">
               {/* LEFT */}
               <div className="space-y-4">
                 <div className="group relative h-[414px] w-[414px] rounded-xl overflow-hidden p-2 flex justify-center items-center bg-black/40">
                   <img
                     src={
-                      previewIcon
-                        ? `${import.meta.env.VITE_BACKEND_URL}/${previewIcon}`
-                        : "/image/question_icon.jpg"
+                      isEdit && previewIcon
+                        ? previewIcon
+                        : icon
+                          ? `${import.meta.env.VITE_BACKEND_URL}/${icon}`
+                          : questionIcon
                     }
                     alt="icon genre"
                     className="object-cover rounded-xl"
@@ -262,7 +282,13 @@ const DialogGenreDetail = (props) => {
                 >
                   Cancel
                 </Button>
-                <Button>Save changes</Button>
+                <Button
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                >
+                  Save changes
+                </Button>
               </>
             ) : (
               <>
@@ -274,7 +300,12 @@ const DialogGenreDetail = (props) => {
                 >
                   Edit Genre
                 </Button>
-                <Button variant="destructive">Delete Genre</Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleDeleteGenre(dataGenre.id)}
+                >
+                  Delete Genre
+                </Button>
               </>
             )}
           </DialogFooter>

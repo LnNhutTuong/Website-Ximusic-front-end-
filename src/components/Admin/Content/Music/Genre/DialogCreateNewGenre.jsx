@@ -32,6 +32,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { createNewGenre } from "../../../../../services/music/genre/genreService";
+import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
 const DialogCreateNewGenre = (props) => {
   const { show, setShow, fetchAllGenre } = props;
@@ -71,7 +72,7 @@ const DialogCreateNewGenre = (props) => {
     let check = true;
     let error = "";
 
-    const nameRegex = /^[\p{L}\p{N}]+(?: [\p{L}\p{N}]+)*$/u;
+    const nameRegex = /^[\p{L}\p{N}]+(?:[- ][\p{L}\p{N}]+)*$/u;
     const descriptionRegex =
       /^[\p{L}\p{N}](?:[\p{L}\p{N}\s.,!?:;()'"-]*[\p{L}\p{N}])?$/u;
 
@@ -153,7 +154,7 @@ const DialogCreateNewGenre = (props) => {
               <div className="space-y-4">
                 <div className="group relative h-[414px] w-[414px] rounded-xl overflow-hidden p-2 flex justify-center items-center bg-black/40">
                   <img
-                    src={previewIcon || "/image/question_icon.jpg"}
+                    src={previewIcon || questionIcon}
                     alt="icon genre"
                     className="object-cover rounded-xl"
                   />
@@ -198,7 +199,7 @@ const DialogCreateNewGenre = (props) => {
                   <Label className="text-sm">Description</Label>
                   <Textarea
                     aria-invalid={!isValidInput.isValidDescription}
-                    className="h-9 text-sm"
+                    className="h-76 resize-none text-sm"
                     name="description"
                     onChange={(e) => {
                       setDescription(e.target.value);
