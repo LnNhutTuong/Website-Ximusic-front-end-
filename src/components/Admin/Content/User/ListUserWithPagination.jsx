@@ -42,6 +42,7 @@ const ListUser = () => {
 
   const getListUser = async () => {
     let res = await fetchAllUser(currentPage, currentLimit);
+
     if (res?.EC === 0) {
       setListUser(res.DT.rows);
 
@@ -89,7 +90,9 @@ const ListUser = () => {
     let res = await handleGetUserWithId(idUser);
     if (res?.EC === 0) {
       setDetailUser(res.DT);
+      return res.DT;
     }
+    return null;
   };
 
   const handleDelete = async (idUser) => {
@@ -212,10 +215,14 @@ const ListUser = () => {
                             onClick={
                               user.groupId === 2
                                 ? async () => {
-                                    (setDialogArtistProfile(false),
-                                      await handleGetDataUser(user.id),
-                                      setIsArtist(true),
-                                      setDialogArtistProfile(true));
+                                    const data = await handleGetDataUser(
+                                      user.id,
+                                    );
+
+                                    if (data) {
+                                      setIsArtist(true);
+                                      setDialogArtistProfile(true);
+                                    }
                                   }
                                 : undefined
                             }

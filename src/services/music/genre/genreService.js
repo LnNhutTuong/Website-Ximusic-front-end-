@@ -4,6 +4,10 @@ const fetchAllGenre = (page, limit) => {
   return axios.get(`api/v1/genre?page=${page}&limit=${limit}`);
 };
 
+const getGenreOption = () => {
+  return axios.get(`api/v1/genre/option`);
+};
+
 const createNewGenre = (name, description, icon) => {
   const data = new FormData();
 
@@ -34,6 +38,7 @@ const deleteGenre = (genreId) => {
 
 export {
   fetchAllGenre,
+  getGenreOption,
   createNewGenre,
   getGenreWithId,
   updateGenre,

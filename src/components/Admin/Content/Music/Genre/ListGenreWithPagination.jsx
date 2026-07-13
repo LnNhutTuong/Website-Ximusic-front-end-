@@ -91,7 +91,6 @@ const ManagerGenre = (props) => {
                 Refresh
               </button>
             </div>
-
             <div>
               <label
                 for="search"
@@ -100,24 +99,6 @@ const ManagerGenre = (props) => {
                 Search
               </label>
 
-              <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none">
-                <svg
-                  class="w-4 h-4 text-body"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-width="2"
-                    d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
               <input
                 type="search"
                 id="search"
@@ -134,12 +115,15 @@ const ManagerGenre = (props) => {
             </div>
           </div>
 
-          <div className="relative o1verflow-x-auto bg-neutral-1primary-soft shadow-xs rounded-base  h-[522px] border border-white/10 rounded-xl mt-3 scrollbar-none">
+          <div className="relative overflow-x-auto bg-neutral-1primary-soft shadow-xs rounded-base  h-[522px] border border-white/10 rounded-xl mt-3 scrollbar-none">
             {!isRefresh ? (
               listGenre.length > 0 ? (
                 <div className="grid grid-cols-8 gap-4 mx-auto items-center px-24 mt-10">
                   {listGenre.map((genre) => (
-                    <div className="col-span-2 flex h-30 overflow-hidden rounded-xl border">
+                    <div
+                      className="col-span-2 flex h-30 overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm 
+                    duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/10 hover:shadow-xl transition border border-white"
+                    >
                       <img
                         src={
                           genre.icon
