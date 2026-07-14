@@ -28,9 +28,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import React from "react";
+import ReactSelect from "react-select";
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
+import { toSelectOptions, toArtistOptions } from "@/utils/selectOption";
 
 import { getArtistOption } from "@/services/artist/artistService";
 
@@ -38,8 +42,10 @@ import { getAlbumOptionWithIdOrNot } from "@/services/music/album/albumService";
 
 import { getGenreOption } from "@/services/music/genre/genreService";
 
+import { createNewSong } from "@/services/music/song/songService";
+
 const DialogCreateNewSong = (props) => {
-  const { show, setShow, fetchAllGenre } = props;
+  const { show, setShow, fetchListSong } = props;
 
   const [title, setTitle] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
@@ -47,20 +53,23 @@ const DialogCreateNewSong = (props) => {
   const [cover, setCover] = useState("");
   const [previewCover, setPreviewCover] = useState("");
 
-  const [audioFileName, setAudioFileName] = useState("");
-  const [audioFileCover, setAudioFileCover] = useState("");
   const [duration, setDuration] = useState("");
 
   const [lyrics, setLyrics] = useState("");
 
   const [ownerId, setOwnerId] = useState("");
-  const [featureId, setFeatureId] = useState("");
+  const [featureId, setFeatureId] = useState([]);
+
   const [genreId, setGenreId] = useState("");
   const [albumId, setAlbumId] = useState("");
 
+  const [audioFileName, setAudioFileName] = useState("");
+  const [audioFileCover, setAudioFileCover] = useState("");
   const [listArtistOption, setListArtistOption] = useState([]);
   const [listGenreOption, setListGenreOption] = useState([]);
   const [listAlbumOptionWithId, setListAlbumOptionWithId] = useState([]);
+
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     getListArtistOption();
@@ -69,10 +78,9 @@ const DialogCreateNewSong = (props) => {
 
   useEffect(() => {
     setAlbumId("");
+    setListAlbumOptionWithId([]);
     if (ownerId) {
       getAlbumOption(ownerId);
-    } else {
-      setListAlbumOptionWithId([]);
     }
   }, [ownerId]);
 
@@ -83,37 +91,34 @@ const DialogCreateNewSong = (props) => {
     }
   };
 
+  const artistOptions = toArtistOptions(listArtistOption);
+  const ownerOptions = artistOptions.filter(
+    (artist) => !featureId.some((feature) => feature.value === artist.value),
+  );
+  const featureOptions = artistOptions.filter(
+    (artist) => artist.value !== Number(ownerId),
+  );
+
   const getAlbumOption = async (id) => {
-    if (id) {
-      let res = await getAlbumOptionWithIdOrNot(id);
-      console.log(">>>check res: ", res);
-      if (res?.EC === 0) {
-        setListAlbumOptionWithId(res.DT.rows);
-      }
-    } else {
-      console.log("you forgot the ID");
+    if (!id) {
+      setListAlbumOptionWithId([]);
+      return;
+    }
+
+    const res = await getAlbumOptionWithIdOrNot(id);
+    if (res?.EC === 0) {
+      setListAlbumOptionWithId(res.DT.rows);
     }
   };
 
   const getListGenreOption = async () => {
     let res = await getGenreOption();
-    console.log(">>>check res: ", res);
     if (res?.EC === 0) {
       setListGenreOption(res.DT.rows);
     }
   };
 
-  const [isValidInput, setIsValidInput] = useState({
-    isValidTitle: true,
-    isValidAudioUrl: true,
-    isValidCover: true,
-    isValidPreviewCover: true,
-    isValidDuration: true,
-    isValidLyrics: true,
-    isValidGenreId: true,
-    isValidArtistId: true,
-    isValidAlbumId: true,
-  });
+  const GenreOption = toSelectOptions(listGenreOption);
 
   const handleCLoseDialog = () => {
     setShow(false);
@@ -129,22 +134,12 @@ const DialogCreateNewSong = (props) => {
     setLyrics("");
 
     setOwnerId("");
-    setFeatureId("");
+    setFeatureId([]);
 
-    setGenreId("");
+    setGenreId([]);
     setAlbumId("");
 
-    setIsValidInput({
-      isValidTitle: true,
-      isValidAudioUrl: true,
-      isValidCover: true,
-      isValidPreviewCover: true,
-      isValidDuration: true,
-      isValidLyrics: true,
-      isValidGenreId: true,
-      isValidArtistId: true,
-      isValidAlbumId: true,
-    });
+    setErrors([]);
   };
 
   const handleUploadLRC = (event) => {
@@ -186,46 +181,8 @@ const DialogCreateNewSong = (props) => {
     audio.onloadedmetadata = () => {
       const duration = audio.duration; // giây
       setDuration(formatDuration(duration));
-      console.log(formatDuration(duration));
       URL.revokeObjectURL(audio.src);
     };
-  };
-
-  const isValid = () => {
-    const validation = {
-      isValidName: true,
-      isValidDescription: true,
-    };
-
-    let check = true;
-    let error = "";
-
-    const nameRegex = /^[\p{L}\p{N}]+(?:[- ][\p{L}\p{N}]+)*$/u;
-    const descriptionRegex =
-      /^[\p{L}\p{N}](?:[\p{L}\p{N}\s.,!?:;()'"-]*[\p{L}\p{N}])?$/u;
-
-    if (!name && !description) {
-      validation.isValidName = false;
-      validation.isValidDescription = false;
-      error = "Please fill in all the fields";
-      check = false;
-    } else if (!name || !name.match(nameRegex)) {
-      validation.isValidName = false;
-      error = "Name is not valid";
-      check = false;
-    } else if (!description || !description.match(descriptionRegex)) {
-      validation.isValidDescription = false;
-      error = "Description is not valid";
-      check = false;
-    }
-
-    setIsValidInput(validation);
-
-    if (!check && error) {
-      toast.error(error);
-      return false;
-    }
-    return check;
   };
 
   const handleUploadCover = (event) => {
@@ -233,28 +190,124 @@ const DialogCreateNewSong = (props) => {
       let coverFile = event.target.files[0];
       setPreviewCover(URL.createObjectURL(coverFile));
       setAudioFileCover(URL.createObjectURL(coverFile));
-      setIcon(event.target.files[0]);
+      setCover(event.target.files[0]);
     } else {
       setPreviewCover(``);
     }
   };
 
-  //   const handleSubmit = async () => {
-  //     if (!isValid()) {
-  //       return;
-  //     } else {
-  //       let res = await createNewGenre(name, description, icon);
-  //       console.log(">>>check res: ", res);
+  const validateForm = () => {
+    const titleRegex = /^(?=.{1,150}$)[\p{L}\p{N}\p{M}\p{P}\p{S}\s]+$/su;
+    const lrcRegex = /^(?:\[[^\]\r\n]+\].*(?:\r?\n|$)|.*(?:\r?\n|$))*$/u;
+    const validations = [
+      //Title
+      {
+        field: "title",
+        value: title.trim() !== "",
+        message: "Please fill title",
+      },
+      {
+        field: "title",
+        value: titleRegex.test(title),
+        message: "Title is invalid",
+      },
 
-  //       if (res?.EC === 0) {
-  //         toast.success(res.EM);
-  //         await fetchAllGenre();
-  //         handleCLoseDialog();
-  //       } else {
-  //         toast.error(res.EM);
-  //       }
-  //     }
-  //   };
+      //Audio
+      {
+        field: "audioUrl",
+        value: !!audioUrl,
+        message: "Please add file audio",
+      },
+
+      //Cover
+      {
+        field: "cover",
+        value: !!cover,
+        message: "Please add cover song",
+      },
+
+      //duration
+      {
+        field: "duration",
+        value: duration.trim() !== "",
+        message: "Can not get duration",
+      },
+
+      //lyrics
+      {
+        field: "lyrics",
+        value: lyrics.trim() !== "",
+        message: "Please fill lyrics",
+      },
+      {
+        field: "lyrics",
+        value: lrcRegex.test(lyrics),
+        message: "Lyrics are invalid",
+      },
+
+      //owner
+      {
+        field: "ownerId",
+        value: !!ownerId,
+        message: "Please select owner song",
+      },
+
+      //feature
+      // {
+      //   field: "featureId",
+      //   value: featureId.length > 0,
+      //   message: "Please select owner song",
+      // },
+
+      //genre
+      {
+        field: "genreId",
+        value: genreId.length > 0,
+        message: "Please select genre ",
+      },
+    ];
+    const newErrors = {};
+
+    for (const { field, value, message } of validations) {
+      if (!value) {
+        newErrors[field] = message;
+      }
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      toast.error("Please re-check song info");
+      return;
+    }
+
+    let listGenre = genreId.map((item) => item.value);
+    let listFeature = featureId.map((item) => item.value);
+
+    let res = await createNewSong(
+      title,
+      audioUrl,
+      cover,
+      duration,
+      lyrics,
+      ownerId,
+      listFeature,
+      listGenre,
+      albumId,
+    );
+
+    if (res?.EC === 0) {
+      toast.success(res.EM);
+      await fetchListSong();
+      handleCLoseDialog();
+    } else {
+      toast.error(res.EM);
+    }
+  };
 
   return (
     <>
@@ -270,7 +323,7 @@ const DialogCreateNewSong = (props) => {
       >
         <DialogContent
           onPointerDownOutside={(e) => e.preventDefault()}
-          className="sm:max-w-7xl max-h-[77vh] overflow-y-auto p-6"
+          className="sm:max-w-7xl max-h-[77=8vh] overflow-y-auto p-6"
         >
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold mb-3">
@@ -284,9 +337,16 @@ const DialogCreateNewSong = (props) => {
               <div className="col-span-2 space-y-4 flex flex-col">
                 <div className="grid grid-cols-2 gap-3">
                   {/* LEFT */}
-                  <div className="space-y-4">
-                    <span className="px-1 font-bold text-sm">Cover</span>
-                    <div className="group relative h-98 rounded-xl overflow-hidden p-2 flex justify-center items-center bg-black/40">
+                  <div className="{space-y-4}">
+                    <span className="px-1 font-bold text-sm flex justify-between py-1">
+                      Cover{" "}
+                      {errors.cover && (
+                        <p className="text-sm text-red-500">♦{errors.cover}♥</p>
+                      )}
+                    </span>
+                    <div
+                      className={`group relative h-98 rounded-xl overflow-hidden p-2 flex justify-center items-center ${errors.cover ? "bg-red-600/80 ring-3 ring-red-600/30" : " bg-black/40"}`}
+                    >
                       <img
                         src={previewCover || questionIcon}
                         alt="icon genre"
@@ -303,6 +363,7 @@ const DialogCreateNewSong = (props) => {
                         <input
                           type="file"
                           name="cover"
+                          accept="image/*"
                           hidden
                           id="uploadFile"
                           onChange={handleUploadCover}
@@ -314,23 +375,32 @@ const DialogCreateNewSong = (props) => {
                   {/* RIGHT */}
                   <div className="space-y-4">
                     <Field>
-                      <Label className="text-sm">Title</Label>
+                      <Label className="text-sm flex justify-between">
+                        Title{" "}
+                        {errors.title && (
+                          <p className="text-sm text-red-500">
+                            ♦{errors.title}♥
+                          </p>
+                        )}
+                      </Label>
                       <Input
-                        aria-invalid={!isValidInput.isValidTitle}
+                        aria-invalid={!!errors.title}
                         className="h-9 text-sm"
-                        name="email"
+                        name="title"
                         onChange={(e) => {
-                          setName(e.target.value);
+                          setTitle(e.target.value);
                         }}
                       />
-                      {!isValidInput.isValidTitle && (
-                        <FieldError>The title is invalid</FieldError>
-                      )}
                     </Field>
 
                     <Field>
                       <Label className="flex justify-between text-sm">
-                        Lyrics
+                        Lyrics{" "}
+                        {errors.lyrics && (
+                          <p className="text-sm text-red-500">
+                            ♦{errors.lyrics}♥
+                          </p>
+                        )}
                         <label
                           htmlFor="uploadLrc"
                           className="cursor-pointer font-bold text-blue-900 hover:underline"
@@ -350,20 +420,25 @@ const DialogCreateNewSong = (props) => {
                       <Textarea
                         value={lyrics}
                         onChange={(e) => setLyrics(e.target.value)}
-                        aria-invalid={!isValidInput.isValidLyrics}
+                        aria-invalid={!!errors.lyrics}
                         className="h-76 resize-none text-sm"
                         name="lyrics"
                       />
-
-                      {!isValidInput.isValidLyrics && (
-                        <FieldError>Your lyrics are invalid</FieldError>
-                      )}
                     </Field>
                   </div>
                 </div>
                 <Field>
-                  <Label className="text-sm">Audio</Label>
-                  <div className="group relative h-[122px] rounded-xl bg-black/40 overflow-hidden">
+                  <Label className="text-sm flex justify-between ">
+                    Audio{" "}
+                    {errors.audioUrl && (
+                      <p className="text-sm text-red-500">
+                        ♦{errors.audioUrl}♥
+                      </p>
+                    )}
+                  </Label>
+                  <div
+                    className={`group relative h-[122px] rounded-xl bg-black/40 overflow-hidden ${cn(errors.audioUrl && "border border-red-600 ring-3 ring-red-600/30")}`}
+                  >
                     <div className="flex h-full items-center px-4 gap-4">
                       <img
                         src={audioUrl ? audioFileCover : questionIcon}
@@ -410,7 +485,12 @@ const DialogCreateNewSong = (props) => {
               {/* RIGHT */}
               <div className="space-y-4">
                 <Field>
-                  <FieldLabel>Owner</FieldLabel>
+                  <FieldLabel className="flex justify-between">
+                    Owner{" "}
+                    {errors.ownerId && (
+                      <p className="text-sm text-red-500">♦{errors.ownerId}♥</p>
+                    )}
+                  </FieldLabel>
                   <Select
                     value={ownerId || "none"}
                     items={listArtistOption}
@@ -424,7 +504,7 @@ const DialogCreateNewSong = (props) => {
                     }}
                   >
                     <SelectTrigger
-                      // aria-invalid={!isValidInput.isValidGroupId}
+                      aria-invalid={!!errors.ownerId}
                       className="w-full"
                     >
                       <SelectValue placeholder="--- None ---" />
@@ -432,19 +512,17 @@ const DialogCreateNewSong = (props) => {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="none">--- None ---</SelectItem>
-                        {listArtistOption.map((owner) => (
-                          <SelectItem key={owner.id} value={owner.id}>
-                            {owner.artistProfile.stageName
-                              ? `${owner.displayName} - ${owner.artistProfile.stageName}`
-                              : `${owner.displayName}`}
+                        {ownerOptions.map((owner) => (
+                          <SelectItem
+                            key={owner.value}
+                            value={String(owner.value)}
+                          >
+                            {owner.label}
                           </SelectItem>
                         ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {/* {!isValidInput.isValidGroupId && (
-                      <FieldError>Please select a Group</FieldError>
-                    )} */}
                 </Field>
                 <Field>
                   <FieldLabel>Album</FieldLabel>
@@ -456,10 +534,7 @@ const DialogCreateNewSong = (props) => {
                       setAlbumId(value === "none" ? "" : value);
                     }}
                   >
-                    <SelectTrigger
-                      // aria-invalid={!isValidInput.isValidGroupId}
-                      className="w-full"
-                    >
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="--- None ---" />
                     </SelectTrigger>
                     <SelectContent>
@@ -473,17 +548,45 @@ const DialogCreateNewSong = (props) => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {/* {!isValidInput.isValidGroupId && (
-                      <FieldError>Please select a Group</FieldError>
-                    )} */}
                 </Field>
-                <Tabs defaultValue="genre" className="w-full border">
+                <Tabs
+                  defaultValue="genre"
+                  className="w-full border  h-106 rounded-xl"
+                >
                   <TabsList className="w-full">
                     <TabsTrigger value="genre">Genre</TabsTrigger>
                     <TabsTrigger value="feature">Feature</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="genre"></TabsContent>
-                  <TabsContent value="feature"></TabsContent>
+                  <TabsContent value="genre">
+                    <ReactSelect
+                      className={
+                        errors.genreId &&
+                        "border border-red-600 ring-3 ring-red-600/30"
+                      }
+                      isMulti
+                      placeholder={
+                        errors.genreId
+                          ? `♦${errors.genreId}♥`
+                          : `Select genre...`
+                      }
+                      options={GenreOption}
+                      value={genreId}
+                      onChange={setGenreId}
+                    />
+                    {/* {errors.genreId && (
+                      <p className="text-sm text-red-500 text-center">
+                        
+                      </p>
+                    )} */}
+                  </TabsContent>
+                  <TabsContent value="feature">
+                    <ReactSelect
+                      isMulti
+                      options={featureOptions}
+                      value={featureId}
+                      onChange={setFeatureId}
+                    />
+                  </TabsContent>
                 </Tabs>
               </div>
             </div>

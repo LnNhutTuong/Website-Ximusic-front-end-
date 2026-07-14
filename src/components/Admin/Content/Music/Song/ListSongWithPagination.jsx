@@ -168,6 +168,7 @@ const ManagerSong = (props) => {
       <DialogCreateNewSong
         show={showDialogCreate}
         setShow={setShowDialogCreate}
+        fetchListSong={getListSongs}
       />
     </>
   );

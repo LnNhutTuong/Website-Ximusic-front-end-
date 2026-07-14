@@ -140,18 +140,23 @@ const ManagerGenre = (props) => {
                             {genre.name.toUpperCase()}
                           </h3>
                           <button
-                            className=" px-2 rounded-xl mb-2 text-white/60 hover:text-white hover:cursor-pointer"
+                            className="px-2 rounded-xl mb-2 text-white/60 hover:text-white hover:cursor-pointer"
                             onClick={async () => {
-                              (setShowDialogDetail(true),
-                                await handleGetGenreWithId(genre.id));
+                              setShowDialogDetail(true);
+                              await handleGetGenreWithId(genre.id);
                             }}
                           >
                             View
                           </button>
                         </div>
-
-                        <p className="mt-1 line-clamp-3 text-sm text-white/80 overflow-y-auto scrollbar-none">
+                        <p className="mt-2 line-clamp-2 text-sm text-white/80 overflow-hidden">
                           {genre.description}
+                        </p>
+                        <p className="mt-auto pt-3 text-xs text-white/60">
+                          Song count:{" "}
+                          <span className="text-white font-bold">
+                            {genre.songCount}
+                          </span>
                         </p>
                       </div>
                     </div>

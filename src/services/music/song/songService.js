@@ -10,8 +10,9 @@ const createNewSong = (
   cover,
   duration,
   lyrics,
+  ownerId,
+  featureId,
   genreId,
-  artistId,
   albumId,
 ) => {
   const data = new FormData();
@@ -22,7 +23,8 @@ const createNewSong = (
   data.append("duration", duration);
   data.append("lyrics", lyrics);
   data.append("genreId", genreId);
-  data.append("artistId", artistId);
+  data.append("ownerId", ownerId);
+  data.append("featureId", featureId);
   data.append("albumId", albumId);
 
   return axios.post("/api/v1/song/create", data);
