@@ -30,8 +30,8 @@ const createNewSong = (
   return axios.post("/api/v1/song/create", data);
 };
 
-const getGenreWithId = (genreId) => {
-  return axios.get(`/api/v1/genre/${genreId}`);
+const getSongWithId = (songId) => {
+  return axios.get(`/api/v1/song/${songId}`);
 };
 
 const updateGenre = (genreId, name, description, icon) => {
@@ -48,4 +48,4 @@ const deleteGenre = (genreId) => {
   return axios.delete(`/api/v1/genre/delete/${genreId}`);
 };
 
-export { getAllSongs, createNewSong };
+export { getAllSongs, createNewSong, getSongWithId };

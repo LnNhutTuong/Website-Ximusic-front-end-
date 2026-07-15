@@ -44,8 +44,10 @@ import { getGenreOption } from "@/services/music/genre/genreService";
 
 import { createNewSong } from "@/services/music/song/songService";
 
-const DialogCreateNewSong = (props) => {
-  const { show, setShow, fetchListSong } = props;
+const DialogDetailSong = (props) => {
+  const { show, setShow, songData } = props;
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const [title, setTitle] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
@@ -73,6 +75,33 @@ const DialogCreateNewSong = (props) => {
   const [errors, setErrors] = useState([]);
 
   useEffect(() => {
+    handleSetSongData();
+  }, [songData]);
+
+  const handleSetSongData = () => {
+    if (songData) {
+      setTitle(songData.title);
+      setAudioUrl(songData.audioUrl);
+      setCover(songData.cover);
+      if (songData.cover) {
+        setPreviewCover(songData.cover);
+        setAudioFileCover(songData.cover);
+        setAudioFileName(songData.title);
+      }
+      setDuration(songData.duration);
+      if (songData.duration) {
+        setDurationFe(songData.duration);
+      }
+
+      setLyrics(songData.lyrics);
+      setOwnerId(songData.ownerId);
+      setFeatureId(songData.features);
+      setGenreId(songData.genres);
+      setAlbumId(songData.setAlbumId);
+    }
+  };
+
+  useEffect(() => {
     getListArtistOption();
     getListGenreOption();
   }, []);
@@ -91,6 +120,12 @@ const DialogCreateNewSong = (props) => {
       setListArtistOption(res.DT.rows);
     }
   };
+
+  //chuan hoa mang
+  const genreSelectValue = genreId.map((item) => ({
+    value: item.id,
+    label: item.name,
+  }));
 
   const artistOptions = toArtistOptions(listArtistOption);
   const ownerOptions = artistOptions.filter(
@@ -123,7 +158,7 @@ const DialogCreateNewSong = (props) => {
 
   const handleCLoseDialog = () => {
     setShow(false);
-
+    setIsEdit(false);
     setTitle("");
     setAudioUrl("");
 
@@ -181,8 +216,7 @@ const DialogCreateNewSong = (props) => {
     const audio = new Audio(URL.createObjectURL(file));
     audio.onloadedmetadata = () => {
       const duration = audio.duration; // giây
-      setDuration(duration);
-      setDurationFe(formatDuration(duration));
+      setDuration(formatDuration(duration));
       URL.revokeObjectURL(audio.src);
     };
   };
@@ -311,6 +345,8 @@ const DialogCreateNewSong = (props) => {
     }
   };
 
+  console.log("????????Check is edit: ", isEdit);
+
   return (
     <>
       <Dialog
@@ -329,7 +365,7 @@ const DialogCreateNewSong = (props) => {
         >
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold mb-3">
-              Create new Song
+              Create new Genre
             </DialogTitle>
           </DialogHeader>
 
@@ -339,7 +375,8 @@ const DialogCreateNewSong = (props) => {
               <div className="col-span-2 space-y-4 flex flex-col">
                 <div className="grid grid-cols-2 gap-3">
                   {/* LEFT */}
-                  <div className="{space-y-4}">
+                  {isEdit && <div className="bg-red-500 text-white">TEST</div>}
+                  <div>
                     <span className="px-1 font-bold text-sm flex justify-between py-1">
                       Cover{" "}
                       {errors.cover && (
@@ -350,27 +387,33 @@ const DialogCreateNewSong = (props) => {
                       className={`group relative h-98 rounded-xl overflow-hidden p-2 flex justify-center items-center ${errors.cover ? "bg-red-600/80 ring-3 ring-red-600/30" : " bg-black/40"}`}
                     >
                       <img
-                        src={previewCover || questionIcon}
+                        src={
+                          previewCover
+                            ? `${import.meta.env.VITE_BACKEND_URL}/${previewCover}`
+                            : questionIcon
+                        }
                         alt="icon genre"
                         className="object-cover rounded-xl"
                       />
 
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <label
-                          htmlFor="uploadFile"
-                          className="cursor-pointer px-6 py-2 rounded-xl bg-white text-black font-semibold transition-all duration-300 hover:shadow-[0_0_22px_rgba(255,255,255,0.8)]"
-                        >
-                          Choose cover
-                        </label>
-                        <input
-                          type="file"
-                          name="cover"
-                          accept="image/*"
-                          hidden
-                          id="uploadFile"
-                          onChange={handleUploadCover}
-                        />
-                      </div>
+                      {isEdit && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          <label
+                            htmlFor="uploadFile"
+                            className="cursor-pointer px-6 py-2 rounded-xl bg-white text-black font-semibold transition-all duration-300 hover:shadow-[0_0_22px_rgba(255,255,255,0.8)]"
+                          >
+                            Choose cover
+                          </label>
+                          <input
+                            type="file"
+                            name="cover"
+                            accept="image/*"
+                            hidden
+                            id="uploadFile"
+                            onChange={handleUploadCover}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -386,6 +429,8 @@ const DialogCreateNewSong = (props) => {
                         )}
                       </Label>
                       <Input
+                        readOnly={!isEdit}
+                        value={title}
                         aria-invalid={!!errors.title}
                         className="h-9 text-sm"
                         name="title"
@@ -403,23 +448,27 @@ const DialogCreateNewSong = (props) => {
                             ♦{errors.lyrics}♥
                           </p>
                         )}
-                        <label
-                          htmlFor="uploadLrc"
-                          className="cursor-pointer font-bold text-blue-900 hover:underline"
-                        >
-                          Upload file .lrc
-                        </label>
+                        {isEdit && (
+                          <label
+                            htmlFor="uploadLrc"
+                            className="cursor-pointer font-bold text-blue-900 hover:underline"
+                          >
+                            Upload file .lrc
+                          </label>
+                        )}
                       </Label>
-
-                      <input
-                        id="uploadLrc"
-                        type="file"
-                        accept=".lrc"
-                        hidden
-                        onChange={handleUploadLRC}
-                      />
+                      {isEdit && (
+                        <input
+                          id="uploadLrc"
+                          type="file"
+                          accept=".lrc"
+                          hidden
+                          onChange={handleUploadLRC}
+                        />
+                      )}
 
                       <Textarea
+                        readOnly={!isEdit}
                         value={lyrics}
                         onChange={(e) => setLyrics(e.target.value)}
                         aria-invalid={!!errors.lyrics}
@@ -443,7 +492,11 @@ const DialogCreateNewSong = (props) => {
                   >
                     <div className="flex h-full items-center px-4 gap-4">
                       <img
-                        src={audioUrl ? audioFileCover : questionIcon}
+                        src={
+                          audioUrl
+                            ? `${import.meta.env.VITE_BACKEND_URL}/${audioFileCover}`
+                            : questionIcon
+                        }
                         alt=""
                         className="h-20 w-20 rounded-full object-cover"
                       />
@@ -458,28 +511,30 @@ const DialogCreateNewSong = (props) => {
                           </span>
 
                           <span className="text-sm text-white/60">
-                            {durationFe}
+                            {duration}
                           </span>
                         </div>
                       )}
                     </div>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <label
-                        htmlFor="uploadAudio"
-                        className="cursor-pointer rounded-xl bg-white px-6 py-2 font-semibold text-black"
-                      >
-                        Choose Audio
-                      </label>
+                    {isEdit && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <label
+                          htmlFor="uploadAudio"
+                          className="cursor-pointer rounded-xl bg-white px-6 py-2 font-semibold text-black"
+                        >
+                          Choose Audio
+                        </label>
 
-                      <input
-                        id="uploadAudio"
-                        type="file"
-                        name="audioUrl"
-                        accept="audio/*"
-                        hidden
-                        onChange={handleUploadAudio}
-                      />
-                    </div>
+                        <input
+                          id="uploadAudio"
+                          type="file"
+                          name="audioUrl"
+                          accept="audio/*"
+                          hidden
+                          onChange={handleUploadAudio}
+                        />
+                      </div>
+                    )}
                   </div>
                 </Field>
               </div>
@@ -494,7 +549,7 @@ const DialogCreateNewSong = (props) => {
                     )}
                   </FieldLabel>
                   <Select
-                    value={ownerId || "none"}
+                    value={String(ownerId)}
                     items={listArtistOption}
                     onValueChange={(value) => {
                       if (value === "none") {
@@ -506,6 +561,7 @@ const DialogCreateNewSong = (props) => {
                     }}
                   >
                     <SelectTrigger
+                      disabled={!isEdit}
                       aria-invalid={!!errors.ownerId}
                       className="w-full"
                     >
@@ -513,7 +569,7 @@ const DialogCreateNewSong = (props) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="none">--- None ---</SelectItem>
+                        <SelectItem>--- None ---</SelectItem>
                         {ownerOptions.map((owner) => (
                           <SelectItem
                             key={owner.value}
@@ -536,7 +592,7 @@ const DialogCreateNewSong = (props) => {
                       setAlbumId(value === "none" ? "" : value);
                     }}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full" disabled={!isEdit}>
                       <SelectValue placeholder="--- None ---" />
                     </SelectTrigger>
                     <SelectContent>
@@ -561,6 +617,7 @@ const DialogCreateNewSong = (props) => {
                   </TabsList>
                   <TabsContent value="genre">
                     <ReactSelect
+                      isDisabled={!isEdit}
                       className={
                         errors.genreId &&
                         "border border-red-600 ring-3 ring-red-600/30"
@@ -572,17 +629,13 @@ const DialogCreateNewSong = (props) => {
                           : `Select genre...`
                       }
                       options={GenreOption}
-                      value={genreId}
+                      value={genreSelectValue}
                       onChange={setGenreId}
                     />
-                    {/* {errors.genreId && (
-                      <p className="text-sm text-red-500 text-center">
-                        
-                      </p>
-                    )} */}
                   </TabsContent>
                   <TabsContent value="feature">
                     <ReactSelect
+                      isDisabled={!isEdit}
                       isMulti
                       options={featureOptions}
                       value={featureId}
@@ -612,4 +665,4 @@ const DialogCreateNewSong = (props) => {
   );
 };
 
-export default DialogCreateNewSong;
+export default DialogDetailSong;

@@ -4,9 +4,13 @@ import { useSearchParams } from "react-router-dom";
 
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
-import DialogCreateNewSong from "./DialogCreateNewSong";
+import {
+  getAllSongs,
+  getSongWithId,
+} from "../../../../../services/music/song/songService";
 
-import { getAllSongs } from "../../../../../services/music/song/songService";
+import DialogCreateNewSong from "./DialogCreateNewSong";
+import DialogDetailSong from "./DialogDetailSong";
 
 const ManagerSong = (props) => {
   const [listSong, setListSong] = useState("");
@@ -18,6 +22,9 @@ const ManagerSong = (props) => {
 
   const currentPage = parseInt(searchParams.get("page"), 10) || 1;
   const currentLimit = 7;
+
+  const [songData, setSongData] = useState("");
+  const [showDialogDetail, setShowDialogDetail] = useState(false);
 
   useEffect(() => {
     getListSongs();
@@ -50,6 +57,16 @@ const ManagerSong = (props) => {
     setTimeout(() => {
       setIsRefresh(false);
     }, 3000);
+  };
+
+  const handleGetSongWithId = async (songId) => {
+    let res = await getSongWithId(songId);
+    if (res?.EC === 0) {
+      setSongData(res.DT);
+      setShowDialogDetail(true);
+    } else {
+      toast.error("Something went wrong when get SONG ID");
+    }
   };
 
   return (
@@ -108,11 +125,16 @@ const ManagerSong = (props) => {
                   {listSong.map((song) => (
                     <div className="w-50 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/10 hover:shadow-xl">
                       {/* Thumbnail */}
-                      <div className="rounded-full overflow-hidden m-3">
+                      <div
+                        className="relative rounded-full overflow-hidden m-3 hover:cursor-pointer"
+                        onClick={() => {
+                          handleGetSongWithId(song.id);
+                        }}
+                      >
                         <img
                           src={`${import.meta.env.VITE_BACKEND_URL}/${song.cover}`}
                           alt="Song thumbnail"
-                          className="h-full w-full object-cover transition-transform duration-300 hover:-rotate-9 hover:scale-105"
+                          className="h-full w-full object-cover transition-transform duration-300 hover:-rotate-360 hover:scale-100 [animation-duration:1000ms]"
                         />
                       </div>
 
@@ -164,11 +186,15 @@ const ManagerSong = (props) => {
           </div>
         </div>
       </>
-
       <DialogCreateNewSong
         show={showDialogCreate}
         setShow={setShowDialogCreate}
         fetchListSong={getListSongs}
+      />
+      <DialogDetailSong
+        show={showDialogDetail}
+        setShow={setShowDialogDetail}
+        songData={songData}
       />
     </>
   );
