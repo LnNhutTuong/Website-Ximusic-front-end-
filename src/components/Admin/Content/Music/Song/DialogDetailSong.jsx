@@ -90,7 +90,7 @@ const DialogDetailSong = (props) => {
 
       if (songData.cover) {
         setAudioFileCover(songData.cover);
-        setAudioFileName(songData.title);
+        setAudioFileName(songData.audioUrl.split("/").pop());
       }
 
       setDuration(songData.duration);
