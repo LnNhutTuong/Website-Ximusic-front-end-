@@ -129,6 +129,9 @@ const DialogGenreDetail = (props) => {
   };
 
   const handleSubmit = async () => {
+    console.log(">>>>>>>check icon: ", icon);
+    console.log(">>>>>>>check newIcon: ", newIcon);
+
     if (!isValid()) {
       return;
     } else {

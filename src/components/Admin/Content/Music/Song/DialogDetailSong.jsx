@@ -42,21 +42,23 @@ import { getAlbumOptionWithIdOrNot } from "@/services/music/album/albumService";
 
 import { getGenreOption } from "@/services/music/genre/genreService";
 
-import { createNewSong } from "@/services/music/song/songService";
+import { songUpdate } from "@/services/music/song/songService";
 
 const DialogDetailSong = (props) => {
-  const { show, setShow, songData } = props;
+  const { show, setShow, songData, fetchListSong } = props;
 
   const [isEdit, setIsEdit] = useState(false);
 
   const [title, setTitle] = useState("");
+
   const [audioUrl, setAudioUrl] = useState("");
+  const [newAudioUrl, setNewAudioUrl] = useState(null);
 
   const [cover, setCover] = useState("");
+  const [newCover, setNewCover] = useState(null);
   const [previewCover, setPreviewCover] = useState("");
 
-  const [duration, setDuration] = useState("");
-  const [durationFe, setDurationFe] = useState("");
+  const [duration, setDuration] = useState(0);
 
   const [lyrics, setLyrics] = useState("");
 
@@ -68,6 +70,7 @@ const DialogDetailSong = (props) => {
 
   const [audioFileName, setAudioFileName] = useState("");
   const [audioFileCover, setAudioFileCover] = useState("");
+
   const [listArtistOption, setListArtistOption] = useState([]);
   const [listGenreOption, setListGenreOption] = useState([]);
   const [listAlbumOptionWithId, setListAlbumOptionWithId] = useState([]);
@@ -79,25 +82,28 @@ const DialogDetailSong = (props) => {
   }, [songData]);
 
   const handleSetSongData = () => {
+    if (!songData) return;
     if (songData) {
       setTitle(songData.title);
       setAudioUrl(songData.audioUrl);
       setCover(songData.cover);
+
       if (songData.cover) {
-        setPreviewCover(songData.cover);
         setAudioFileCover(songData.cover);
         setAudioFileName(songData.title);
       }
+
       setDuration(songData.duration);
-      if (songData.duration) {
-        setDurationFe(songData.duration);
-      }
 
       setLyrics(songData.lyrics);
+
       setOwnerId(songData.ownerId);
-      setFeatureId(songData.features);
-      setGenreId(songData.genres);
-      setAlbumId(songData.setAlbumId);
+      setFeatureId(toArtistOptions(songData.features));
+
+      //phai chuyen ve dang nay de hien thị
+      setGenreId(toSelectOptions(songData.genres));
+
+      setAlbumId(songData.albumId || "");
     }
   };
 
@@ -107,11 +113,11 @@ const DialogDetailSong = (props) => {
   }, []);
 
   useEffect(() => {
-    setAlbumId("");
-    setListAlbumOptionWithId([]);
-    if (ownerId) {
-      getAlbumOption(ownerId);
+    if (!ownerId) {
+      setListAlbumOptionWithId([]);
+      return;
     }
+    getAlbumOption(ownerId);
   }, [ownerId]);
 
   const getListArtistOption = async () => {
@@ -121,13 +127,8 @@ const DialogDetailSong = (props) => {
     }
   };
 
-  //chuan hoa mang
-  const genreSelectValue = genreId.map((item) => ({
-    value: item.id,
-    label: item.name,
-  }));
-
   const artistOptions = toArtistOptions(listArtistOption);
+
   const ownerOptions = artistOptions.filter(
     (artist) => !featureId.some((feature) => feature.value === artist.value),
   );
@@ -210,13 +211,13 @@ const DialogDetailSong = (props) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setAudioUrl(file);
+    setNewAudioUrl(file);
     setAudioFileName(file.name);
 
     const audio = new Audio(URL.createObjectURL(file));
     audio.onloadedmetadata = () => {
       const duration = audio.duration; // giây
-      setDuration(formatDuration(duration));
+      setDuration(Math.round(duration));
       URL.revokeObjectURL(audio.src);
     };
   };
@@ -226,7 +227,7 @@ const DialogDetailSong = (props) => {
       let coverFile = event.target.files[0];
       setPreviewCover(URL.createObjectURL(coverFile));
       setAudioFileCover(URL.createObjectURL(coverFile));
-      setCover(event.target.files[0]);
+      setNewCover(event.target.files[0]);
     } else {
       setPreviewCover(``);
     }
@@ -234,7 +235,7 @@ const DialogDetailSong = (props) => {
 
   const validateForm = () => {
     const titleRegex = /^(?=.{1,150}$)[\p{L}\p{N}\p{M}\p{P}\p{S}\s]+$/su;
-    const lrcRegex = /^(?:\[[^\]\r\n]+\].*(?:\r?\n|$)|.*(?:\r?\n|$))*$/u;
+    // const lrcRegex = /^(?:\[[^\]\r\n]+\].*(?:\r?\n|$)|.*(?:\r?\n|$))*$/u;
     const validations = [
       //Title
       {
@@ -265,21 +266,21 @@ const DialogDetailSong = (props) => {
       //duration
       {
         field: "duration",
-        value: duration.trim() !== "",
+        value: duration !== "",
         message: "Can not get duration",
       },
 
       //lyrics
-      {
-        field: "lyrics",
-        value: lyrics.trim() !== "",
-        message: "Please fill lyrics",
-      },
-      {
-        field: "lyrics",
-        value: lrcRegex.test(lyrics),
-        message: "Lyrics are invalid",
-      },
+      // {
+      //   field: "lyrics",
+      //   value: lyrics.trim() !== "",
+      //   message: "Please fill lyrics",
+      // },
+      // {
+      //   field: "lyrics",
+      //   value: lrcRegex.test(lyrics),
+      //   message: "Lyrics are invalid",
+      // },
 
       //owner
       {
@@ -315,19 +316,33 @@ const DialogDetailSong = (props) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleEditMode = () => {
+    setIsEdit(true);
+  };
+
+  const handleCancelEditMode = () => {
+    setPreviewCover("");
+    setNewCover(null);
+    setNewAudioUrl(null);
+    handleSetSongData();
+    setIsEdit(false);
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       toast.error("Please re-check song info");
       return;
     }
-
     let listGenre = genreId.map((item) => item.value);
     let listFeature = featureId.map((item) => item.value);
 
-    let res = await createNewSong(
+    console.log(albumId);
+
+    let res = await songUpdate(
+      songData.id,
       title,
-      audioUrl,
-      cover,
+      newAudioUrl || audioUrl,
+      newCover || cover,
       duration,
       lyrics,
       ownerId,
@@ -344,8 +359,6 @@ const DialogDetailSong = (props) => {
       toast.error(res.EM);
     }
   };
-
-  console.log("????????Check is edit: ", isEdit);
 
   return (
     <>
@@ -375,7 +388,6 @@ const DialogDetailSong = (props) => {
               <div className="col-span-2 space-y-4 flex flex-col">
                 <div className="grid grid-cols-2 gap-3">
                   {/* LEFT */}
-                  {isEdit && <div className="bg-red-500 text-white">TEST</div>}
                   <div>
                     <span className="px-1 font-bold text-sm flex justify-between py-1">
                       Cover{" "}
@@ -389,10 +401,12 @@ const DialogDetailSong = (props) => {
                       <img
                         src={
                           previewCover
-                            ? `${import.meta.env.VITE_BACKEND_URL}/${previewCover}`
-                            : questionIcon
+                            ? previewCover
+                            : cover
+                              ? `${import.meta.env.VITE_BACKEND_URL}/${cover}`
+                              : questionIcon
                         }
-                        alt="icon genre"
+                        alt="cover song"
                         className="object-cover rounded-xl"
                       />
 
@@ -493,9 +507,11 @@ const DialogDetailSong = (props) => {
                     <div className="flex h-full items-center px-4 gap-4">
                       <img
                         src={
-                          audioUrl
-                            ? `${import.meta.env.VITE_BACKEND_URL}/${audioFileCover}`
-                            : questionIcon
+                          previewCover
+                            ? previewCover
+                            : cover
+                              ? `${import.meta.env.VITE_BACKEND_URL}/${audioFileCover}`
+                              : questionIcon
                         }
                         alt=""
                         className="h-20 w-20 rounded-full object-cover"
@@ -511,7 +527,7 @@ const DialogDetailSong = (props) => {
                           </span>
 
                           <span className="text-sm text-white/60">
-                            {duration}
+                            {formatDuration(duration)}
                           </span>
                         </div>
                       )}
@@ -569,7 +585,7 @@ const DialogDetailSong = (props) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem>--- None ---</SelectItem>
+                        <SelectItem value="none">--- None ---</SelectItem>
                         {ownerOptions.map((owner) => (
                           <SelectItem
                             key={owner.value}
@@ -585,11 +601,14 @@ const DialogDetailSong = (props) => {
                 <Field>
                   <FieldLabel>Album</FieldLabel>
                   <Select
-                    key={ownerId || "none"}
-                    value={albumId || "none"}
+                    value={albumId ? String(albumId) : "none"}
                     items={listAlbumOptionWithId}
                     onValueChange={(value) => {
-                      setAlbumId(value === "none" ? "" : value);
+                      if (value === "none") {
+                        setAlbumId("");
+                      } else {
+                        setAlbumId(value);
+                      }
                     }}
                   >
                     <SelectTrigger className="w-full" disabled={!isEdit}>
@@ -599,7 +618,7 @@ const DialogDetailSong = (props) => {
                       <SelectGroup>
                         <SelectItem value="none">--- None ---</SelectItem>
                         {listAlbumOptionWithId.map((album) => (
-                          <SelectItem key={album.id} value={album.id}>
+                          <SelectItem key={album.id} value={String(album.id)}>
                             {album.title}
                           </SelectItem>
                         ))}
@@ -629,7 +648,7 @@ const DialogDetailSong = (props) => {
                           : `Select genre...`
                       }
                       options={GenreOption}
-                      value={genreSelectValue}
+                      value={genreId}
                       onChange={setGenreId}
                     />
                   </TabsContent>
@@ -647,17 +666,43 @@ const DialogDetailSong = (props) => {
             </div>
           </FieldGroup>
 
-          <DialogFooter className="mt-6">
-            <Button
-              onClick={() => {
-                handleCLoseDialog();
-              }}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-
-            <Button onClick={() => handleSubmit()}>Create user</Button>
+          <DialogFooter className="mt-4">
+            {isEdit ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handleCancelEditMode();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                >
+                  Save Song
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="warning"
+                  onClick={() => {
+                    handleEditMode();
+                  }}
+                >
+                  Edit Song
+                </Button>
+                <Button
+                  variant="destructive"
+                  // onClick={() => handleDeleteGenre(dataGenre.id)}
+                >
+                  Delete Song
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

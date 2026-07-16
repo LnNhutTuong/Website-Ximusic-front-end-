@@ -22,7 +22,11 @@ const createNewSong = (
   data.append("cover", cover);
   data.append("duration", duration);
   data.append("lyrics", lyrics);
-  data.append("genreId", genreId);
+
+  genreId.forEach((item) => {
+    data.append("genreId", item);
+  });
+
   data.append("ownerId", ownerId);
   data.append("featureId", featureId);
   data.append("albumId", albumId);
@@ -34,18 +38,42 @@ const getSongWithId = (songId) => {
   return axios.get(`/api/v1/song/${songId}`);
 };
 
-const updateGenre = (genreId, name, description, icon) => {
+const songUpdate = (
+  songId,
+  title,
+  audioUrl,
+  cover,
+  duration,
+  lyrics,
+  ownerId,
+  featureId,
+  genreId,
+  albumId,
+) => {
   const data = new FormData();
 
-  data.append("name", name);
-  data.append("description", description);
-  data.append("icon", icon);
+  data.append("title", title);
+  data.append("audioUrl", audioUrl);
+  data.append("cover", cover);
+  data.append("duration", duration);
+  data.append("lyrics", lyrics);
 
-  return axios.put(`/api/v1/genre/update/${genreId}`, data);
+  genreId.forEach((item) => {
+    data.append("genreId", item);
+  });
+  data.append("ownerId", ownerId);
+
+  featureId.forEach((item) => {
+    data.append("featureId", item);
+  });
+
+  data.append("albumId", albumId);
+
+  return axios.put(`/api/v1/song/update/${songId}`, data);
 };
 
 const deleteGenre = (genreId) => {
   return axios.delete(`/api/v1/genre/delete/${genreId}`);
 };
 
-export { getAllSongs, createNewSong, getSongWithId };
+export { getAllSongs, createNewSong, getSongWithId, songUpdate };

@@ -54,7 +54,6 @@ const DialogCreateNewSong = (props) => {
   const [previewCover, setPreviewCover] = useState("");
 
   const [duration, setDuration] = useState("");
-  const [durationFe, setDurationFe] = useState("");
 
   const [lyrics, setLyrics] = useState("");
 
@@ -181,8 +180,7 @@ const DialogCreateNewSong = (props) => {
     const audio = new Audio(URL.createObjectURL(file));
     audio.onloadedmetadata = () => {
       const duration = audio.duration; // giây
-      setDuration(duration);
-      setDurationFe(formatDuration(duration));
+      setDuration(Math.round(duration));
       URL.revokeObjectURL(audio.src);
     };
   };
@@ -200,7 +198,9 @@ const DialogCreateNewSong = (props) => {
 
   const validateForm = () => {
     const titleRegex = /^(?=.{1,150}$)[\p{L}\p{N}\p{M}\p{P}\p{S}\s]+$/su;
-    const lrcRegex = /^(?:\[[^\]\r\n]+\].*(?:\r?\n|$)|.*(?:\r?\n|$))*$/u;
+
+    // const lrcRegex = /^(?:\[[^\]\r\n]+\].*(?:\r?\n|$)|.*(?:\r?\n|$))*$/u;
+
     const validations = [
       //Title
       {
@@ -231,21 +231,21 @@ const DialogCreateNewSong = (props) => {
       //duration
       {
         field: "duration",
-        value: duration.trim() !== "",
+        value: duration !== "",
         message: "Can not get duration",
       },
 
       //lyrics
-      {
-        field: "lyrics",
-        value: lyrics.trim() !== "",
-        message: "Please fill lyrics",
-      },
-      {
-        field: "lyrics",
-        value: lrcRegex.test(lyrics),
-        message: "Lyrics are invalid",
-      },
+      // {
+      //   field: "lyrics",
+      //   value: lyrics.trim() !== "",
+      //   message: "Please fill lyrics",
+      // },
+      // {
+      //   field: "lyrics",
+      //   value: lrcRegex.test(lyrics),
+      //   message: "Lyrics are invalid",
+      // },
 
       //owner
       {
@@ -458,7 +458,7 @@ const DialogCreateNewSong = (props) => {
                           </span>
 
                           <span className="text-sm text-white/60">
-                            {durationFe}
+                            {formatDuration(duration)}
                           </span>
                         </div>
                       )}
