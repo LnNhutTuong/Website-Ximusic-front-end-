@@ -9,6 +9,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -42,7 +52,7 @@ import { getAlbumOptionWithIdOrNot } from "@/services/music/album/albumService";
 
 import { getGenreOption } from "@/services/music/genre/genreService";
 
-import { songUpdate } from "@/services/music/song/songService";
+import { songUpdate, deleteSong } from "@/services/music/song/songService";
 
 const DialogDetailSong = (props) => {
   const { show, setShow, songData, fetchListSong } = props;
@@ -74,6 +84,8 @@ const DialogDetailSong = (props) => {
   const [listArtistOption, setListArtistOption] = useState([]);
   const [listGenreOption, setListGenreOption] = useState([]);
   const [listAlbumOptionWithId, setListAlbumOptionWithId] = useState([]);
+
+  const [songDelete, setSongDelete] = useState(null);
 
   const [errors, setErrors] = useState([]);
 
@@ -146,6 +158,16 @@ const DialogDetailSong = (props) => {
     if (res?.EC === 0) {
       setListAlbumOptionWithId(res.DT.rows);
     }
+  };
+
+  console.log(songDelete);
+  console.log(listAlbumOptionWithId);
+
+  const getAlbumName = (albumId) => {
+    let album = listAlbumOptionWithId.find((item) => item.id === albumId);
+
+    console.log(album?.title);
+    return album?.title;
   };
 
   const getListGenreOption = async () => {
@@ -328,6 +350,20 @@ const DialogDetailSong = (props) => {
     setIsEdit(false);
   };
 
+  const handleDeleteSong = async (songId) => {
+    if (albumId) {
+    }
+
+    let res = await deleteSong(songId);
+    if (res?.EC === 0) {
+      toast.success(res.EM);
+      await fetchListSong();
+      handleCLoseDialog();
+    } else {
+      toast.error(res.EM);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       toast.error("Please re-check song info");
@@ -335,8 +371,6 @@ const DialogDetailSong = (props) => {
     }
     let listGenre = genreId.map((item) => item.value);
     let listFeature = featureId.map((item) => item.value);
-
-    console.log(albumId);
 
     let res = await songUpdate(
       songData.id,
@@ -697,7 +731,7 @@ const DialogDetailSong = (props) => {
                 </Button>
                 <Button
                   variant="destructive"
-                  // onClick={() => handleDeleteGenre(dataGenre.id)}
+                  onClick={() => setSongDelete(songData)}
                 >
                   Delete Song
                 </Button>
@@ -706,6 +740,45 @@ const DialogDetailSong = (props) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={!!songDelete}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSongDelete(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Song</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              {songDelete?.albumId && (
+                <>
+                  This song is on an Album{" "}
+                  <span className="text-black font-bold">
+                    " {getAlbumName(songDelete?.albumId)} "
+                    <br />
+                  </span>
+                </>
+              )}
+              Are you want to delete{" "}
+              <span className="text-black font-bold">
+                " {songDelete?.title} "?
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+
+            <AlertDialogAction onClick={() => handleDeleteSong(songDelete.id)}>
+              Xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

@@ -126,15 +126,13 @@ const ManagerSong = (props) => {
                     <div className="w-50 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/10 hover:shadow-xl">
                       {/* Thumbnail */}
                       <div
-                        className="relative rounded-full overflow-hidden m-3 hover:cursor-pointer"
-                        onClick={() => {
-                          handleGetSongWithId(song.id);
-                        }}
+                        className="relative w-40 h-40 rounded-full overflow-hidden mx-auto mt-3 cursor-pointer"
+                        onClick={() => handleGetSongWithId(song.id)}
                       >
                         <img
                           src={`${import.meta.env.VITE_BACKEND_URL}/${song.cover}`}
                           alt="Song thumbnail"
-                          className="h-full w-full object-cover transition-transform duration-300 hover:-rotate-360 hover:scale-100 [animation-duration:1000ms]"
+                          className="w-full h-full object-cover transition-transform duration-300 hover:-rotate-360"
                         />
                       </div>
 

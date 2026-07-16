@@ -72,8 +72,8 @@ const songUpdate = (
   return axios.put(`/api/v1/song/update/${songId}`, data);
 };
 
-const deleteGenre = (genreId) => {
-  return axios.delete(`/api/v1/genre/delete/${genreId}`);
+const deleteSong = (songId) => {
+  return axios.delete(`/api/v1/song/delete/${songId}`);
 };
 
-export { getAllSongs, createNewSong, getSongWithId, songUpdate };
+export { getAllSongs, createNewSong, getSongWithId, songUpdate, deleteSong };
