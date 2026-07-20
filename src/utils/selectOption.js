@@ -8,6 +8,6 @@ export const toSelectOptions = (data, valueKey = "id", labelKey = "name") => {
 export const toArtistOptions = (artists) => {
   return artists.map((artist) => ({
     value: artist.id,
-    label: artist.artistProfile?.stageName || artist.displayName,
+    label: artist.artistName,
   }));
 };

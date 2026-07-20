@@ -160,13 +160,9 @@ const DialogDetailSong = (props) => {
     }
   };
 
-  console.log(songDelete);
-  console.log(listAlbumOptionWithId);
-
   const getAlbumName = (albumId) => {
     let album = listAlbumOptionWithId.find((item) => item.id === albumId);
 
-    console.log(album?.title);
     return album?.title;
   };
 

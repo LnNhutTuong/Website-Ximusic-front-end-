@@ -4,4 +4,12 @@ const getAlbumOptionWithIdOrNot = (id) => {
   return axios.get(`/api/v1/album/option?id=${id}`);
 };
 
-export { getAlbumOptionWithIdOrNot };
+const getListAlbum = () => {
+  return axios.get("api/v1/album");
+};
+
+const getAlbumWithId = (albumId) => {
+  return axios.get(`api/v1/album/${albumId}`);
+};
+
+export { getAlbumOptionWithIdOrNot, getListAlbum, getAlbumWithId };

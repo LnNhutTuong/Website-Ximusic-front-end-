@@ -1,54 +1,39 @@
 import { useState, useEffect } from "react";
 import { Triangle } from "react-loader-spinner";
 import { useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
 import {
-  getAllSongs,
-  getSongWithId,
-} from "../../../../../services/music/song/songService";
+  getListAlbum,
+  getAlbumWithId,
+} from "../../../../../services/music/album/albumService";
 
-import DialogCreateNewSong from "./DialogCreateNewSong";
-import DialogDetailSong from "./DialogDetailSong";
+import DialogCreateNewAlbum from "./DialogCreateNewAlbum";
+
+import { toast } from "react-toastify";
 
 const ManagerSong = (props) => {
-  const [listSong, setListSong] = useState("");
-  const [totalPage, setTotalPage] = useState([]);
-  const [isRefresh, setIsRefresh] = useState("");
+  const [listAlbum, setListAlbum] = useState([]);
+
+  const [isRefresh, setIsRefresh] = useState(false);
 
   const [showDialogCreate, setShowDialogCreate] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  const currentPage = parseInt(searchParams.get("page"), 10) || 1;
-  const currentLimit = 7;
-
-  const [songData, setSongData] = useState("");
+  const [albumData, setAlbumData] = useState("");
   const [showDialogDetail, setShowDialogDetail] = useState(false);
 
   useEffect(() => {
-    getListSongs();
-  }, [currentPage, currentLimit]);
+    handleGetListAlbum();
+  }, []);
 
-  const getListSongs = async () => {
-    let res = await getAllSongs(currentPage, currentLimit);
+  const handleGetListAlbum = async () => {
+    let res = await getListAlbum();
     if (res?.EC === 0) {
-      setListSong(res.DT.rows);
-
-      let totalSongs = +res.DT.count;
-
-      let pageCount = Math.ceil(totalSongs / currentLimit);
-
-      const pageArray = [];
-      for (let i = 1; i <= pageCount; i++) {
-        pageArray.push(i);
-      }
-
-      setTotalPage(pageArray);
+      setListAlbum(res.DT.rows);
     } else {
-      setListSong([]);
-      setTotalPage([]);
+      setListAlbum([]);
+
       toast.error(res.EM);
     }
   };
@@ -60,13 +45,14 @@ const ManagerSong = (props) => {
     }, 3000);
   };
 
-  const handleGetSongWithId = async (songId) => {
-    let res = await getSongWithId(songId);
+  const handleGetAlbumWithId = async (albumId) => {
+    let res = await getAlbumWithId(albumId);
     if (res?.EC === 0) {
-      setSongData(res.DT);
-      setShowDialogDetail(true);
+      setAlbumData(res.DT);
+      toast.success(albumId);
+      // setShowDialogDetail(true);
     } else {
-      toast.error(res.EM);
+      toast.error("Something went wrong when get SONG ID");
     }
   };
 
@@ -83,7 +69,7 @@ const ManagerSong = (props) => {
                 }}
                 class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-slate-800 border-slate-800 text-slate-50 hover:bg-slate-700 hover:border-slate-700"
               >
-                Add new song
+                Add new album
               </button>
               <button
                 onClick={() => {
@@ -121,38 +107,55 @@ const ManagerSong = (props) => {
 
           <div className="relative overflow-x-auto bg-neutral-1primary-soft shadow-xs rounded-base  h-[522px] border border-white/10 rounded-xl mt-3 scrollbar-none">
             {!isRefresh ? (
-              listSong.length > 0 ? (
+              listAlbum.length > 0 ? (
                 <div className="grid grid-cols-6 gap-4 mx-auto items-center px-24 mt-10">
-                  {listSong.map((song) => (
-                    <div className="w-50 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/10 hover:shadow-xl">
-                      {/* Thumbnail */}
+                  {listAlbum.map((album) => {
+                    return (
                       <div
-                        className="relative w-40 h-40 rounded-full overflow-hidden mx-auto mt-3 cursor-pointer"
-                        onClick={() => handleGetSongWithId(song.id)}
+                        className={`${
+                          album.releaseDate !== null &&
+                          new Date(album.releaseDate) <= new Date()
+                            ? "border-green-700 hover:shadow-green-500/22 hover:shadow-xl"
+                            : "border-red-700 hover:shadow-red-500/22 hover:shadow-xl"
+                        } w-64 aspect-square overflow-hidden rounded-2xl border bg-white/5 backdrop-blur-sm transition duration-300 hover:-translate-y-1  hover:bg-white/10 hover:shadow-xl`}
                       >
-                        <img
-                          src={`${import.meta.env.VITE_BACKEND_URL}/${song.cover}`}
-                          alt="Song thumbnail"
-                          className="w-full h-full object-cover transition-transform duration-300 hover:-rotate-360"
-                        />
-                      </div>
+                        {/* Thumbnail */}
+                        <div
+                          className="relative w-45 h-45 mx-auto mt-3 cursor-pointer "
+                          onClick={() => handleGetAlbumWithId(album.id)}
+                        >
+                          <div className="absolute inset-0 translate-x-7 rounded-full bg-zinc-900 z-0 flex items-center justify-center ">
+                            <span className="absolute translate-x-18 text-white font-semibold [writing-mode:vertical-rl]">
+                              {album.songCount} song
+                            </span>
+                          </div>
 
-                      {/* Content */}
-                      <div className="p-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="min-w-0">
-                            <h3 className="truncate text-lg font-semibold text-white">
-                              {song.title}
-                            </h3>
+                          <div className="absolute inset-0 rounded-full overflow-hidden z-10 bg-red-900">
+                            <img
+                              src={`${import.meta.env.VITE_BACKEND_URL}/${album.cover}`}
+                              alt="album cover"
+                              className="w-full h-full object-cover transition-transform hover:animate-[spin_3s_linear_infinite]"
+                            />
+                          </div>
+                        </div>
 
-                            <p className="mt-1 truncate text-sm text-white/60">
-                              {song.artistId}
-                            </p>
+                        {/* Content */}
+                        <div className="px-4 py-2 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <div className="min-w-0">
+                              <h3 className="truncate text-lg font-semibold text-white">
+                                {album.title}
+                              </h3>
+
+                              <p className="truncate text-sm text-white/60">
+                                {album.artistName}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <>
@@ -185,16 +188,10 @@ const ManagerSong = (props) => {
           </div>
         </div>
       </>
-      <DialogCreateNewSong
+
+      <DialogCreateNewAlbum
         show={showDialogCreate}
         setShow={setShowDialogCreate}
-        fetchListSong={getListSongs}
-      />
-      <DialogDetailSong
-        show={showDialogDetail}
-        setShow={setShowDialogDetail}
-        songData={songData}
-        fetchListSong={getListSongs}
       />
     </>
   );

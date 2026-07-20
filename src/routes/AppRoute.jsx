@@ -10,7 +10,7 @@ import Register from "../components/Auth/Register";
 import Admin from "@/pages/Admin";
 import ManagerUser from "../components/Admin/Content/User/ListUserWithPagination";
 import ManagerGenre from "../components/Admin/Content/Music/Genre/ListGenreWithPagination";
-import ManageAlbum from "../components/Admin/Content/Music/Album/ListAlbumWithPagination";
+import ManageAlbum from "../components/Admin/Content/Music/Album/ListAlbum";
 import ManageSong from "../components/Admin/Content/Music/Song/ListSongWithPagination";
 
 import Home from "@/pages/Home";
