@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import {
   Select,
   SelectContent,
@@ -347,9 +347,6 @@ const DialogDetailSong = (props) => {
   };
 
   const handleDeleteSong = async (songId) => {
-    if (albumId) {
-    }
-
     let res = await deleteSong(songId);
     if (res?.EC === 0) {
       toast.success(res.EM);

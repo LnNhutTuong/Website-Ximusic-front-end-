@@ -11,6 +11,8 @@ import {
 
 import DialogCreateNewAlbum from "./DialogCreateNewAlbum";
 
+import DialogDetailAlbum from "./DialogDetailAlbum";
+
 import { toast } from "react-toastify";
 
 const ManagerSong = (props) => {
@@ -49,8 +51,7 @@ const ManagerSong = (props) => {
     let res = await getAlbumWithId(albumId);
     if (res?.EC === 0) {
       setAlbumData(res.DT);
-      toast.success(albumId);
-      // setShowDialogDetail(true);
+      setShowDialogDetail(true);
     } else {
       toast.error("Something went wrong when get SONG ID");
     }
@@ -108,7 +109,7 @@ const ManagerSong = (props) => {
           <div className="relative overflow-x-auto bg-neutral-1primary-soft shadow-xs rounded-base  h-[522px] border border-white/10 rounded-xl mt-3 scrollbar-none">
             {!isRefresh ? (
               listAlbum.length > 0 ? (
-                <div className="grid grid-cols-6 gap-4 mx-auto items-center px-24 mt-10">
+                <div className="grid grid-cols-6 gap-70 mx-auto items-center px-24 mt-10">
                   {listAlbum.map((album) => {
                     return (
                       <div
@@ -209,6 +210,11 @@ const ManagerSong = (props) => {
         show={showDialogCreate}
         setShow={setShowDialogCreate}
         fetchAllAlbum={handleGetListAlbum}
+      />
+      <DialogDetailAlbum
+        show={showDialogDetail}
+        setShow={setShowDialogDetail}
+        albumData={albumData}
       />
     </>
   );
