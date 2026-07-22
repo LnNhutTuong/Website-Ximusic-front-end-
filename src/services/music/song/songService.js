@@ -4,6 +4,10 @@ const getAllSongs = (page, limit) => {
   return axios.get(`api/v1/song?page=${page}&limit=${limit}`);
 };
 
+const getSongOptionWithIdOrNot = (id) => {
+  return axios.get(`/api/v1/song/option?id=${id}`);
+};
+
 const createNewSong = (
   title,
   audioUrl,
@@ -76,4 +80,11 @@ const deleteSong = (songId) => {
   return axios.delete(`/api/v1/song/delete/${songId}`);
 };
 
-export { getAllSongs, createNewSong, getSongWithId, songUpdate, deleteSong };
+export {
+  getAllSongs,
+  getSongOptionWithIdOrNot,
+  createNewSong,
+  getSongWithId,
+  songUpdate,
+  deleteSong,
+};

@@ -339,7 +339,7 @@ const DialogCreateNewSong = (props) => {
               <div className="col-span-2 space-y-4 flex flex-col">
                 <div className="grid grid-cols-2 gap-3">
                   {/* LEFT */}
-                  <div className="{space-y-4}">
+                  <div className="space-y-4">
                     <span className="px-1 font-bold text-sm flex justify-between py-1">
                       Cover{" "}
                       {errors.cover && (
@@ -575,11 +575,6 @@ const DialogCreateNewSong = (props) => {
                       value={genreId}
                       onChange={setGenreId}
                     />
-                    {/* {errors.genreId && (
-                      <p className="text-sm text-red-500 text-center">
-                        
-                      </p>
-                    )} */}
                   </TabsContent>
                   <TabsContent value="feature">
                     <ReactSelect

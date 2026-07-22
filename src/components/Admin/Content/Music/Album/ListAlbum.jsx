@@ -60,7 +60,7 @@ const ManagerSong = (props) => {
     <>
       <>
         <div className="list-genre-container mx-10 my-5">
-          <h1 className="text-xl font-bold">List Song</h1>
+          <h1 className="text-xl font-bold">List Album</h1>
           <div className="flex gap-2 my-2 justify-between">
             <div className="flex gap-4">
               <button
@@ -117,24 +117,40 @@ const ManagerSong = (props) => {
                           new Date(album.releaseDate) <= new Date()
                             ? "border-green-700 hover:shadow-green-500/22 hover:shadow-xl"
                             : "border-red-700 hover:shadow-red-500/22 hover:shadow-xl"
-                        } w-64 aspect-square overflow-hidden rounded-2xl border bg-white/5 backdrop-blur-sm transition duration-300 hover:-translate-y-1  hover:bg-white/10 hover:shadow-xl`}
+                        } w-64 aspect-square overflow-hidden rounded-2xl border bg-white/5 backdrop-blur-sm transition duration-300 
+                        hover:-translate-y-1  hover:bg-white/10 hover:shadow-xl group`}
                       >
                         {/* Thumbnail */}
                         <div
                           className="relative w-45 h-45 mx-auto mt-3 cursor-pointer "
                           onClick={() => handleGetAlbumWithId(album.id)}
                         >
-                          <div className="absolute inset-0 translate-x-7 rounded-full bg-zinc-900 z-0 flex items-center justify-center ">
-                            <span className="absolute translate-x-18 text-white font-semibold [writing-mode:vertical-rl]">
-                              {album.songCount} song
-                            </span>
+                          <div className="absolute inset-0 translate-x-7 rounded-full bg-zinc-900 z-0 flex items-center justify-center transition-transform group-hover:animate-[spin_6s_linear_infinite]">
+                            <svg viewBox="0 0 300 300" className="w-72 h-72">
+                              <defs>
+                                <path
+                                  id="text-circle"
+                                  d="M150,150
+                                  m-120,0
+                                  a120,120 0 1,1 240,0
+                                  a120,120 0 1,1 -240,0
+                                "
+                                />
+                              </defs>
+
+                              <text className="tracking-[4px] uppercase fill-white">
+                                <textPath href="#text-circle" startOffset="0%">
+                                  {`${album.songCount} SONG • `.repeat(8)}
+                                </textPath>
+                              </text>
+                            </svg>
                           </div>
 
-                          <div className="absolute inset-0 rounded-full overflow-hidden z-10 bg-red-900">
+                          <div className="absolute inset-0 rounded-sm overflow-hidden z-10 bg-red-900">
                             <img
                               src={`${import.meta.env.VITE_BACKEND_URL}/${album.cover}`}
                               alt="album cover"
-                              className="w-full h-full object-cover transition-transform hover:animate-[spin_3s_linear_infinite]"
+                              className="w-full h-full object-cover "
                             />
                           </div>
                         </div>
@@ -192,6 +208,7 @@ const ManagerSong = (props) => {
       <DialogCreateNewAlbum
         show={showDialogCreate}
         setShow={setShowDialogCreate}
+        fetchAllAlbum={handleGetListAlbum}
       />
     </>
   );

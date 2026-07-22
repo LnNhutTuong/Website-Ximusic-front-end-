@@ -12,4 +12,24 @@ const getAlbumWithId = (albumId) => {
   return axios.get(`api/v1/album/${albumId}`);
 };
 
-export { getAlbumOptionWithIdOrNot, getListAlbum, getAlbumWithId };
+const createNewAlbum = (title, cover, ownerId, releaseDate, listSongChoose) => {
+  const data = new FormData();
+
+  data.append("title", title);
+  data.append("cover", cover);
+  data.append("ownerId", ownerId);
+  data.append("releaseDate", releaseDate);
+
+  listSongChoose.forEach((song) => {
+    data.append("songId", song);
+  });
+
+  return axios.post(`api/v1/album/create`, data);
+};
+
+export {
+  getAlbumOptionWithIdOrNot,
+  getListAlbum,
+  getAlbumWithId,
+  createNewAlbum,
+};

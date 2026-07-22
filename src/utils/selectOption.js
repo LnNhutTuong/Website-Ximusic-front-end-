@@ -5,6 +5,13 @@ export const toSelectOptions = (data, valueKey = "id", labelKey = "name") => {
   }));
 };
 
+export const toSongSelect = (songs) => {
+  return songs.map((song) => ({
+    value: song.id,
+    label: song.title,
+  }));
+};
+
 export const toArtistOptions = (artists) => {
   return artists.map((artist) => ({
     value: artist.id,
