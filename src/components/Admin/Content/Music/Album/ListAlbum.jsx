@@ -215,6 +215,7 @@ const ManagerSong = (props) => {
         show={showDialogDetail}
         setShow={setShowDialogDetail}
         albumData={albumData}
+        fetchAllAlbum={handleGetListAlbum}
       />
     </>
   );

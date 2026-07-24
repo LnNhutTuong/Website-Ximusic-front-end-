@@ -95,6 +95,7 @@ const DialogDetailSong = (props) => {
 
   const handleSetSongData = () => {
     if (!songData) return;
+
     if (songData) {
       setTitle(songData.title);
       setAudioUrl(songData.audioUrl);

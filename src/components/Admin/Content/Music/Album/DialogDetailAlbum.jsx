@@ -52,12 +52,17 @@ import { toSongSelect } from "@/utils/selectOption";
 
 import { getArtistOption } from "@/services/artist/artistService";
 
-import { getSongOptionWithIdOrNot } from "@/services/music/song/songService";
+import {
+  getSongOptionWithIdOrNot,
+  songUpdate,
+} from "@/services/music/song/songService";
+
+import { deleteAlbum } from "@/services/music/album/albumService";
 
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
 const DialogDetailAlbum = (props) => {
-  const { show, setShow, albumData } = props;
+  const { show, setShow, albumData, fetchAllAlbum } = props;
 
   const [title, setTitle] = useState("");
 
@@ -202,50 +207,58 @@ const DialogDetailAlbum = (props) => {
     setIsEdit(false);
   };
 
-  const handleDeleteAlbum = async (albumId) => {
+  console.log("albumData: ", albumData);
+  console.log(">>>check length of song id: ", songId.length);
+
+  const handleDeleteAlbum = () => {
     if (songId.length > 0) {
       setAlertDelete(true);
       return;
     }
-    toast.success("ok");
 
-    // let res = await deleteAlbum(albumId);
-    // if (res?.EC === 0) {
-    //   toast.success(res.EM);
-    //   await fetchListSong();
-    //   handleCLoseDialog();
-    // } else {
-    //   toast.error(res.EM);
-    // }
+    handleConfirmDelete(albumData.id);
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      toast.error("Please re-check song info");
-      return;
-    }
-
-    let listsongId = [];
-    if (songId) {
-      listsongId = songId.map((item) => item.value);
-    }
-
-    let res = await createNewAlbum(
-      title,
-      cover,
-      ownerId,
-      releaseDate,
-      listsongId,
-    );
+  const handleConfirmDelete = async (albumId) => {
+    const res = await deleteAlbum(albumId);
 
     if (res?.EC === 0) {
       toast.success(res.EM);
       await fetchAllAlbum();
+      setAlertDelete(false);
       handleCLoseDialog();
     } else {
       toast.error(res.EM);
     }
   };
+
+  // const handleSubmit = async () => {
+  //   if (!validateForm()) {
+  //     toast.error("Please re-check song info");
+  //     return;
+  //   }
+
+  //   let listsongId = [];
+  //   if (songId) {
+  //     listsongId = songId.map((item) => item.value);
+  //   }
+
+  //   let res = await createNewAlbum(
+  //     title,
+  //     cover,
+  //     ownerId,
+  //     releaseDate,
+  //     listsongId,
+  //   );
+
+  //   if (res?.EC === 0) {
+  //     toast.success(res.EM);
+  //     await fetchAllAlbum();
+  //     handleCLoseDialog();
+  //   } else {
+  //     toast.error(res.EM);
+  //   }
+  // };
 
   return (
     <>
@@ -436,13 +449,13 @@ const DialogDetailAlbum = (props) => {
                     handleEditMode();
                   }}
                 >
-                  Edit Song
+                  Edit Album
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={() => handleDeleteAlbum(albumData.id)}
+                  onClick={() => handleDeleteAlbum()}
                 >
-                  Delete Song
+                  Delete Album
                 </Button>
               </>
             )}
@@ -462,7 +475,8 @@ const DialogDetailAlbum = (props) => {
               <AlertDialogTitle>Can't delete this album</AlertDialogTitle>
 
               <AlertDialogDescription>
-                Can not delete this album because it's have some song
+                Can not delete this album because it's have some song, if you
+                delete please choose the action.
               </AlertDialogDescription>
             </AlertDialogHeader>
 
@@ -476,7 +490,7 @@ const DialogDetailAlbum = (props) => {
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  setAlertDelete(false);
+                  handleConfirmDelete(albumData.id);
                 }}
               >
                 Toi dong tinh

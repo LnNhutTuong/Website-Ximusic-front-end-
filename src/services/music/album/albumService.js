@@ -27,9 +27,14 @@ const createNewAlbum = (title, cover, ownerId, releaseDate, listSongChoose) => {
   return axios.post(`api/v1/album/create`, data);
 };
 
+const deleteAlbum = (id) => {
+  return axios.delete(`/api/v1/album/delete/${id}`);
+};
+
 export {
   getAlbumOptionWithIdOrNot,
   getListAlbum,
   getAlbumWithId,
   createNewAlbum,
+  deleteAlbum,
 };
