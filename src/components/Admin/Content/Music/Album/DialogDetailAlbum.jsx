@@ -52,12 +52,9 @@ import { toSongSelect } from "@/utils/selectOption";
 
 import { getArtistOption } from "@/services/artist/artistService";
 
-import {
-  getSongOptionWithIdOrNot,
-  songUpdate,
-} from "@/services/music/song/songService";
+import { getSongOptionWithIdOrNot } from "@/services/music/song/songService";
 
-import { deleteAlbum } from "@/services/music/album/albumService";
+import { albumUpdate, deleteAlbum } from "@/services/music/album/albumService";
 
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
@@ -202,13 +199,10 @@ const DialogDetailAlbum = (props) => {
   };
 
   const handleCancelEditMode = () => {
-    setalbumData();
-    setPreviewIcon("");
+    handleGetAlbumData();
+    setPreviewCover("");
     setIsEdit(false);
   };
-
-  console.log("albumData: ", albumData);
-  console.log(">>>check length of song id: ", songId.length);
 
   const handleDeleteAlbum = () => {
     if (songId.length > 0) {
@@ -232,33 +226,36 @@ const DialogDetailAlbum = (props) => {
     }
   };
 
-  // const handleSubmit = async () => {
-  //   if (!validateForm()) {
-  //     toast.error("Please re-check song info");
-  //     return;
-  //   }
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      toast.error("Please re-check song info");
+      return;
+    }
 
-  //   let listsongId = [];
-  //   if (songId) {
-  //     listsongId = songId.map((item) => item.value);
-  //   }
+    let listSongId = [];
+    if (songId) {
+      listSongId = songId.map((item) => item.value);
+    }
 
-  //   let res = await createNewAlbum(
-  //     title,
-  //     cover,
-  //     ownerId,
-  //     releaseDate,
-  //     listsongId,
-  //   );
+    let res = await albumUpdate(
+      albumData.id,
+      title,
+      newCover || cover,
+      ownerId,
+      releaseDate,
+      listSongId,
+    );
 
-  //   if (res?.EC === 0) {
-  //     toast.success(res.EM);
-  //     await fetchAllAlbum();
-  //     handleCLoseDialog();
-  //   } else {
-  //     toast.error(res.EM);
-  //   }
-  // };
+    console.log(">>check res: ", res);
+
+    if (res?.EC === 0) {
+      toast.success(res.EM);
+      await fetchAllAlbum();
+      handleCLoseDialog();
+    } else {
+      toast.error(res.EM);
+    }
+  };
 
   return (
     <>
@@ -307,22 +304,24 @@ const DialogDetailAlbum = (props) => {
                     className="object-cover rounded-xl p-2"
                   />
 
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <label
-                      htmlFor="uploadFile"
-                      className="cursor-pointer px-6 py-2 rounded-xl bg-white text-black font-semibold transition-all duration-300 hover:shadow-[0_0_22px_rgba(255,255,255,0.8)]"
-                    >
-                      Choose cover
-                    </label>
-                    <input
-                      type="file"
-                      name="cover"
-                      accept="image/*"
-                      hidden
-                      id="uploadFile"
-                      onChange={handleUploadCover}
-                    />
-                  </div>
+                  {isEdit && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <label
+                        htmlFor="uploadFile"
+                        className="cursor-pointer px-6 py-2 rounded-xl bg-white text-black font-semibold transition-all duration-300 hover:shadow-[0_0_22px_rgba(255,255,255,0.8)]"
+                      >
+                        Choose cover
+                      </label>
+                      <input
+                        type="file"
+                        name="cover"
+                        accept="image/*"
+                        hidden
+                        id="uploadFile"
+                        onChange={handleUploadCover}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               {/* RIGHT */}
@@ -335,6 +334,7 @@ const DialogDetailAlbum = (props) => {
                     )}
                   </Label>
                   <Input
+                    readOnly={!isEdit}
                     value={title}
                     aria-invalid={!!errors.title}
                     className="h-9 text-sm"
@@ -352,6 +352,7 @@ const DialogDetailAlbum = (props) => {
                     )}
                   </FieldLabel>
                   <Select
+                    disabled={!isEdit}
                     value={String(ownerId)}
                     items={listArtistOption}
                     onValueChange={setOwnerId}
@@ -382,6 +383,7 @@ const DialogDetailAlbum = (props) => {
                     )}
                   </FieldLabel>
                   <ReactSelect
+                    isDisabled={!isEdit}
                     className={
                       errors.songId &&
                       "border border-red-600 ring-3 ring-red-600/30"
@@ -399,7 +401,7 @@ const DialogDetailAlbum = (props) => {
                   </FieldLabel>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline">
+                      <Button variant="outline" disabled={!isEdit}>
                         {releaseDate
                           ? format(releaseDate, "PPP")
                           : "Pick a date"}
