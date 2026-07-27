@@ -3,11 +3,25 @@ import {
   fetchAllUser,
   handleDeleteUser,
   handleGetUserWithId,
-} from "../../../../services/userService";
+} from "../../../../services/user/userService";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";
 import DialogArtistProfile from "./DialogArtistProfile";
+import {
+  Field,
+  FieldGroup,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { Triangle } from "react-loader-spinner";
@@ -36,15 +50,59 @@ const ListUser = () => {
   const currentPage = parseInt(searchParams.get("page"), 10) || 1;
   const currentLimit = 7;
 
+  const [keySearch, setKeySearch] = useState("");
+
+  const [sort, setSort] = useState("newest"); //mac dinh luc nao cung phai show moi
+  const sortOptions = [
+    {
+      value: "newest",
+      label: "Newest",
+    },
+    {
+      value: "oldest",
+      label: "Oldest",
+    },
+    {
+      value: "name_asc",
+      label: "Name A-Z",
+    },
+    {
+      value: "name_desc",
+      label: "name Z-A",
+    },
+  ];
+
+  const [group, setGroup] = useState("all");
+  const groupOption = [
+    {
+      value: "all",
+      label: "All",
+    },
+    {
+      value: "listener",
+      label: "Listener",
+    },
+    {
+      value: "artist",
+      label: "Artist",
+    },
+  ];
+
   useEffect(() => {
     getListUser();
-  }, [currentPage, currentLimit]);
+  }, [currentPage, currentLimit, group, sort, keySearch]);
 
   const getListUser = async () => {
-    let res = await fetchAllUser(currentPage, currentLimit);
+    let res = await fetchAllUser(
+      currentPage,
+      currentLimit,
+      group,
+      sort,
+      keySearch,
+    );
 
     if (res?.EC === 0) {
-      setListUser(res.DT.rows);
+      setListUser(res.DT.users);
 
       let totalUser = +res.DT.count;
 
@@ -107,7 +165,9 @@ const ListUser = () => {
 
   const handleRefresh = () => {
     setIsRefresh(true);
-    getListUser();
+    setKeySearch("");
+    setGroup("all");
+    setSort("newest");
     setTimeout(() => {
       setIsRefresh(false);
     }, 3000);
@@ -119,23 +179,92 @@ const ListUser = () => {
         <>
           <div className="list-user-container mx-10 my-5">
             <h1 className="text-xl font-bold">List Users</h1>
-            <div className="flex gap-2 my-2">
-              <button
-                onClick={() => {
-                  setDialogCreate(true);
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-slate-800 border-slate-800 text-slate-50 hover:bg-slate-700 hover:border-slate-700"
-              >
-                Add new user
-              </button>
-              <button
-                onClick={() => {
-                  handleRefresh();
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-lime-800 border-lime-800 text-slate-50 hover:bg-lime-700 hover:border-lime-700"
-              >
-                Refresh
-              </button>
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              {/* Left Actions */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setDialogCreate(true)}
+                  className="rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700"
+                >
+                  Add new user
+                </button>
+
+                <button
+                  onClick={handleRefresh}
+                  className="rounded-lg bg-lime-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-lime-600"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              {/* Right Filters */}
+              <div className="flex items-end gap-4">
+                {/* Group by*/}
+                <Field className="flex-1">
+                  <FieldLabel>Group by</FieldLabel>
+                  <Select
+                    value={group}
+                    item={groupOption}
+                    onValueChange={setGroup}
+                  >
+                    <SelectTrigger className="h-10 w-[180px]">
+                      <SelectValue placeholder="--- None ---" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="none">--- None ---</SelectItem>
+                        {groupOption.map((group) => (
+                          <SelectItem key={group.value} value={group.value}>
+                            {group.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                {/* Sort by */}
+                <Field className="flex-1">
+                  <FieldLabel>Sort by</FieldLabel>
+                  <Select
+                    value={sort}
+                    item={sortOptions}
+                    onValueChange={setSort}
+                  >
+                    <SelectTrigger className="h-10 w-[180px]">
+                      <SelectValue placeholder="--- None ---" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="none">--- None ---</SelectItem>
+                        {sortOptions.map((sort) => (
+                          <SelectItem key={sort.value} value={sort.value}>
+                            {sort.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                {/* Search */}
+                <div className="w-[320px]">
+                  <FieldLabel>Search</FieldLabel>
+
+                  <div className="relative">
+                    <input
+                      value={keySearch}
+                      type="search"
+                      placeholder="Nguoi trong tim..."
+                      className="h-10 w-full rounded-lg border border-border bg-background pl-4 pr-20 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                      onChange={(e) => {
+                        setKeySearch(e.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base  h-[522px]">

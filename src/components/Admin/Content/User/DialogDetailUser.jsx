@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label";
 import {
   handleUpdateUser,
   handleDeleteUser,
-} from "../../../../services/userService";
+} from "../../../../services/user/userService";
 import { getAllGroup } from "../../../../services/groupService";
 import DialogArtistProfile from "./DialogArtistProfile";
 import { useEffect, useState } from "react";

@@ -1,7 +1,9 @@
-import axios from "../API/axiosSetup";
+import axios from "../../API/axiosSetup";
 
-const fetchAllUser = (page, limit) => {
-  return axios.get(`api/v1/user?page=${page}&limit=${limit}`);
+const fetchAllUser = (page, limit, group, sort, keySearch) => {
+  return axios.get(`api/v1/user`, {
+    params: { page, limit, group, sort, keySearch },
+  });
 };
 
 const handleCreateNewUser = (
