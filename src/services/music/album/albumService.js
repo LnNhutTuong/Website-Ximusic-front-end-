@@ -4,8 +4,8 @@ const getAlbumOptionWithIdOrNot = (id) => {
   return axios.get(`/api/v1/album/option?id=${id}`);
 };
 
-const getListAlbum = () => {
-  return axios.get("api/v1/album");
+const getListAlbum = (sort, keySearch) => {
+  return axios.get("api/v1/album", { params: { sort, keySearch } });
 };
 
 const getAlbumWithId = (albumId) => {

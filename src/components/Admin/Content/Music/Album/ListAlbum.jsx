@@ -1,9 +1,20 @@
 import { useState, useEffect } from "react";
 import { Triangle } from "react-loader-spinner";
-import { useSearchParams } from "react-router-dom";
-
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
-
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Field,
+  FieldGroup,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   getListAlbum,
   getAlbumWithId,
@@ -25,14 +36,46 @@ const ManagerSong = (props) => {
   const [albumData, setAlbumData] = useState("");
   const [showDialogDetail, setShowDialogDetail] = useState(false);
 
+  const [keySearch, setKeySearch] = useState("");
+
+  const [sort, setSort] = useState("newest"); //mac dinh luc nao cung phai show moi
+
+  const sortOptions = [
+    {
+      value: "newest",
+      label: "Newest",
+    },
+    {
+      value: "oldest",
+      label: "Oldest",
+    },
+    {
+      value: "title_asc",
+      label: "Title A-Z",
+    },
+    {
+      value: "title_desc",
+      label: "Title Z-A",
+    },
+    {
+      value: "song_asc",
+      label: "Song ASC",
+    },
+    {
+      value: "song_desc",
+      label: "Song DESC",
+    },
+    { value: "releaseDate_desc", label: "Release date DESC" },
+    { value: "releaseDate_asc", label: "Release date ASC" },
+  ];
   useEffect(() => {
     handleGetListAlbum();
-  }, []);
+  }, [sort, keySearch]);
 
   const handleGetListAlbum = async () => {
-    let res = await getListAlbum();
+    let res = await getListAlbum(sort, keySearch);
     if (res?.EC === 0) {
-      setListAlbum(res.DT.rows);
+      setListAlbum(res.DT.albums);
     } else {
       setListAlbum([]);
 
@@ -42,6 +85,8 @@ const ManagerSong = (props) => {
 
   const handleRefresh = () => {
     setIsRefresh(true);
+    setKeySearch("");
+    setSort("newest");
     setTimeout(() => {
       setIsRefresh(false);
     }, 3000);
@@ -62,54 +107,67 @@ const ManagerSong = (props) => {
       <>
         <div className="list-genre-container mx-10 my-5">
           <h1 className="text-xl font-bold">List Album</h1>
-          <div className="flex gap-2 my-2 justify-between">
-            <div className="flex gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="flex items-center gap-3">
               <button
-                onClick={() => {
-                  setShowDialogCreate(true);
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-slate-800 border-slate-800 text-slate-50 hover:bg-slate-700 hover:border-slate-700"
+                type="button"
+                onClick={() => setShowDialogCreate(true)}
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-slate-800 px-4 text-sm font-medium text-slate-50 transition-colors hover:bg-slate-700 active:bg-slate-900 disabled:opacity-50"
               >
                 Add new album
               </button>
+
               <button
-                onClick={() => {
-                  handleRefresh();
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-lime-800 border-lime-800 text-slate-50 hover:bg-lime-700 hover:border-lime-700"
+                type="button"
+                onClick={handleRefresh}
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-lime-800 px-4 text-sm font-medium text-slate-50 transition-colors hover:bg-lime-700 active:bg-lime-900 disabled:opacity-50"
               >
                 Refresh
               </button>
             </div>
 
-            <div>
-              <label
-                for="search"
-                class="block mb-2.5 text-sm font-medium text-heading sr-only "
-              >
-                Search
-              </label>
+            <div className="flex items-end gap-4">
+              {/* Sort */}
+              <Field className="flex-1">
+                <FieldLabel>Sort by</FieldLabel>
+                <Select value={sort} item={sortOptions} onValueChange={setSort}>
+                  <SelectTrigger className="h-10 w-[180px]">
+                    <SelectValue placeholder="--- None ---" />
+                  </SelectTrigger>
 
-              <input
-                type="search"
-                id="search"
-                class="block w-full p-3 ps-9 bg-neutral-secondary-medium bg-white/30 rounded-xl text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
-                placeholder="Search"
-                required
-              />
-              <button
-                type="button"
-                class="absolute end-1.5 bottom-1.5 text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 focus:outline-none"
-              >
-                Search
-              </button>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="none">--- None ---</SelectItem>
+                      {sortOptions.map((sort) => (
+                        <SelectItem key={sort.value} value={sort.value}>
+                          {sort.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Search */}
+              <div className="w-[320px]">
+                <FieldLabel>Search</FieldLabel>
+                <div className="relative">
+                  <input
+                    value={keySearch}
+                    type="search"
+                    placeholder="Title album or artist..."
+                    className="h-10 w-full rounded-lg border border-border bg-background pl-4 pr-10 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                    onChange={(e) => setKeySearch(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="relative overflow-x-auto bg-neutral-1primary-soft shadow-xs rounded-base  h-[522px] border border-white/10 rounded-xl mt-3 scrollbar-none">
+          <div className="relative overflow-x-auto bg-neutral-1primary-soft shadow-xs rounded-base h-[522px] border border-white/10 rounded-xl mt-3 scrollbar-none">
             {!isRefresh ? (
               listAlbum.length > 0 ? (
-                <div className="grid grid-cols-6 gap-70 mx-auto items-center px-24 mt-10">
+                <div className="grid grid-cols-6 gap-70 mx-auto items-center px-10 mt-10">
                   {listAlbum.map((album) => {
                     return (
                       <div

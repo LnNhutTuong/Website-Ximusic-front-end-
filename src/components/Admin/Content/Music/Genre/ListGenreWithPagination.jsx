@@ -167,8 +167,9 @@ const ManagerGenre = (props) => {
                 <FieldLabel>Search</FieldLabel>
                 <div className="relative">
                   <input
+                    value={keySearch}
                     type="search"
-                    placeholder="Ballad..."
+                    placeholder="Name genre..."
                     className="h-10 w-full rounded-lg border border-border bg-background pl-4 pr-10 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                     onChange={(e) => setKeySearch(e.target.value)}
                   />

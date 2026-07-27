@@ -162,6 +162,7 @@ const ManagerSong = (props) => {
 
                 <div className="relative">
                   <input
+                    value={keySearch}
                     type="search"
                     placeholder="Nguoi trong tim..."
                     className="h-10 w-full rounded-lg border border-border bg-background pl-4 pr-20 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
