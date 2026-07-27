@@ -1,7 +1,9 @@
 import axios from "../../../API/axiosSetup";
 
-const getAllSongs = (page, limit) => {
-  return axios.get(`api/v1/song?page=${page}&limit=${limit}`);
+const getAllSongs = (page, limit, genreId, keySearch) => {
+  return axios.get(`api/v1/song`, {
+    params: { page, limit, genreId, keySearch },
+  });
 };
 
 const getSongOptionWithIdOrNot = (id) => {

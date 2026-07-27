@@ -2,7 +2,20 @@ import { useState, useEffect } from "react";
 import { Triangle } from "react-loader-spinner";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import {
+  Field,
+  FieldGroup,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
 import {
@@ -12,6 +25,9 @@ import {
 
 import DialogCreateNewSong from "./DialogCreateNewSong";
 import DialogDetailSong from "./DialogDetailSong";
+
+import { toSelectOptions, toArtistOptions } from "@/utils/selectOption";
+import { getGenreOption } from "@/services/music/genre/genreService";
 
 const ManagerSong = (props) => {
   const [listSong, setListSong] = useState("");
@@ -27,12 +43,22 @@ const ManagerSong = (props) => {
   const [songData, setSongData] = useState("");
   const [showDialogDetail, setShowDialogDetail] = useState(false);
 
+  const [dataGenreOption, setDataGenreOption] = useState([]);
+  const [genreId, setGenreId] = useState("");
+
+  const [keySearch, setKeySearch] = useState("");
+
+  useEffect(() => {
+    handelGetDataGenreOption();
+  }, []);
+
   useEffect(() => {
     getListSongs();
-  }, [currentPage, currentLimit]);
+  }, [currentPage, currentLimit, genreId, keySearch]);
 
   const getListSongs = async () => {
-    let res = await getAllSongs(currentPage, currentLimit);
+    let res = await getAllSongs(currentPage, currentLimit, genreId, keySearch);
+
     if (res?.EC === 0) {
       setListSong(res.DT.rows);
 
@@ -54,6 +80,8 @@ const ManagerSong = (props) => {
   };
 
   const handleRefresh = () => {
+    setGenreId("");
+    setKeySearch("");
     setIsRefresh(true);
     setTimeout(() => {
       setIsRefresh(false);
@@ -70,52 +98,79 @@ const ManagerSong = (props) => {
     }
   };
 
+  const handelGetDataGenreOption = async () => {
+    let res = await getGenreOption();
+    if (res?.EC === 0) {
+      setDataGenreOption(res.DT.rows);
+    }
+  };
+
   return (
     <>
       <>
         <div className="list-genre-container mx-10 my-5">
           <h1 className="text-xl font-bold">List Song</h1>
-          <div className="flex gap-2 my-2 justify-between">
-            <div className="flex gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            {/* Left Actions */}
+            <div className="flex items-center gap-3">
               <button
-                onClick={() => {
-                  setShowDialogCreate(true);
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-slate-800 border-slate-800 text-slate-50 hover:bg-slate-700 hover:border-slate-700"
+                onClick={() => setShowDialogCreate(true)}
+                className="rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700"
               >
                 Add new song
               </button>
+
               <button
-                onClick={() => {
-                  handleRefresh();
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-lime-800 border-lime-800 text-slate-50 hover:bg-lime-700 hover:border-lime-700"
+                onClick={handleRefresh}
+                className="rounded-lg bg-lime-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-lime-600"
               >
                 Refresh
               </button>
             </div>
 
-            <div>
-              <label
-                for="search"
-                class="block mb-2.5 text-sm font-medium text-heading sr-only "
-              >
-                Search
-              </label>
+            {/* Right Filters */}
+            <div className="flex items-end gap-4">
+              {/* Genre */}
+              <Field className="flex-1">
+                <FieldLabel>Genre</FieldLabel>
 
-              <input
-                type="search"
-                id="search"
-                class="block w-full p-3 ps-9 bg-neutral-secondary-medium bg-white/30 rounded-xl text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
-                placeholder="Search"
-                required
-              />
-              <button
-                type="button"
-                class="absolute end-1.5 bottom-1.5 text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 focus:outline-none"
-              >
-                Search
-              </button>
+                <Select
+                  value={genreId}
+                  item={dataGenreOption}
+                  onValueChange={setGenreId}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="--- None ---" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="none">--- None ---</SelectItem>
+                      {dataGenreOption.map((genre) => (
+                        <SelectItem key={genre.id} value={String(genre.id)}>
+                          {genre.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Search */}
+              <div className="w-[320px]">
+                <FieldLabel>Search artist or name song</FieldLabel>
+
+                <div className="relative">
+                  <input
+                    type="search"
+                    placeholder="Nguoi trong tim..."
+                    className="h-10 w-full rounded-lg border border-border bg-background pl-4 pr-20 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                    onChange={(e) => {
+                      setKeySearch(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
