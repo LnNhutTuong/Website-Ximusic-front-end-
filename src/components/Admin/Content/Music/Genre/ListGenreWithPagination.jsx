@@ -4,6 +4,20 @@ import { useSearchParams } from "react-router-dom";
 import DialogCreateNewGenre from "./DialogCreateNewGenre";
 import DialogGenreDetail from "./DialogGenreDetail";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Field,
+  FieldGroup,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
   fetchAllGenre,
   getGenreWithId,
 } from "../../../../../services/music/genre/genreService";
@@ -26,21 +40,56 @@ const ManagerGenre = (props) => {
   //Dialog Genre Detail
   const [showDialogDetail, setShowDialogDetail] = useState(false);
 
+  const [keySearch, setKeySearch] = useState("");
+
+  const [sort, setSort] = useState("newest"); //mac dinh luc nao cung phai show moi
+
+  const sortOptions = [
+    {
+      value: "newest",
+      label: "Newest",
+    },
+    {
+      value: "oldest",
+      label: "Oldest",
+    },
+    {
+      value: "name_asc",
+      label: "Name A-Z",
+    },
+    {
+      value: "name_desc",
+      label: "Name Z-A",
+    },
+    {
+      value: "song_asc",
+      label: "Song ASC",
+    },
+    {
+      value: "song_desc",
+      label: "Song DESC",
+    },
+  ];
+
   const handleRefresh = () => {
+    setSort("newest");
+    setKeySearch("");
     setIsRefresh(true);
     setTimeout(() => {
       setIsRefresh(false);
     }, 3000);
+    getListGenre();
   };
 
   useEffect(() => {
     getListGenre();
-  }, [currentPage, currentLimit]);
+  }, [currentPage, currentLimit, sort, keySearch]);
 
   const getListGenre = async () => {
-    let res = await fetchAllGenre(currentPage, currentLimit);
+    let res = await fetchAllGenre(currentPage, currentLimit, sort, keySearch);
+
     if (res?.EC === 0) {
-      setListGenre(res.DT.rows);
+      setListGenre(res.DT.genres);
 
       let totalGenre = +res.DT.count;
 
@@ -72,46 +121,59 @@ const ManagerGenre = (props) => {
       <>
         <div className="list-genre-container mx-10 my-5">
           <h1 className="text-xl font-bold">List Genres</h1>
-          <div className="flex gap-2 my-2 justify-between">
-            <div className="flex gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="flex items-center gap-3">
               <button
-                onClick={() => {
-                  setShowDialogCreate(true);
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-slate-800 border-slate-800 text-slate-50 hover:bg-slate-700 hover:border-slate-700"
+                type="button"
+                onClick={() => setShowDialogCreate(true)}
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-slate-800 px-4 text-sm font-medium text-slate-50 transition-colors hover:bg-slate-700 active:bg-slate-900 disabled:opacity-50"
               >
                 Add new genre
               </button>
+
               <button
-                onClick={() => {
-                  handleRefresh();
-                }}
-                class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-2 px-4 shadow-sm hover:shadow-md bg-lime-800 border-lime-800 text-slate-50 hover:bg-lime-700 hover:border-lime-700"
+                type="button"
+                onClick={handleRefresh}
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-lime-800 px-4 text-sm font-medium text-slate-50 transition-colors hover:bg-lime-700 active:bg-lime-900 disabled:opacity-50"
               >
                 Refresh
               </button>
             </div>
-            <div>
-              <label
-                for="search"
-                class="block mb-2.5 text-sm font-medium text-heading sr-only "
-              >
-                Search
-              </label>
 
-              <input
-                type="search"
-                id="search"
-                class="block w-full p-3 ps-9 bg-neutral-secondary-medium bg-white/30 rounded-xl text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
-                placeholder="Search"
-                required
-              />
-              <button
-                type="button"
-                class="absolute end-1.5 bottom-1.5 text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 focus:outline-none"
-              >
-                Search
-              </button>
+            <div className="flex items-end gap-4">
+              {/* Sort */}
+              <Field className="flex-1">
+                <FieldLabel>Sort by</FieldLabel>
+                <Select value={sort} item={sortOptions} onValueChange={setSort}>
+                  <SelectTrigger className="h-10 w-[180px]">
+                    <SelectValue placeholder="--- None ---" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="none">--- None ---</SelectItem>
+                      {sortOptions.map((sort) => (
+                        <SelectItem key={sort.value} value={sort.value}>
+                          {sort.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Search */}
+              <div className="w-[320px]">
+                <FieldLabel>Search</FieldLabel>
+                <div className="relative">
+                  <input
+                    type="search"
+                    placeholder="Ballad..."
+                    className="h-10 w-full rounded-lg border border-border bg-background pl-4 pr-10 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                    onChange={(e) => setKeySearch(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

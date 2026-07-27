@@ -158,7 +158,7 @@ const ManagerSong = (props) => {
 
               {/* Search */}
               <div className="w-[320px]">
-                <FieldLabel>Search artist or name song</FieldLabel>
+                <FieldLabel>Search</FieldLabel>
 
                 <div className="relative">
                   <input
