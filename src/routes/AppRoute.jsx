@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import Admin from "@/pages/Admin";
+import Dashboard from "../components/Admin/Content/Dashboard";
 import ManagerUser from "../components/Admin/Content/User/ListUserWithPagination";
 import ManagerGenre from "../components/Admin/Content/Music/Genre/ListGenreWithPagination";
 import ManageAlbum from "../components/Admin/Content/Music/Album/ListAlbum";
@@ -24,7 +25,8 @@ const AppRoutes = (props) => {
 
         {/* private route */}
         <Route element={<PrivateRoutes />}>
-          <Route path="admin" element={<Admin />}>
+          <Route path="/admin" element={<Admin />}>
+            <Route index element={<Dashboard />} />
             <Route path="users" element={<ManagerUser />} />
             <Route path="genre" element={<ManagerGenre />} />
             <Route path="album" element={<ManageAlbum />} />

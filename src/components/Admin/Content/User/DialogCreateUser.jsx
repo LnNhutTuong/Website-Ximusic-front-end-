@@ -27,8 +27,8 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { handleCreateNewUser } from "../../../../services/user/userService";
-import { getAllGroup } from "../../../../services/groupService";
+import { handleCreateNewUser } from "../../../../services/admin/user/userService";
+import { getAllGroup } from "../../../../services/admin/group/groupService";
 
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

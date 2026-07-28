@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,13 +46,16 @@ import ReactSelect from "react-select";
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 import { toSelectOptions, toArtistOptions } from "@/utils/selectOption";
 
-import { getArtistOption } from "@/services/artist/artistService";
+import { getArtistOption } from "@/services/admin/artist/artistService";
 
-import { getAlbumOptionWithIdOrNot } from "@/services/music/album/albumService";
+import { getAlbumOptionWithIdOrNot } from "@/services/admin/music/album/albumService";
 
-import { getGenreOption } from "@/services/music/genre/genreService";
+import { getGenreOption } from "@/services/admin/music/genre/genreService";
 
-import { songUpdate, deleteSong } from "@/services/music/song/songService";
+import {
+  songUpdate,
+  deleteSong,
+} from "@/services/admin/music/song/songService";
 
 const DialogDetailSong = (props) => {
   const { show, setShow, songData, fetchListSong } = props;
@@ -70,6 +74,13 @@ const DialogDetailSong = (props) => {
   const [duration, setDuration] = useState(0);
 
   const [lyrics, setLyrics] = useState("");
+
+  const [status, setStatus] = useState(0);
+  const statusOptions = [
+    { value: 0, label: "Draft" },
+    { value: 1, label: "Published" },
+    { value: 2, label: "Private" },
+  ];
 
   const [ownerId, setOwnerId] = useState("");
   const [featureId, setFeatureId] = useState([]);
@@ -108,7 +119,7 @@ const DialogDetailSong = (props) => {
       setDuration(songData.duration);
 
       setLyrics(songData.lyrics);
-
+      setStatus(songData.status);
       setOwnerId(songData.ownerId);
       setFeatureId(toArtistOptions(songData.features));
 
@@ -187,6 +198,8 @@ const DialogDetailSong = (props) => {
     setAudioFileName("");
     setDuration("");
     setLyrics("");
+
+    setStatus(0);
 
     setOwnerId("");
     setFeatureId([]);
@@ -288,31 +301,12 @@ const DialogDetailSong = (props) => {
         message: "Can not get duration",
       },
 
-      //lyrics
-      // {
-      //   field: "lyrics",
-      //   value: lyrics.trim() !== "",
-      //   message: "Please fill lyrics",
-      // },
-      // {
-      //   field: "lyrics",
-      //   value: lrcRegex.test(lyrics),
-      //   message: "Lyrics are invalid",
-      // },
-
       //owner
       {
         field: "ownerId",
         value: !!ownerId,
         message: "Please select owner song",
       },
-
-      //feature
-      // {
-      //   field: "featureId",
-      //   value: featureId.length > 0,
-      //   message: "Please select owner song",
-      // },
 
       //genre
       {
@@ -372,6 +366,7 @@ const DialogDetailSong = (props) => {
       newCover || cover,
       duration,
       lyrics,
+      status,
       ownerId,
       listFeature,
       listGenre,
@@ -653,6 +648,29 @@ const DialogDetailSong = (props) => {
                     </SelectContent>
                   </Select>
                 </Field>
+
+                <Field>
+                  <FieldLabel>Status</FieldLabel>
+                  <RadioGroup
+                    defaultValue="comfortable"
+                    className="w-fit flex gap-2"
+                    value={status}
+                    onValueChange={setStatus}
+                  >
+                    {statusOptions.map((statusO) => (
+                      <div className="flex items-center gap-1 ">
+                        <RadioGroupItem
+                          value={statusO.value}
+                          id={String(statusO.value)}
+                        />
+                        <Label htmlFor={String(statusO.value)}>
+                          {statusO.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </Field>
+
                 <Tabs
                   defaultValue="genre"
                   className="w-full border  h-106 rounded-xl"

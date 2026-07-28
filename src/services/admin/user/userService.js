@@ -1,4 +1,4 @@
-import axios from "../../API/axiosSetup";
+import axios from "../../../API/axiosSetup";
 
 const fetchAllUser = (page, limit, group, sort, keySearch) => {
   return axios.get(`api/v1/user`, {
@@ -46,15 +46,10 @@ const handleDeleteUser = (id) => {
   return axios.delete(`api/v1/user/delete/${id}`);
 };
 
-const getUserAccount = () => {
-  return axios.get("/api/v1/account");
-};
-
 export {
   fetchAllUser,
   handleCreateNewUser,
   handleGetUserWithId,
   handleUpdateUser,
   handleDeleteUser,
-  getUserAccount,
 };

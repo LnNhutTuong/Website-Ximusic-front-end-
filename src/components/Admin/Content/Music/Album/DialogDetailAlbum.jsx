@@ -50,11 +50,14 @@ import ReactSelect from "react-select";
 
 import { toSongSelect } from "@/utils/selectOption";
 
-import { getArtistOption } from "@/services/artist/artistService";
+import { getArtistOption } from "@/services/admin/artist/artistService";
 
-import { getSongOptionWithIdOrNot } from "@/services/music/song/songService";
+import { getSongOptionWithIdOrNot } from "@/services/admin/music/song/songService";
 
-import { albumUpdate, deleteAlbum } from "@/services/music/album/albumService";
+import {
+  albumUpdate,
+  deleteAlbum,
+} from "@/services/admin/music/album/albumService";
 
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 

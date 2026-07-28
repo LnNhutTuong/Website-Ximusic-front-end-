@@ -31,7 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { createNewGenre } from "../../../../../services/music/genre/genreService";
+import { createNewGenre } from "../../../../../services/admin/music/genre/genreService";
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
 const DialogCreateNewGenre = (props) => {

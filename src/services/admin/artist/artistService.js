@@ -1,4 +1,4 @@
-import axios from "../../API/axiosSetup";
+import axios from "../../../API/axiosSetup";
 
 const getAllArtist = () => {
   return axios.get(`api/v1/artist`);

@@ -24,7 +24,7 @@ import { toast } from "react-toastify";
 import {
   updateGenre,
   deleteGenre,
-} from "../../../../../services/music/genre/genreService";
+} from "../../../../../services/admin/music/genre/genreService";
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 
 const DialogGenreDetail = (props) => {

@@ -1,4 +1,4 @@
-import axios from "../../../API/axiosSetup";
+import axios from "../../../../API/axiosSetup";
 
 const getAllSongs = (page, limit, genreId, keySearch) => {
   return axios.get(`api/v1/song`, {
@@ -16,6 +16,7 @@ const createNewSong = (
   cover,
   duration,
   lyrics,
+  status,
   ownerId,
   featureId,
   genreId,
@@ -28,6 +29,7 @@ const createNewSong = (
   data.append("cover", cover);
   data.append("duration", duration);
   data.append("lyrics", lyrics);
+  data.append("status", status);
 
   genreId.forEach((item) => {
     data.append("genreId", item);
@@ -51,6 +53,7 @@ const songUpdate = (
   cover,
   duration,
   lyrics,
+  status,
   ownerId,
   featureId,
   genreId,
@@ -63,6 +66,7 @@ const songUpdate = (
   data.append("cover", cover);
   data.append("duration", duration);
   data.append("lyrics", lyrics);
+  data.append("status", status);
 
   genreId.forEach((item) => {
     data.append("genreId", item);

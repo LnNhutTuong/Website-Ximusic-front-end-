@@ -3,7 +3,7 @@ import {
   fetchAllUser,
   handleDeleteUser,
   handleGetUserWithId,
-} from "../../../../services/user/userService";
+} from "../../../../services/admin/user/userService";
 import { useSearchParams } from "react-router-dom";
 import DialogCreateUser from "./DialogCreateUser";
 import DialogDetailUser from "./DialogDetailUser";

@@ -21,7 +21,6 @@ const LibrarySidebar = (props) => {
   };
 
   const { user } = useContext(UserContext);
-  console.log(">>>>check user: ", user);
   const handleScroll = (direction) => {
     const container = document.getElementById("category-scroll-container");
     if (container) {

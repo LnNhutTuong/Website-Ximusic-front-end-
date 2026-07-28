@@ -1,4 +1,4 @@
-import axios from "../../../API/axiosSetup";
+import axios from "../../../../API/axiosSetup";
 
 const fetchAllGenre = (page, limit, sort, keySearch) => {
   return axios.get(`api/v1/genre`, {

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { handleLogin } from "../../services/authService";
+import { handleLogin } from "../../services/auth/authService";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/userContext";
 import { Triangle } from "react-loader-spinner";

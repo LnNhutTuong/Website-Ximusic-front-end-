@@ -20,7 +20,7 @@ import {
 import {
   fetchAllGenre,
   getGenreWithId,
-} from "../../../../../services/music/genre/genreService";
+} from "../../../../../services/admin/music/genre/genreService";
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 const ManagerGenre = (props) => {
   const [listGenre, setListGenre] = useState([]);

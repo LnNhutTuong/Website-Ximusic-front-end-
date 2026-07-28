@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { registerNewUser } from "../../services/authService";
+import { registerNewUser } from "../../services/auth/authService";
 import { Triangle } from "react-loader-spinner";
 const Register = (props) => {
   const navigate = useNavigate();

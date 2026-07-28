@@ -18,7 +18,7 @@ import {
 import {
   getListAlbum,
   getAlbumWithId,
-} from "../../../../../services/music/album/albumService";
+} from "../../../../../services/admin/music/album/albumService";
 
 import DialogCreateNewAlbum from "./DialogCreateNewAlbum";
 

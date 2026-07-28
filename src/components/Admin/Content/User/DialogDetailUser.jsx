@@ -31,8 +31,8 @@ import { Label } from "@/components/ui/label";
 import {
   handleUpdateUser,
   handleDeleteUser,
-} from "../../../../services/user/userService";
-import { getAllGroup } from "../../../../services/groupService";
+} from "../../../../services/admin/user/userService";
+import { getAllGroup } from "../../../../services/admin/group/groupService";
 import DialogArtistProfile from "./DialogArtistProfile";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

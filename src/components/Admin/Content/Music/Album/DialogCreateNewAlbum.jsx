@@ -40,11 +40,11 @@ import ReactSelect from "react-select";
 
 import { toSongSelect } from "@/utils/selectOption";
 
-import { getSongOptionWithIdOrNot } from "@/services/music/song/songService";
+import { getSongOptionWithIdOrNot } from "@/services/admin/music/song/songService";
 
-import { getArtistOption } from "@/services/artist/artistService";
+import { getArtistOption } from "@/services/admin/artist/artistService";
 
-import { createNewAlbum } from "@/services/music/album/albumService";
+import { createNewAlbum } from "@/services/admin/music/album/albumService";
 
 import questionIcon from "@/assets/static/genre/question_icon.jpg";
 

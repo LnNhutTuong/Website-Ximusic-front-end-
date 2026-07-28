@@ -21,13 +21,13 @@ import questionIcon from "@/assets/static/genre/question_icon.jpg";
 import {
   getAllSongs,
   getSongWithId,
-} from "../../../../../services/music/song/songService";
+} from "../../../../../services/admin/music/song/songService";
 
 import DialogCreateNewSong from "./DialogCreateNewSong";
 import DialogDetailSong from "./DialogDetailSong";
 
 import { toSelectOptions, toArtistOptions } from "@/utils/selectOption";
-import { getGenreOption } from "@/services/music/genre/genreService";
+import { getGenreOption } from "@/services/admin/music/genre/genreService";
 
 const ManagerSong = (props) => {
   const [listSong, setListSong] = useState("");
