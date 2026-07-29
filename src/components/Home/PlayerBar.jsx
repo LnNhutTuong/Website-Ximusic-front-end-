@@ -4,28 +4,50 @@ import {
   GiFastBackwardButton,
   GiFastForwardButton,
   GiPlayButton,
+  GiPauseButton,
 } from "react-icons/gi";
 import { FaRepeat, FaVolumeHigh } from "react-icons/fa6";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { PlayerContext } from "@/context/musicContext";
 
 const PlayerBar = () => {
-  const { player, setPlayer } = useContext(PlayerContext);
+  const { queue, currentIndex, isPlaying, setIsPlaying, audioRef } =
+    useContext(PlayerContext);
 
-  return player && player.currentSong != null ? (
+  const currentSong = queue[currentIndex];
+
+  useEffect(() => {
+    if (!currentSong || !audioRef.current) return;
+
+    audioRef.current.play();
+  }, [currentSong]);
+
+  const togglePlayPause = async () => {
+    if (!audioRef.current || !currentSong) return;
+
+    if (audioRef.current.paused) {
+      await audioRef.current.play();
+      setIsPlaying(true);
+    } else {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  return currentSong ? (
     <div className="fixed bottom-0 left-0 right-0 h-20 bg-black/95 flex items-center justify-between px-5 text-white z-50 select-none border-t border-white/20">
       <div className="flex items-center w-1/3 min-w-[180px]">
         <img
-          src="https://picsum.photos/56"
+          src={`${import.meta.env.VITE_BACKEND_URL}/${currentSong.cover}`}
           alt="Cover"
           className="w-14 h-14 rounded object-cover mr-3 bg-gray-800"
         />
         <div className="overflow-hidden">
           <div className="text-sm font-semibold truncate hover:underline cursor-pointer">
-            Tên Bài Hát Mẫu
+            {currentSong.title}
           </div>
           <div className="text-xs text-gray-400 truncate hover:underline hover:text-white cursor-pointer">
-            Ca Sĩ / Artist
+            {currentSong.owner.artistName}
           </div>
         </div>
         <div className="text-sm px-2">
@@ -43,8 +65,13 @@ const PlayerBar = () => {
           <button className="text-gray-400 hover:text-white text-xl transition">
             <GiFastBackwardButton />
           </button>
-          <button className="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center text-lg hover:scale-105 transition font-bold">
-            <GiPlayButton />
+          <button
+            className="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center text-lg hover:scale-105 transition font-bold"
+            onClick={() => {
+              togglePlayPause();
+            }}
+          >
+            {isPlaying ? <GiPauseButton /> : <GiPlayButton />}
           </button>
           <button className="text-gray-400 hover:text-white text-lg transition">
             <GiFastForwardButton />
@@ -55,14 +82,22 @@ const PlayerBar = () => {
         </div>
 
         <div className="flex items-center w-full gap-2 text-[11px] text-gray-400">
-          <span>1:23</span>
+          <audio
+            ref={audioRef}
+            src={
+              currentSong
+                ? `${import.meta.env.VITE_BACKEND_URL}/${currentSong.audioUrl}`
+                : ""
+            }
+          />
+          {/* <span>0:00</span>
           <div className="flex-grow group relative py-2 cursor-pointer">
             <div className="h-1 w-full bg-gray-600 rounded-full overflow-hidden">
               <div className="h-full bg-white w-[35%]" />
             </div>
             <div className="absolute top-1/2 left-[35%] -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full hidden group-hover:block" />
           </div>
-          <span>3:45</span>
+          <span>3:45</span> */}
         </div>
       </div>
 

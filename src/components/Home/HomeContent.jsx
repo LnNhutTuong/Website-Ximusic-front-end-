@@ -1,6 +1,30 @@
 import { Swiper, SwiperSlide } from "swiper/react";
+import { PlayerContext } from "@/context/musicContext";
+import { useContext, useEffect, useState } from "react";
+
+import { getAllSongsPublic } from "@/services/public/music/songService";
 
 const HomeContent = (props) => {
+  const [listSong, setListSong] = useState("");
+  const [listSongHistories, setListSongHistories] = useState("");
+
+  useEffect(() => {
+    handleGetAllSongs();
+  }, []);
+
+  const handleGetAllSongs = async () => {
+    let res = await getAllSongsPublic(1, 6);
+    if (res?.EC === 0) {
+      setListSong(res?.DT.rows);
+    }
+  };
+
+  const { playSongContext } = useContext(PlayerContext);
+
+  const handlePlaySong = (song, songs, playlist = null) => {
+    playSongContext(song, songs, { type: "HOME" });
+  };
+
   return (
     <div className="flex-1 h-[calc(100%-30px)] rounded-xl overflow-y-auto space-y-4 scrollbar-none mb-3">
       <div className="h-56 rounded-xl overflow-hidden">
@@ -32,61 +56,23 @@ const HomeContent = (props) => {
           </button>
         </div>
         <div className="grid grid-cols-3 gap-3 px-2">
-          <div className="flex items-center gap-3 p-2 border border-white/5 shrink-0 rounded-lg hover:bg-white/10">
-            <img
-              src="https://picsum.photos/60"
-              className="w-12 h-12 rounded-md object-cover"
-            />
-            <div>
-              <p className="text-sm font-medium">Haisam</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10">
-            <img
-              src="https://picsum.photos/60"
-              className="w-12 h-12 rounded-md object-cover"
-            />
-            <div>
-              <p className="text-sm font-medium">Haisam</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10">
-            <img
-              src="https://picsum.photos/60"
-              className="w-12 h-12 rounded-md object-cover"
-            />
-            <div>
-              <p className="text-sm font-medium">Haisam</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10">
-            <img
-              src="https://picsum.photos/60"
-              className="w-12 h-12 rounded-md object-cover"
-            />
-            <div>
-              <p className="text-sm font-medium">Haisam</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10">
-            <img
-              src="https://picsum.photos/60"
-              className="w-12 h-12 rounded-md object-cover"
-            />
-            <div>
-              <p className="text-sm font-medium">Haisam</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10">
-            <img
-              src="https://picsum.photos/60"
-              className="w-12 h-12 rounded-md object-cover"
-            />
-            <div>
-              <p className="text-sm font-medium">Haisam</p>
-            </div>
-          </div>
+          {listSong.length > 0 &&
+            listSong.map((song) => (
+              <div
+                className="flex items-center gap-3 p-2 border border-white/5 shrink-0 rounded-lg hover:bg-white/10 hover:cursor-pointer"
+                onClick={() => {
+                  handlePlaySong(song, listSong);
+                }}
+              >
+                <img
+                  src={`${import.meta.env.VITE_BACKEND_URL}/${song.cover}`}
+                  className="w-12 h-12 rounded-md object-cover"
+                />
+                <div>
+                  <p className="text-sm font-medium">{song.title}</p>
+                </div>
+              </div>
+            ))}
         </div>
       </div>
       <div className="h-84 bg-stone-900/80 flex rounded-xl overflow-hidden">

@@ -373,6 +373,8 @@ const DialogDetailSong = (props) => {
       albumId,
     );
 
+    console.log(">>>check res: ", res);
+
     if (res?.EC === 0) {
       toast.success(res.EM);
       await fetchListSong();
@@ -656,6 +658,7 @@ const DialogDetailSong = (props) => {
                     className="w-fit flex gap-2"
                     value={status}
                     onValueChange={setStatus}
+                    disabled={!isEdit}
                   >
                     {statusOptions.map((statusO) => (
                       <div className="flex items-center gap-1 ">

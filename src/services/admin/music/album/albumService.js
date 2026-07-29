@@ -1,15 +1,15 @@
 import axios from "../../../../API/axiosSetup";
 
 const getAlbumOptionWithIdOrNot = (id) => {
-  return axios.get(`/api/v1/album/option?id=${id}`);
+  return axios.get(`/api/v1/admin/album/option?id=${id}`);
 };
 
 const getListAlbum = (sort, keySearch) => {
-  return axios.get("api/v1/album", { params: { sort, keySearch } });
+  return axios.get("api/v1/admin/album", { params: { sort, keySearch } });
 };
 
 const getAlbumWithId = (albumId) => {
-  return axios.get(`api/v1/album/${albumId}`);
+  return axios.get(`api/v1/admin/album/${albumId}`);
 };
 
 const createNewAlbum = (title, cover, ownerId, releaseDate, listSongChoose) => {
@@ -24,7 +24,7 @@ const createNewAlbum = (title, cover, ownerId, releaseDate, listSongChoose) => {
     data.append("songId", song);
   });
 
-  return axios.post(`api/v1/album/create`, data);
+  return axios.post(`api/v1/admin/album/create`, data);
 };
 
 const albumUpdate = (
@@ -46,11 +46,11 @@ const albumUpdate = (
     data.append("songId", song);
   });
 
-  return axios.put(`/api/v1/album/update/${albumId}`, data);
+  return axios.put(`/api/v1/admin/album/update/${albumId}`, data);
 };
 
 const deleteAlbum = (id) => {
-  return axios.delete(`/api/v1/album/delete/${id}`);
+  return axios.delete(`/api/v1/admin/album/delete/${id}`);
 };
 
 export {

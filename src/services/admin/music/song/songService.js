@@ -1,13 +1,13 @@
 import axios from "../../../../API/axiosSetup";
 
 const getAllSongs = (page, limit, genreId, keySearch) => {
-  return axios.get(`api/v1/song`, {
+  return axios.get(`api/v1/admin/song`, {
     params: { page, limit, genreId, keySearch },
   });
 };
 
 const getSongOptionWithIdOrNot = (id) => {
-  return axios.get(`/api/v1/song/option?id=${id}`);
+  return axios.get(`/api/v1/admin/song/option?id=${id}`);
 };
 
 const createNewSong = (
@@ -39,11 +39,11 @@ const createNewSong = (
   data.append("featureId", featureId);
   data.append("albumId", albumId);
 
-  return axios.post("/api/v1/song/create", data);
+  return axios.post("/api/v1/admin/song/create", data);
 };
 
 const getSongWithId = (songId) => {
-  return axios.get(`/api/v1/song/${songId}`);
+  return axios.get(`/api/v1/admin/song/${songId}`);
 };
 
 const songUpdate = (
@@ -79,11 +79,11 @@ const songUpdate = (
 
   data.append("albumId", albumId);
 
-  return axios.put(`/api/v1/song/update/${songId}`, data);
+  return axios.put(`/api/v1/admin/song/update/${songId}`, data);
 };
 
 const deleteSong = (songId) => {
-  return axios.delete(`/api/v1/song/delete/${songId}`);
+  return axios.delete(`/api/v1/admin/song/delete/${songId}`);
 };
 
 export {

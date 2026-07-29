@@ -55,6 +55,8 @@ const UserProvider = ({ children }) => {
         });
       }
     } catch (error) {
+      console.log("fetchUser error");
+
       setUser({
         isLoadingAuth: false,
         isAuthenticated: false,

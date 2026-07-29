@@ -1,7 +1,7 @@
 import axios from "../../../API/axiosSetup";
 
 const fetchAllUser = (page, limit, group, sort, keySearch) => {
-  return axios.get(`api/v1/user`, {
+  return axios.get(`api/v1/admin/user`, {
     params: { page, limit, group, sort, keySearch },
   });
 };
@@ -13,7 +13,7 @@ const handleCreateNewUser = (
   groupId,
   statusVerify,
 ) => {
-  return axios.post("api/v1/user/create", {
+  return axios.post("api/v1/admin/user/create", {
     email,
     password,
     displayName,
@@ -23,7 +23,7 @@ const handleCreateNewUser = (
 };
 
 const handleGetUserWithId = (id) => {
-  return axios.get(`api/v1/user/${id}`);
+  return axios.get(`api/v1/admin/user/${id}`);
 };
 
 const handleUpdateUser = (
@@ -34,7 +34,7 @@ const handleUpdateUser = (
 
   statusVerify,
 ) => {
-  return axios.put(`api/v1/user/update/${id}`, {
+  return axios.put(`api/v1/admin/user/update/${id}`, {
     email,
     displayName,
     groupId,
@@ -43,7 +43,7 @@ const handleUpdateUser = (
 };
 
 const handleDeleteUser = (id) => {
-  return axios.delete(`api/v1/user/delete/${id}`);
+  return axios.delete(`api/v1/admin/user/delete/${id}`);
 };
 
 export {
