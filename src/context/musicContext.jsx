@@ -16,7 +16,7 @@ const PlayerProvider = ({ children }) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [volume, setVolume] = useState(100);
+  const [volume, setVolume] = useState(1);
   const [lastVolume, setLastVolume] = useState(1);
 
   const [repeatMode, setRepeatMode] = useState("off");

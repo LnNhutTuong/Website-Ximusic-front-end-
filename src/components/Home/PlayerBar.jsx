@@ -60,6 +60,28 @@ const PlayerBar = () => {
     audioRef.current.play();
   }, [currentSong]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === "Space") {
+        if (
+          e.target.tagName === "INPUT" ||
+          e.target.tagName === "TEXTAREA" ||
+          e.target.isContentEditable
+        ) {
+          return;
+        }
+
+        e.preventDefault();
+        togglePlayPause(currentSong);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentSong]);
   //+++++====VOlume======
   useEffect(() => {
     if (!audioRef.current) return;
