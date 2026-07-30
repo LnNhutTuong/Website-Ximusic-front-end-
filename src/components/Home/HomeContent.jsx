@@ -2,6 +2,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { PlayerContext } from "@/context/musicContext";
 import { useContext, useEffect, useState } from "react";
 
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
 import { getAllSongsPublic } from "@/services/public/music/songService";
 
 const HomeContent = (props) => {
@@ -49,30 +51,78 @@ const HomeContent = (props) => {
       </div>
       <div className="rounded-xl bg-stone-900/80 h-50 ">
         <div className="p-3 flex gap-1 text-sm">
-          <button className="border border-white rounded-xl px-3 ">All</button>
-          <button className="border border-white rounded-xl px-3">Music</button>
-          <button className="border border-white rounded-xl px-3">
-            PodCasts
-          </button>
-        </div>
-        <div className="grid grid-cols-3 gap-3 px-2">
-          {listSong.length > 0 &&
-            listSong.map((song) => (
-              <div
-                className="flex items-center gap-3 p-2 border border-white/5 shrink-0 rounded-lg hover:bg-white/10 hover:cursor-pointer"
-                onClick={() => {
-                  handlePlaySong(song, listSong);
-                }}
+          <Tabs
+            defaultValue="all"
+            className="w-full border rounded-xl border border-none "
+          >
+            <TabsList className="w-mã text-white flex gap-1 bg-transparent border border-none  ">
+              <TabsTrigger
+                className="border border-white rounded-xl px-3 text-white"
+                value="all"
               >
-                <img
-                  src={`${import.meta.env.VITE_BACKEND_URL}/${song.cover}`}
-                  className="w-12 h-12 rounded-md object-cover"
-                />
-                <div>
-                  <p className="text-sm font-medium">{song.title}</p>
-                </div>
+                All
+              </TabsTrigger>
+              <TabsTrigger
+                className="border border-white rounded-xl px-3 text-white"
+                value="song"
+              >
+                Music
+              </TabsTrigger>
+              <TabsTrigger
+                className="border border-white rounded-xl px-3 text-white"
+                value="podcast"
+              >
+                PodCast
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <div className="grid grid-cols-3 gap-3 px-2">
+                {listSong.length > 0 &&
+                  listSong.map((song) => (
+                    <div
+                      className="flex items-center gap-3 p-2 border border-white/5 shrink-0 rounded-lg hover:bg-white/10 hover:cursor-pointer"
+                      onClick={() => {
+                        handlePlaySong(song, listSong);
+                      }}
+                    >
+                      <img
+                        src={`${import.meta.env.VITE_BACKEND_URL}/${song.cover}`}
+                        className="w-12 h-12 rounded-md object-cover"
+                      />
+                      <div>
+                        <p className="text-sm font-medium">{song.title}</p>
+                      </div>
+                    </div>
+                  ))}
               </div>
-            ))}
+            </TabsContent>
+            <TabsContent value="song">
+              <div className="grid grid-cols-3 gap-3 px-2">
+                {listSong.length > 0 &&
+                  listSong.map((song) => (
+                    <div
+                      className="flex items-center gap-3 p-2 border border-white/5 shrink-0 rounded-lg hover:bg-white/10 hover:cursor-pointer"
+                      onClick={() => {
+                        handlePlaySong(song, listSong);
+                      }}
+                    >
+                      <img
+                        src={`${import.meta.env.VITE_BACKEND_URL}/${song.cover}`}
+                        className="w-12 h-12 rounded-md object-cover"
+                      />
+                      <div>
+                        <p className="text-sm font-medium">{song.title}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="podcast">
+              <h1 className="flex justify-center item-center font-bold text-xl text-blue-400/90">
+                chưa ai nói chuyện để làm podcast
+              </h1>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       <div className="h-84 bg-stone-900/80 flex rounded-xl overflow-hidden">

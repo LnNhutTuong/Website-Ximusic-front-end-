@@ -1,37 +1,103 @@
 import { FaPlus } from "react-icons/fa";
-import { FaRandom, FaVolumeMute } from "react-icons/fa";
+import { FaRandom, FaVolumeMute, FaVolumeDown } from "react-icons/fa";
 import {
   GiFastBackwardButton,
   GiFastForwardButton,
   GiPlayButton,
   GiPauseButton,
 } from "react-icons/gi";
-import { FaRepeat, FaVolumeHigh } from "react-icons/fa6";
+import { FaVolumeHigh } from "react-icons/fa6";
+import { PiRepeatBold, PiRepeatOnceBold } from "react-icons/pi";
+
 import { useContext, useEffect } from "react";
+
+import { formatTimeProgress } from "@/utils/songUtils";
+
 import { PlayerContext } from "@/context/musicContext";
 
 const PlayerBar = () => {
-  const { queue, currentIndex, isPlaying, setIsPlaying, audioRef } =
-    useContext(PlayerContext);
+  const {
+    queue,
 
+    currentIndex,
+
+    isPlaying,
+    setIsPlaying,
+
+    volume,
+    setVolume,
+    lastVolume,
+    setLastVolume,
+
+    audioRef,
+
+    currentTime,
+    setCurrentTime,
+
+    duration,
+    setDuration,
+
+    repeatMode,
+
+    shuffleMode,
+
+    togglePlayPause,
+
+    handleNextSong,
+    handlePrevSong,
+    handleRepeat,
+    handleShuffle,
+
+    handleMuteVolume,
+  } = useContext(PlayerContext);
+
+  //========RUN AUDIO==========
   const currentSong = queue[currentIndex];
 
   useEffect(() => {
     if (!currentSong || !audioRef.current) return;
-
+    setIsPlaying(true);
     audioRef.current.play();
   }, [currentSong]);
 
-  const togglePlayPause = async () => {
-    if (!audioRef.current || !currentSong) return;
+  //+++++====VOlume======
+  useEffect(() => {
+    if (!audioRef.current) return;
 
-    if (audioRef.current.paused) {
-      await audioRef.current.play();
-      setIsPlaying(true);
-    } else {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
+    audioRef.current.volume = volume;
+  }, [volume]);
+
+  const handleVolume = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const clickX = e.clientX - rect.left;
+
+    //gioi han nam trong cai progress
+    const percent = Math.min(Math.max(clickX / rect.width, 0), 1);
+
+    setVolume(percent);
+  };
+
+  //========Format time lai==========
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  //=================ANh Tua=======
+  const handSeek = (e) => {
+    if (!audioRef.current || !duration) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const clickX = e.clientX - rect.left;
+
+    //gioi han nam trong cai progress
+    const percent = Math.min(Math.max(clickX / rect.width, 0), 1);
+
+    audioRef.current.currentTime = percent * duration;
+
+    const newTime = percent * duration;
+
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
   };
 
   return currentSong ? (
@@ -59,64 +125,137 @@ const PlayerBar = () => {
 
       <div className="flex flex-col items-center w-1/3 max-w-[600px]">
         <div className="flex items-center gap-5 mb-1.5">
-          <button className="text-gray-400 hover:text-white text-lg transition">
-            <FaRandom />
+          <button
+            className="text-gray-400 hover:text-white text-lg transition hover:cursor-pointer"
+            onClick={() => {
+              handleShuffle(currentSong);
+            }}
+          >
+            {shuffleMode ? (
+              <FaRandom className="text-white" />
+            ) : (
+              <FaRandom className="text-gray-400 hover:text-white transition" />
+            )}
           </button>
-          <button className="text-gray-400 hover:text-white text-xl transition">
+          <button
+            className="text-gray-400 hover:text-white text-xl transition hover:cursor-pointer"
+            onClick={handlePrevSong}
+          >
             <GiFastBackwardButton />
           </button>
           <button
             className="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center text-lg hover:scale-105 transition font-bold"
             onClick={() => {
-              togglePlayPause();
+              togglePlayPause(currentSong);
             }}
           >
             {isPlaying ? <GiPauseButton /> : <GiPlayButton />}
           </button>
-          <button className="text-gray-400 hover:text-white text-lg transition">
+          <button
+            className="text-gray-400 hover:text-white text-lg transition hover:cursor-pointer"
+            onClick={handleNextSong}
+          >
             <GiFastForwardButton />
           </button>
-          <button className="text-gray-400 hover:text-white text-lg transition">
-            <FaRepeat />
+          <button
+            className="text-gray-400 text-xl hover:cursor-pointer "
+            onClick={handleRepeat}
+          >
+            {(() => {
+              switch (repeatMode) {
+                case "off":
+                  return (
+                    <PiRepeatBold className="text-gray-400 hover:text-white transition" />
+                  );
+                case "all":
+                  return <PiRepeatBold className="text-white" />;
+                case "one":
+                  return <PiRepeatOnceBold className="text-white" />;
+                default:
+                  return <PiRepeatBold />;
+              }
+            })()}
           </button>
         </div>
 
         <div className="flex items-center w-full gap-2 text-[11px] text-gray-400">
           <audio
+            key={currentSong?.id}
             ref={audioRef}
             src={
               currentSong
                 ? `${import.meta.env.VITE_BACKEND_URL}/${currentSong.audioUrl}`
                 : ""
             }
+            onEnded={handleNextSong}
+            onTimeUpdate={() => {
+              setCurrentTime(audioRef.current.currentTime);
+            }}
+            onLoadedMetadata={() => {
+              setDuration(audioRef.current.duration);
+            }}
           />
-          {/* <span>0:00</span>
-          <div className="flex-grow group relative py-2 cursor-pointer">
+          <span>{formatTimeProgress(currentTime)}</span>
+          <div
+            className="flex-grow group relative py-2 cursor-pointer"
+            onClick={handSeek}
+          >
             <div className="h-1 w-full bg-gray-600 rounded-full overflow-hidden">
-              <div className="h-full bg-white w-[35%]" />
+              <div
+                className="h-full bg-white"
+                style={{ width: `${progress}%` }}
+              />
             </div>
-            <div className="absolute top-1/2 left-[35%] -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full hidden group-hover:block" />
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full hidden group-hover:block"
+              style={{ left: `${progress}%` }}
+            />
           </div>
-          <span>3:45</span> */}
+          <span>{formatTimeProgress(duration)}</span>
         </div>
       </div>
 
       <div className="flex items-center justify-end w-1/3 gap-3">
-        <button className="text-xl text-gray-400 hover:text-white text-base transition">
-          <FaVolumeHigh />
+        <button
+          className="text-xl text-gray-400 hover:text-white text-base transition hover:cursor-pointer "
+          onClick={handleMuteVolume}
+        >
+          {volume === 0 ? (
+            <FaVolumeMute />
+          ) : volume < 0.5 ? (
+            <FaVolumeDown />
+          ) : (
+            <FaVolumeHigh />
+          )}
         </button>
         {/* <button className="text-xl text-gray-400 hover:text-white text-base transition">
           <FaVolumeMute />
         </button> */}
 
         {/* Thanh âm lượng */}
-        <div className="w-24 group relative py-2 cursor-pointer">
+        <div
+          className="w-24 group relative py-2 cursor-pointer"
+          onClick={handleVolume}
+        >
           <div className="h-1 w-full bg-gray-600 rounded-full overflow-hidden">
-            {/* Mức âm lượng mẫu (Ví dụ 70%) */}
-            <div className="h-full bg-white group-hover:bg-[#1db954] w-[70%]" />
+            <div
+              className="h-full bg-white group-hover:bg-[#1db954]"
+              style={{ width: `${volume * 100}%` }}
+            />
           </div>
-          <div className="absolute top-1/2 left-[70%] -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full hidden group-hover:block" />
+          <div
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full hidden group-hover:block"
+            style={{ left: `${volume * 100}%` }}
+          />
         </div>
+        {/* <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={volume}
+          onChange={(e) => setVolume(Number(e.target.value))}
+        /> */}
       </div>
     </div>
   ) : (

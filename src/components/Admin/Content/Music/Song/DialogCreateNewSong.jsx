@@ -612,7 +612,7 @@ const DialogCreateNewSong = (props) => {
               Cancel
             </Button>
 
-            <Button onClick={() => handleSubmit()}>Create user</Button>
+            <Button onClick={() => handleSubmit()}>Create song</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

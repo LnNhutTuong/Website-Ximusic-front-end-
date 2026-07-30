@@ -1,5 +1,71 @@
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { RxCross2 } from "react-icons/rx";
+
+import {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  useLayoutEffect,
+} from "react";
+import { PlayerContext } from "@/context/musicContext";
+import { parseLrc } from "@/utils/songUtils";
 const NowPlayingSidebar = (props) => {
-  return (
+  const { queue, currentIndex, currentTime } = useContext(PlayerContext);
+
+  const currentSong = queue[currentIndex];
+
+  const lyrics = useMemo(() => {
+    return parseLrc(currentSong?.lyrics);
+  }, [currentSong]);
+
+  //tra ve index
+  const activeIndex = lyrics?.findIndex((line, index) => {
+    const nextLine = lyrics[index + 1];
+
+    if (
+      currentTime >= line.time &&
+      (!nextLine || currentTime < nextLine.time)
+    ) {
+      return true;
+    }
+  });
+
+  const lyricsRef = useRef([]);
+  const lyricsContainerRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const container = lyricsContainerRef.current;
+    const activeLine = lyricsRef.current[activeIndex];
+
+    if (!container || !activeLine) return;
+
+    // Tính khoảng cách từ đỉnh dòng hiện tại tới đỉnh container
+    const lineTop = activeLine.offsetTop - container.offsetTop;
+
+    // Tính vị trí scroll để đưa dòng đó vào ĐÚNG GIỮA khung
+    const targetScrollTop =
+      lineTop - container.clientHeight / 2 + activeLine.clientHeight / 2;
+
+    container.scrollTo({
+      top: targetScrollTop,
+      behavior: "smooth",
+    });
+  }, [activeIndex]);
+
+  // useLayoutEffect(() => {
+  //   const activeLine = lyricsRef.current[activeIndex];
+
+  //   if (!activeLine) return;
+
+  //   activeLine.scrollIntoView({
+  //     behavior: "smooth",
+  //     block: "center", // Tự động đưa phần tử ra BẤM GIỮA khung chứa
+  //   });
+  // }, [activeIndex]);
+
+  return currentSong ? (
     <div className="flex flex-col gap-4 w-80 h-[calc(100%-30px)] bg-white/5 overflow-y-auto scrollbar-none rounded-xl">
       <div className="w-full backdrop-blur-md p-4 flex flex-col rounded-xl  gap-4 border border-white/20 ">
         {/* Header & Album Art */}
@@ -7,18 +73,56 @@ const NowPlayingSidebar = (props) => {
           <div className="text-sm font-semibold text-white/60">Now playing</div>
           <div className="aspect-square w-full bg-neutral-800 rounded-lg overflow-hidden shadow-lg">
             <img
-              src="https://picsum.photos/300"
+              src={`${import.meta.env.VITE_BACKEND_URL}/${currentSong.cover}`}
               alt="Cover"
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center gap-2">
             <div>
               <h3 className="font-bold text-white text-lg truncate">
-                Tên Bài Hát Hay Nhất
+                {currentSong.title}
               </h3>
-              <p className="text-sm text-neutral-400 truncate">Tên Ca Sĩ</p>
+              <p className="text-sm text-neutral-400 truncate">
+                {currentSong.owner.artistName}
+              </p>
             </div>
+            {/* <span className="border border-white h-full" /> */}
+            <div className="flex gap-2">
+              <RxCross2
+                size={28}
+                className="hover:cursor-pointer hover:scale-122 transition"
+              />
+              <FaRegHeart
+                size={26}
+                className="hover:cursor-pointer hover:scale-122 transition"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="bg-white/10 rounded-xl h-56 overflow-hidden w-full flex flex-col">
+          <div className="border-b border-white/10 mx-5">
+            <h1 className="font-bold text-white/70 pt-3 pb-1">Lyrics</h1>
+          </div>
+          <div
+            className="flex-1 w-full overflow-y-auto scrollbar-none px-3 py-1 text-lg "
+            ref={lyricsContainerRef}
+          >
+            {lyrics?.map((line, index) => (
+              <p
+                key={index}
+                className={
+                  index === activeIndex
+                    ? "text-white font-bold bg-white/10 px-2 rounded-xl scale-105 m-0"
+                    : "text-gray-500 m-0"
+                }
+                ref={(target) => {
+                  lyricsRef.current[index] = target;
+                }}
+              >
+                {line.text}
+              </p>
+            ))}
           </div>
         </div>
       </div>
@@ -103,6 +207,8 @@ const NowPlayingSidebar = (props) => {
         </div>
       </div>
     </div>
+  ) : (
+    <></>
   );
 };
 
