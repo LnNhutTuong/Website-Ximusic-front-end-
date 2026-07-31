@@ -6,4 +6,9 @@ const getAllSongsPublic = (page, limit, genreId, keySearch) => {
   });
 };
 
-export { getAllSongsPublic };
+const incrementPlays = (songId) => {
+  console.log(">>check: ");
+  return axios.post(`api/v1/song/${songId}/play`);
+};
+
+export { getAllSongsPublic, incrementPlays };

@@ -9,13 +9,30 @@ import {
 import { FaVolumeHigh } from "react-icons/fa6";
 import { PiRepeatBold, PiRepeatOnceBold } from "react-icons/pi";
 
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 
 import { formatTimeProgress } from "@/utils/songUtils";
 
+import { incrementPlays } from "@/services/public/music/songService";
+
+import { UserContext } from "@/context/userContext";
 import { PlayerContext } from "@/context/musicContext";
 
 const PlayerBar = () => {
+  //==================================================USER++++++++++++==========================================
+  const { user } = useContext(UserContext);
+
+  const [actionPermission, setActionPermission] = useState(false);
+
+  useEffect(() => {
+    if (user?.isAuthenticated) {
+      setActionPermission(true);
+    } else {
+      setActionPermission(false);
+    }
+  }, [user]);
+
+  //==================================================SONG++++++++++++==========================================
   const {
     queue,
 
@@ -56,32 +73,57 @@ const PlayerBar = () => {
 
   useEffect(() => {
     if (!currentSong || !audioRef.current) return;
+    lastTime.current = 0;
+    listened.current = 0;
+    counted.current = false;
     setIsPlaying(true);
     audioRef.current.play();
   }, [currentSong]);
 
+  const handleKeyDown = (e) => {
+    if (e.code !== "Space") return;
+
+    if (
+      e.target.tagName === "INPUT" ||
+      e.target.tagName === "TEXTAREA" ||
+      e.target.isContentEditable
+    ) {
+      return;
+    }
+
+    e.preventDefault();
+    togglePlayPause();
+  };
+
+  const lastTime = useRef(0);
+  const listened = useRef(0);
+  const counted = useRef(false);
+
+  const handleIncrementPlays = async (songId) => {
+    let current = audioRef.current.currentTime;
+
+    let diff = current - lastTime.current;
+
+    if (diff > 0 && diff < 2) {
+      listened.current += diff;
+    }
+
+    lastTime.current = current;
+
+    if (!counted.current && listened.current >= 44) {
+      counted.current = true;
+      await incrementPlays(songId);
+    }
+  };
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.code === "Space") {
-        if (
-          e.target.tagName === "INPUT" ||
-          e.target.tagName === "TEXTAREA" ||
-          e.target.isContentEditable
-        ) {
-          return;
-        }
-
-        e.preventDefault();
-        togglePlayPause(currentSong);
-      }
-    };
-
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [currentSong]);
+
   //+++++====VOlume======
   useEffect(() => {
     if (!audioRef.current) return;
@@ -139,19 +181,26 @@ const PlayerBar = () => {
           </div>
         </div>
         <div className="text-sm px-2">
-          <button className="p-2 rounded-2xl bg-white/20 text-white/60 hover:text-white">
-            <FaPlus />
-          </button>
+          {actionPermission && (
+            <button className="p-2 rounded-2xl bg-white/20 text-white/60 hover:text-white">
+              <FaPlus />
+            </button>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col items-center w-1/3 max-w-[600px]">
         <div className="flex items-center gap-5 mb-1.5">
           <button
-            className="text-gray-400 hover:text-white text-lg transition hover:cursor-pointer"
+            className={`text-gray-400 transition ${
+              actionPermission
+                ? "hover:text-white hover:cursor-pointer"
+                : "cursor-not-allowed opacity-50"
+            }`}
             onClick={() => {
               handleShuffle(currentSong);
             }}
+            disabled={!actionPermission}
           >
             {shuffleMode ? (
               <FaRandom className="text-white" />
@@ -168,7 +217,7 @@ const PlayerBar = () => {
           <button
             className="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center text-lg hover:scale-105 transition font-bold"
             onClick={() => {
-              togglePlayPause(currentSong);
+              togglePlayPause();
             }}
           >
             {isPlaying ? <GiPauseButton /> : <GiPlayButton />}
@@ -180,7 +229,12 @@ const PlayerBar = () => {
             <GiFastForwardButton />
           </button>
           <button
-            className="text-gray-400 text-xl hover:cursor-pointer "
+            className={`text-gray-400 transition ${
+              actionPermission
+                ? "hover:text-white hover:cursor-pointer"
+                : "cursor-not-allowed opacity-50"
+            }`}
+            disabled={!actionPermission}
             onClick={handleRepeat}
           >
             {(() => {
@@ -202,7 +256,7 @@ const PlayerBar = () => {
 
         <div className="flex items-center w-full gap-2 text-[11px] text-gray-400">
           <audio
-            key={currentSong?.id}
+            // key={currentSong?.id}
             ref={audioRef}
             src={
               currentSong
@@ -212,6 +266,7 @@ const PlayerBar = () => {
             onEnded={handleNextSong}
             onTimeUpdate={() => {
               setCurrentTime(audioRef.current.currentTime);
+              handleIncrementPlays(currentSong.id);
             }}
             onLoadedMetadata={() => {
               setDuration(audioRef.current.duration);

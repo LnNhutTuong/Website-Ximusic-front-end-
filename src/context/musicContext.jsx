@@ -53,15 +53,19 @@ const PlayerProvider = ({ children }) => {
     setIsPlaying(true);
   };
 
-  const togglePlayPause = async (currentSong) => {
-    if (!audioRef.current || !currentSong) return;
+  const togglePlayPause = async () => {
+    if (!audioRef.current) return;
 
-    if (isPlaying) {
+    if (audioRef.current.paused) {
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
       audioRef.current.pause();
       setIsPlaying(false);
-    } else {
-      await audioRef.current.play();
-      setIsPlaying(true);
     }
   };
 
