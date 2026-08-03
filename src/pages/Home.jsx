@@ -1,6 +1,6 @@
-import LibrarySidebar from "@/components/Home/LibrarySidebar";
-import HomeContent from "@/components/Home/HomeContent";
-import NowPlayingSidebar from "@/components/Home/NowPlayingSidebar";
+import LibrarySidebar from "@/components/Home/leftContent/LibrarySidebar";
+import HomeContent from "@/components/Home/midContent/HomeContent";
+import NowPlayingSidebar from "@/components/Home/rightContent/NowPlayingSidebar";
 const Home = (prop) => {
   return (
     <>

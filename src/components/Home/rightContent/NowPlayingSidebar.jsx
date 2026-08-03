@@ -1,6 +1,6 @@
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
-import noneAvatar from "../../assets/static/users/default_image.svg";
+import noneAvatar from "../../../assets/static/users/default_image.svg";
 import {
   useContext,
   useEffect,
@@ -14,7 +14,15 @@ import { PlayerContext } from "@/context/musicContext";
 import { parseLrc } from "@/utils/songUtils";
 import { formatTimeProgress } from "@/utils/songUtils";
 
+import { DialogCredits } from "./dialogCredits";
+import { DialogQueue } from "./dialogQueue";
+
 const NowPlayingSidebar = (props) => {
+  const [showDialogCredits, setShowDialogCredits] = useState(false);
+  const [dataCredits, setDataCredits] = useState({});
+
+  const [showDialogQueue, setShowDialogQueue] = useState(false);
+  const [dataQueue, setDataQueue] = useState({});
   //==================================================USER++++++++++++==========================================
   const { user } = useContext(UserContext);
 
@@ -79,15 +87,24 @@ const NowPlayingSidebar = (props) => {
       top: 0,
       behavior: "auto",
     });
+
+    setDataCredits({
+      owner: currentSong.owner.artistName,
+      features: currentSong.features,
+      createdAt: currentSong.createdAt,
+    });
   }, [currentSong?.id]);
 
-  const nextQueue = queue.slice(currentIndex + 1);
+  useEffect(() => {
+    setDataQueue({
+      queue: queue.slice(currentIndex + 1),
+      currentSong,
+      nextSong,
+    });
+  }, [queue, currentIndex]);
 
-  // useEffect(() => {
-  //   console.log(queue);
-  //   console.log(currentIndex);
-  //   console.log(queue.slice(currentIndex + 1));
-  // }, [queue, currentIndex]);
+  const nextIndex = (currentIndex + 1) % queue.length;
+  const nextSong = queue[nextIndex];
 
   const handlePlaySong = (song, songs, playlist = null) => {
     playSongContext(song, songs, { type: "PlayInQue" });
@@ -138,21 +155,25 @@ const NowPlayingSidebar = (props) => {
             className="flex-1 w-full overflow-y-auto scrollbar-none px-3 py-1 text-lg "
             ref={lyricsContainerRef}
           >
-            {lyrics?.map((line, index) => (
-              <p
-                key={index}
-                className={
-                  index === activeIndex
-                    ? "text-white font-bold bg-white/10 px-2 rounded-xl scale-105"
-                    : "text-gray-500 m-0"
-                }
-                ref={(target) => {
-                  lyricsRef.current[index] = target;
-                }}
-              >
-                {line.text}
-              </p>
-            ))}
+            {lyrics?.length > 0 ? (
+              lyrics?.map((line, index) => (
+                <p
+                  key={index}
+                  className={
+                    index === activeIndex
+                      ? "text-white font-bold bg-white/10 px-2 rounded-xl scale-105"
+                      : "text-gray-500 m-0"
+                  }
+                  ref={(target) => {
+                    lyricsRef.current[index] = target;
+                  }}
+                >
+                  {line.text}
+                </p>
+              ))
+            ) : (
+              <p className="text-gray-500 m-0">This song doesn't has</p>
+            )}
           </div>
         </div>
       </div>
@@ -192,22 +213,39 @@ const NowPlayingSidebar = (props) => {
 
       {/* credits */}
       <div className="px-3">
-        <h2 className="text-[18px] font-bold uppercase tracking-wider">
-          Credits
-        </h2>
-        <div className="space-y-2 text-sm bg-neutral-800/30 p-4 rounded-xl">
-          <div className="flex justify-between">
+        <div className="flex justify-between">
+          <h2 className="text-[18px] font-bold uppercase tracking-wider">
+            Credits
+          </h2>
+          <button
+            className="text-xs font-semibold bg-white/10 p-1 mb-1 rounded-lg cursor-pointer text-white/60 hover:text-white hover:underline"
+            onClick={() => {
+              setShowDialogCredits(true);
+            }}
+          >
+            Open Credits
+          </button>
+        </div>
+
+        <div className="space-y-1 text-sm bg-neutral-800/30 p-3 rounded-xl h-20 overflow-hidden overflow-y-scroll scrollbar-none">
+          <div className="flex justify-between item-center">
             <span className="text-gray-400">Main Artist</span>
             <span className="font-medium">{currentSong.owner.artistName}</span>
           </div>
           {currentSong.features.length > 0 && (
-            <div className="flex justify-between overflow-x-auto">
-              <span className="text-gray-400">Features</span>
+            <div className="flex flex-col">
               {currentSong.features.map((feature) => (
-                <span className="font-medium text-gray-200">
-                  {feature.artistName}
-                </span>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Features</span>
+                  <span className="font-medium text-gray-200">
+                    {feature.artistName}
+                  </span>
+                </div>
               ))}
+              <div className="flex justify-between">
+                <span className="text-gray-400">Features</span>
+                <span className="font-medium text-gray-200">zxc</span>
+              </div>
             </div>
           )}
 
@@ -226,38 +264,58 @@ const NowPlayingSidebar = (props) => {
           <h2 className="text-[18px] font-bold  tracking-wider">
             Next in queue
           </h2>
-          <button className="text-xs font-semibold bg-white/10 p-1 rounded-lg cursor-pointer text-white/60 hover:text-white hover:underline">
+          <button
+            className="text-xs font-semibold bg-white/10 p-1 rounded-lg cursor-pointer text-white/60 hover:text-white hover:underline"
+            onClick={() => {
+              setShowDialogQueue(true);
+            }}
+          >
             Open Queue
           </button>
         </div>
 
         <div className="space-y-2">
-          <div className="flex  flex-col gap-3 p-2">
-            {nextQueue.map((song, index) => (
+          <div className="flex flex-col gap-3 p-2">
+            {nextSong && (
               <div
-                key={song.id}
                 className="flex items-center gap-3 rounded-lg hover:bg-neutral-800 group cursor-pointer transition-colors"
                 onClick={() => {
-                  handlePlaySong(song, nextQueue);
+                  handlePlaySong(nextSong, queue);
                 }}
               >
                 <div className="w-10 h-10  rounded-md flex-shrink-0 flex items-center justify-center text-xs text-gray-400 font-bold">
-                  #{index + 1}
+                  <img
+                    src={`${import.meta.env.VITE_BACKEND_URL}/${nextSong.cover}`}
+                    alt="song cover"
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate ">{song.title}</p>
+                  <p className="text-sm font-medium truncate ">
+                    {nextSong.title}
+                  </p>
                   <p className="text-xs text-gray-400 truncate">
-                    {song.owner.artistName}
+                    {nextSong.owner.artistName}
                   </p>
                 </div>
                 <span className="text-xs text-gray-500 pr-2">
-                  {formatTimeProgress(song.duration)}
+                  {formatTimeProgress(nextSong.duration)}
                 </span>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
+      <DialogCredits
+        show={showDialogCredits}
+        setShow={setShowDialogCredits}
+        dataCredits={dataCredits}
+      />
+
+      <DialogQueue
+        show={showDialogQueue}
+        setShow={setShowDialogQueue}
+        dataQueue={dataQueue}
+      />
     </div>
   ) : (
     <></>
